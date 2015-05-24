@@ -1,0 +1,62 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[paper=a4paper, hmargin=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage{fancyhdr}
+%\usepackage{charter} % tipografia
+%\usepackage{graphicx}
+%\usepackage{makeidx}
+%\usepackage{float}
+%\usepackage{amsmath, amsthm, amssymb}
+%\usepackage{amsfonts}
+%\usepackage{sectsty}
+%\usepackage{charter}
+%\usepackage{wrapfig}
+%\usepackage{listings}
+%\lstset{language=C}
+%\input{codesnippet}
+%\input{page.layout}
+% \setcounter{secnumdepth}{2}
+%\usepackage{underscore}
+\usepackage{caratula}
+%\usepackage{url}
+
+
+\begin{document}
+\thispagestyle{empty}
+\materia{Organizaci\'on del Computador II}
+\submateria{Primer Cuatrimestre de 2015}
+\titulo{Trabajo Práctico Filtros}
+\subtitulo{Grupo: Super\_Smash\_Bros\_/\_Nintendo\_64}
+\integrante{Arribas, Joaqu\'in}{702/13}{joacoarribas@hotmail.com}
+\integrante{V\'azquez, J\'esica}{318/13}{jesis\_93@hotmail.com}
+\integrante{Zavalla, Agust\'in}{670/13}{nkm747@gmail.com}
+
+\maketitle
+\newpage
+
+\section{Objetivos Generales}
+El trabajo práctico consiste en una serie de ejercicios en los que se aplican de forma gradual los conceptos necesarios para construir un sistema operativo mínimo.
+El sistema será capaz de capturar cualquier excepción que puedan generar las tareas y tomar las acciones necesarias para quitar a esta del sistema.
+
+\section{Introducción}
+El trabajo práctico consiste en la implementación de un juego de dos jugadores llamado \textbf{Tierra pirata}.
+Los piratas son considerados tareas del sistema operativo que se mueven por la memoria.
+
+\section{Ejercicios}
+
+\subsection{Ejercicio 1}
+Pasos que realizamos para hacer el ejercicio 1:
+\begin{enumerate}
+  \item Creamos la tabla GDT (Global Descriptor Table) con 5 descriptores de segmentos de memoria, uno nulo, dos para código de nivel 0 y 3, y dos para datos de nivel 0 y 3.
+  \item Direccionamos con cada uno de estos segmentos los primeros 500MB de memoria.
+  \item Deshabilitamos las interrupciones.
+  \item Habilitamos A20.
+  \item Cargamos el registro GDTR con la direccion base de la GDT, utilizando la instrucción LGDT.
+  \item Seteamos el bit PE del registro CR0 en 1.
+  \item Pasamos a modo protegido haciendo un jump a la etiqueta \textbf{modoProtegido}.
+  \item Seteamos los selectores de segmentos. (A completar mejor, yo no saber nada)
+  \item Seteamos la base de la pila en la dirección de memoria 0x27000.
+\end{enumerate}
+
+\end{document}
