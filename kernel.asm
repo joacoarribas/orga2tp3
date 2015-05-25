@@ -65,7 +65,7 @@ start:
     ; Imprimir mensaje de bienvenida
     xchg bx, bx
     ; Inicializar el juego
-    mov edx,0xB8000 
+    mov edx, 0x000B8000
     mov dword [edx], 0x60213465
     mov dword [edx+80], 0x60213465
     ; Inicializar pantalla

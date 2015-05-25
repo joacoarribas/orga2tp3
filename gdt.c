@@ -35,7 +35,7 @@ gdt_entry gdt[13] = {
     /* Descriptor codigo nivel 0
      Offset = 0x040 */
     [8] = (gdt_entry) {
-        (unsigned short)    0xFDFF,         /* limit[0:15]  */
+        (unsigned short)    0xF3FF,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x0A,           /* type         */
@@ -54,7 +54,7 @@ gdt_entry gdt[13] = {
      Offset = 0x048 */
     
     [9] = (gdt_entry) {
-        (unsigned short)    0xFDFF,         /* limit[0:15]  */
+        (unsigned short)    0xF3FF,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x02,           /* type         */
@@ -72,7 +72,7 @@ gdt_entry gdt[13] = {
     /* Descriptor codigo nivel 3
      Offset = 0x050 */
     [10] = (gdt_entry) {
-        (unsigned short)    0xFDFF,         /* limit[0:15]  */
+        (unsigned short)    0xF3FF,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x0A,           /* type         */
@@ -90,7 +90,7 @@ gdt_entry gdt[13] = {
     /* Descriptor datos nivel 3*/
     /* Offset = 0x058 */
     [11] = (gdt_entry) {
-        (unsigned short)    0xFDFF,         /* limit[0:15]  */
+        (unsigned short)    0xF3FF,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
         (unsigned char)     0x02,           /* type         */
