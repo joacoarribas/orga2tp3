@@ -82,4 +82,27 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
-
+void screen_inicializar() {
+  int i = 0;
+  int j = 0;
+  for (i=0 ; i < 50 ; i++) {
+    for (j=0 ; j < 80 ; j++) {
+      screen_pintar(32, C_BG_LIGHT_GREY, i, j);
+    }
+  }
+  for (i=44 ; i < 50 ; i++) {
+    for (j=0 ; j < 80 ; j++) {
+      screen_pintar(32, C_BG_BLACK, i, j);
+    }
+  }
+  for (i=44 ; i < 50 ; i++) {
+    for (j=30 ; j < 38 ; j++) {
+      screen_pintar(32, C_BG_RED, i, j);
+    }
+  }
+  for (i=44 ; i < 50 ; i++) {
+    for (j=38 ; j < 46 ; j++) {
+      screen_pintar(32, C_BG_BLUE, i, j);
+    }
+  }
+}

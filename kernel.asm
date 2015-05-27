@@ -8,6 +8,9 @@
 global start
 
 extern GDT_DESC
+extern screen_inicializar 
+extern create_page_directory
+extern create_page_table
 ;; Saltear seccion de datos
 jmp start
 
@@ -62,21 +65,29 @@ start:
     mov fs, ax
     ; Establecer la base de la pila
     mov esp, 0x27000
+
     ; Imprimir mensaje de bienvenida
-    xchg bx, bx
+
+    call screen_inicializar
+    ;FALTA PONER TODOS LOS SEGMENTOS IGUALES; ESTARIAMOS CREYENDO QUE HAY QUE HACERLO
     ; Inicializar el juego
-    mov edx, 0x000B8000
-    mov dword [edx], 0x60213465
-    mov dword [edx+80], 0x60213465
+
     ; Inicializar pantalla
 
     ; Inicializar el manejador de memoria
 
     ; Inicializar el directorio de paginas
-
+    call create_page_directory
     ; Cargar directorio de paginas
+    call create_page_table
 
     ; Habilitar paginacion
+    mov eax, 0x27000
+    mov cr3, eax
+
+    mov eax, cr0
+    or eax, 0x80000000 ;habilito paginacion
+    mov cr0, eax
 
     ; Inicializar tss
 

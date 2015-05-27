@@ -17,6 +17,8 @@
 #define MAPA_BASE_VIRTUAL 0x800000
 
 void mmu_inicializar();
+void create_page_directory();
+void create_page_table();
 
 
 #endif	/* !__MMU_H__ */

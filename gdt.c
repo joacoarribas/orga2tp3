@@ -107,6 +107,7 @@ gdt_entry gdt[13] = {
 
     /* Segmento pa'l video*/
     /* Offset = 0x060 */    
+    /* ZAVA NO SABE SI EL LIMITE ESTA BIEN, ESTARIA CREYENDO QUE NO */
     [12] = (gdt_entry) {
         (unsigned short)    0x0F9F,         /* limit[0:15]  */
         (unsigned short)    0x8000,         /* base[0:15]   */
