@@ -44,7 +44,7 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x01,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */ //Corre en 32 nativo o IA-32e?
+        (unsigned char)     0x00,           /* l            */ 
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
@@ -52,7 +52,6 @@ gdt_entry gdt[13] = {
 
     /* Descriptor datos nivel 0
      Offset = 0x048 */
-    
     [9] = (gdt_entry) {
         (unsigned short)    0xF3FF,         /* limit[0:15]  */
         (unsigned short)    0x0000,         /* base[0:15]   */
@@ -63,7 +62,7 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x01,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */ //Corre en 32 nativo o IA-32e?
+        (unsigned char)     0x00,           /* l            */ 
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
@@ -81,7 +80,7 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x01,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */ //Corre en 32 nativo o IA-32e?
+        (unsigned char)     0x00,           /* l            */ 
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
@@ -99,7 +98,7 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x01,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */ //Corre en 32 nativo o IA-32e?
+        (unsigned char)     0x00,           /* l            */
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
@@ -118,7 +117,7 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x0B,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */ //Corre en 32 nativo o IA-32e?
+        (unsigned char)     0x00,           /* l            */
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */

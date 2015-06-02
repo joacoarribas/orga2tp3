@@ -8,9 +8,12 @@
 global start
 
 extern GDT_DESC
+extern IDT_DESC
 extern screen_inicializar 
+extern screen_escribir_nombre
 extern create_page_directory
 extern create_page_table
+extern idt_inicializar
 ;; Saltear seccion de datos
 jmp start
 
@@ -63,16 +66,26 @@ start:
     mov ss, ax
     mov ax, 1100000b
     mov fs, ax
+
     ; Establecer la base de la pila
     mov esp, 0x27000
 
     ; Imprimir mensaje de bienvenida
 
-    call screen_inicializar
     ;FALTA PONER TODOS LOS SEGMENTOS IGUALES; ESTARIAMOS CREYENDO QUE HAY QUE HACERLO
+    ;mov ax, 1001000b
+    ;mov ds, ax 
+    ;mov fs, ax 
+    ;mov ss, ax 
+    ;mov es, ax 
+    ;mov gs, ax 
     ; Inicializar el juego
+    call idt_inicializar
 
+    lidt [IDT_DESC]
     ; Inicializar pantalla
+    call screen_inicializar
+    call screen_escribir_nombre
 
     ; Inicializar el manejador de memoria
 
@@ -88,6 +101,10 @@ start:
     mov eax, cr0
     or eax, 0x80000000 ;habilito paginacion
     mov cr0, eax
+
+    ; Error division por cero, funciona
+    mov edx, 0
+    div edx 
 
     ; Inicializar tss
 

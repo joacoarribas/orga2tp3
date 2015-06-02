@@ -106,3 +106,10 @@ void screen_inicializar() {
     }
   }
 }
+
+void screen_escribir_nombre() {
+  char *nombre = {
+    "Super Smash Bros"
+  };
+  print(nombre, 64, 0, 15);
+}
