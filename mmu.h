@@ -16,9 +16,15 @@
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
 
-void mmu_inicializar();
 void create_page_directory();
 void create_page_table();
+
+void mmu_inicializar();
+uint* malloc();
+void mmu_inicializar_dir_pirata();
+void mmu_mapear_pagina();
+void mmu_desmapear_pagina();
+
 
 
 #endif	/* !__MMU_H__ */

@@ -9,6 +9,23 @@
 #include "i386.h"
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
+
+
+
+
+int libres;
+uint* base = (uint*) 0x100000;
+
+void mmu_inicializar(){
+  libres = 0;
+}
+
+uint* malloc(){
+  uint* proxPagina = base + libres*1000;
+  libres++;
+  return proxPagina;
+}
+
 void create_page_directory() {
   int i = 0;
   uint *t = (uint*)(0x27000);

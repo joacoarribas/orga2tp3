@@ -102,9 +102,11 @@ start:
     or eax, 0x80000000 ;habilito paginacion
     mov cr0, eax
 
+
+
     ; Error division por cero, funciona
-    mov edx, 0
-    div edx 
+    ; mov edx, 0
+    ; div edx 
 
     ; Inicializar tss
 
