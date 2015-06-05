@@ -16,8 +16,9 @@
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
 
-void create_page_directory();
-void create_page_table();
+
+void kernel_create_page_directory();
+void kernel_create_page_table();
 
 void mmu_inicializar();
 uint* malloc();

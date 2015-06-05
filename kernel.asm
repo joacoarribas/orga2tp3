@@ -90,9 +90,9 @@ start:
     ; Inicializar el manejador de memoria
 
     ; Inicializar el directorio de paginas
-    call create_page_directory
+    call kernel_create_page_directory
     ; Cargar directorio de paginas
-    call create_page_table
+    call kernel_create_page_table
 
     ; Habilitar paginacion
     mov eax, 0x27000
