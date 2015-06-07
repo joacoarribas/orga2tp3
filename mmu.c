@@ -29,23 +29,46 @@ uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata){
   //  0000 0000 00   00 0000 0000   0000 0000 0000
   // (0000 0000 00) (11 1111 1111) (1111 1111 1111)
 
-  inicializar_idmap(cr3,pt);
-  mmu_mapear_pagina(0x0400000, cr3, PAG_INICIAL);
+  inicializar_ident_mapping(cr3,pt);
+
+  mmu_mapear_pagina(0x0400000, &cr3, PAG_INICIAL);
   
 }
 
-//mmu_mapear_pagina(direccion virtual, puntero al pd, direccion fisica)
-void mmu_mapear_pagina(uint* virtual, uint* cr3, uint* fisica){
-  unsigned int directory_index = (unsigned int) ((virtual & FFC00000) / (2^21));
-  uint* PDE = cr3[directory_index];
-  bool seg_present = PDE & 1;
+void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
+  unsigned int directory_index = (unsigned int) ((virtual & 0xFFC00000) / (0x2^0x16)); // No sé si el casteo me hace la conversión a decimal
+  uint* PDE = (*pcr3)[directory_index]; //cr3 fue inicializado como entero sin signo, luego (*pcr3) recorre el array con offset de 4 bytes. (dir = base + tamaño del tipo*subinidice)
+  bool present = PDE & 0x1;
 
-  if (seg_present = 0){
-    uint* nueva_pd = dame_pagina_libre();
+  if (!present){
+    uint* table = dame_pagina_libre();
+    PDE |= (table + 0x3); // Guardo en la entrada del directorio de páginas la dirección base de la página que contiene la tabla de páginas y seteo los bits R/W y P en 1.
+    (*pcr3)[directory_index] = PDE; //Escribo en el directorio, porque PDE era una copia Agustín, prestá atención.
   }
   else {
-    
+    table = (PDE & 0x11111000); // Limpio los bits de atributos. Queda la dirección física sola.
   }
+
+// ¿Sabía Ud. que:
+// a[i] is semantically equivalent to *(a+i), which in turn is equivalent to *(i+a), the expression can also be written as i[a] (although this form is rarely used).
+// Como en assembly!
+// KE
+
+  unsigned int table_index = (unsigned int) ((virtual & 0x003FF000) / (0x2^0xC));
+  uint* PTE = table[table_index];
+  present = PTE & 1;
+
+  if (!present){
+    uint* pagina = dame_pagina_libre();
+    PTE |= (pagina + 0x3); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
+    table[table_index] = PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
+  }
+  else {
+    página = (PDE & 0x11111000); // Limpio los bits de atributos. Queda la dirección física sola.
+  }
+
+  // La variable página no me estaría importando porque el offset dentro de la página
+  // no lo estaría usando todavía. Pero, nuevamente, uno nunca sabe estas cosas.
 
 }
 
