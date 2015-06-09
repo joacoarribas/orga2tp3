@@ -9,11 +9,19 @@ global start
 
 extern GDT_DESC
 extern IDT_DESC
+
 extern screen_inicializar 
 extern screen_escribir_nombre
-extern create_page_directory
-extern create_page_table
+extern screen_actualizar_reloj_global
+
+extern kernel_create_page_directory
+extern kernel_create_page_table
+
 extern idt_inicializar
+
+extern deshabilitar_pic
+extern resetear_pic
+extern habilitar_pic
 ;; Saltear seccion de datos
 jmp start
 
@@ -60,6 +68,7 @@ start:
     BITS 32
     ; Establecer selectores de segmentos
     modoProtegido:
+    cli
     xor eax, eax
     mov ax, 1001000b
     mov ds, ax
@@ -72,6 +81,10 @@ start:
 
     ; Imprimir mensaje de bienvenida
 
+    ; Inicializar pantalla
+    call screen_inicializar
+    call screen_escribir_nombre
+
     ;FALTA PONER TODOS LOS SEGMENTOS IGUALES; ESTARIAMOS CREYENDO QUE HAY QUE HACERLO
     ;mov ax, 1001000b
     ;mov ds, ax 
@@ -83,9 +96,6 @@ start:
     call idt_inicializar
 
     lidt [IDT_DESC]
-    ; Inicializar pantalla
-    call screen_inicializar
-    call screen_escribir_nombre
 
     ; Inicializar el manejador de memoria
 
@@ -102,11 +112,17 @@ start:
     or eax, 0x80000000 ;habilito paginacion
     mov cr0, eax
 
-
-
     ; Error division por cero, funciona
-    ; mov edx, 0
-    ; div edx 
+    ;;mov edx, 0
+    ;;div edx 
+
+    ;xchg bx, bx
+    call deshabilitar_pic
+    call resetear_pic
+    call habilitar_pic
+    sti
+
+    ;call screen_actualizar_reloj_global
 
     ; Inicializar tss
 

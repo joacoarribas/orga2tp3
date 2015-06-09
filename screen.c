@@ -113,3 +113,21 @@ void screen_escribir_nombre() {
   };
   print(nombre, 64, 0, 15);
 }
+
+void print_Lshift() {
+  print("LShift", 70, 2, 15);
+}
+
+void print_Rshift() {
+  print("RShift", 70, 2, 15);
+}
+
+void print_Y() {
+  print ("y", 72, 2, 15);
+}
+
+void clear_screen_portion() {
+  int j = 0;
+  for (j=70; j<76; j++)
+    screen_pintar(32, C_BG_LIGHT_GREY , 2, j); 
+}

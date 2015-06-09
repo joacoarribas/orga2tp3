@@ -13,14 +13,7 @@
 #include "tss.h"
 
 idt_entry idt[255] = { 
-/*
-  [0] = (idt_entry) {
-    (unsigned short)        offset_0_15     
-    (unsigned short)        segsel          
-    (unsigned short)        attr           
-    (unsigned short)        offset_16_31   
-  };
-*/
+
 };
 
 
@@ -47,28 +40,27 @@ idt_descriptor IDT_DESC = {
 */
 
 char *errors[] = {
-  "error 0",
-  "error 1",
-  "error 2",
-  "error 3",
-  "error 4",
-  "error 5",
-  "error 6",
-  "error 7",
-  "error 8",
-  "error 9",
-  "error 10",
-  "error 11",
-  "error 12",
-  "error 13",
-  "error 14",
-  "error 15",
-  "error 16",
-  "error 17",
-  "error 18",
-  "error 19",
-  "error 20"
-}; 
+  "Error 0: Division por cero",
+  "Error 1",
+  "Error 2: Interrupcion NMI",
+  "Error 3: Breakpoint",
+  "Error 4: Overflow",
+  "Error 5: Bound range exceeded",
+  "Error 6: Invalid Opcode",
+  "Error 7: Device Not Available",
+  "Error 8: Double Fault",
+  "Error 9: Coprocessor Segment Overrun",
+  "Error 10: Invalid TSS",
+  "Error 11: Segment Not Present",
+  "Error 12: Stack-Segment Fault", 
+  "Error 13: General Protection",
+  "Error 14: Page Fault",
+  "Error 15",
+  "Error 16: FPU Error",
+  "Error 17: Alignment Check",
+  "Error 18: Machine Check",
+  "Error 19: SIMD Floating-Point Exception",
+};
 
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
@@ -77,7 +69,7 @@ char *errors[] = {
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 void print_error(int a) {
-  print(errors[a], 33, 20, 10); 
+  print(errors[a], 25, 20, 10); 
 }
 
 
@@ -103,5 +95,6 @@ void idt_inicializar() {
     IDT_ENTRY(17);
     IDT_ENTRY(18);
     IDT_ENTRY(19);
-    IDT_ENTRY(20);
+    IDT_ENTRY(32);
+    IDT_ENTRY(33);
 }
