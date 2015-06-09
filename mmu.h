@@ -10,6 +10,8 @@
 
 #include "defines.h"
 #include "game.h"
+#include <stdbool.h>
+
 
 #define CODIGO_BASE       0X400000
 
@@ -21,8 +23,7 @@ void kernel_create_page_directory();
 void kernel_create_page_table();
 
 void mmu_inicializar();
-uint* malloc();
-void mmu_inicializar_dir_pirata();
+uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata);
 void mmu_mapear_pagina();
 void mmu_desmapear_pagina();
 
