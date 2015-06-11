@@ -12,6 +12,12 @@ sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
 
 extern print_error
+extern print_Lshift
+extern print_Rshift
+extern print_Y
+extern clear_screen_portion
+
+extern game_tick
 
 ;; PIC
 extern fin_intr_pic1
@@ -25,257 +31,25 @@ extern sched_tarea_actual
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
 
-%macro ISR 0
-global _isr%0
-
-_isr%0:
-xchg bx, bx
-    mov eax, %0
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
+;%macro PEPE 2
+;hola %1
+;pepe %2
+;%endmacro
+;
+;
+;PEPE carola chau
+;
+;hola carola
+;pepe chau
 
 %macro ISR 1
 global _isr%1
-
 _isr%1:
-xchg bx, bx
+;xchg bx, bx
     mov eax, %1
     push eax
     call print_error
     jmp $
-
-%endmacro
-
-%macro ISR 2
-global _isr%2
-
-_isr%2:
-xchg bx, bx
-    mov eax, %2
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 3
-global _isr%3
-
-_isr%3:
-xchg bx, bx
-    mov eax, %3
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 4
-global _isr%4
-
-_isr%4:
-xchg bx, bx
-    mov eax, %4
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 5
-global _isr%5
-
-_isr%5:
-xchg bx, bx
-    mov eax, %5
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 6
-global _isr%6
-
-_isr%6:
-xchg bx, bx
-    mov eax, %6
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 7
-global _isr%7
-
-_isr%7:
-xchg bx, bx
-    mov eax, %7
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 8
-global _isr%8
-
-_isr%8:
-xchg bx, bx
-    mov eax, %8
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 9
-global _isr%9
-
-_isr%9:
-xchg bx, bx
-    mov eax, %9
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 10
-global _isr%10
-
-_isr%10:
-xchg bx, bx
-    mov eax, %10
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 11
-global _isr%11
-
-_isr%11:
-xchg bx, bx
-    mov eax, %11
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 12
-global _isr%12
-
-_isr%12:
-xchg bx, bx
-    mov eax, %12
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-
-%macro ISR 13
-global _isr%13
-
-_isr%13:
-xchg bx, bx
-    mov eax, %13
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 14
-global _isr%14
-
-_isr%14:
-xchg bx, bx
-    mov eax, %14
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 15
-global _isr%15
-
-_isr%15:
-xchg bx, bx
-    mov eax, %15
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 16
-global _isr%16
-
-_isr%16:
-xchg bx, bx
-    mov eax, %16
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 17
-global _isr%17
-
-_isr%17:
-xchg bx, bx
-    mov eax, %17
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 18
-global _isr%18
-
-_isr%18:
-xchg bx, bx
-    mov eax, %18
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 19
-global _isr%19
-
-_isr%19:
-xchg bx, bx
-    mov eax, %19
-    push eax
-    call print_error
-    jmp $
-
-%endmacro
-
-%macro ISR 20
-global _isr%20
-
-_isr%20:
-xchg bx, bx
-    mov eax, %20
-    push eax
-    call print_error
-    jmp $
-
 %endmacro
 
 
@@ -307,15 +81,67 @@ ISR 16
 ISR 17
 ISR 18
 ISR 19
-ISR 20
+
+
 
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 
+global _isr32
+_isr32:
+;xchg bx, bx
+  pushad
+  call fin_intr_pic1
+  call game_tick 
+  popad
+  iret
+
+
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+
+global _isr33
+_isr33:
+;xchg bx, bx
+  pushad
+  call fin_intr_pic1
+  .ciclo:
+    in al, 0x60
+    cmp al, 0x2A
+    je .Lshift
+    cmp al, 0xAA
+    je .clearScreenPortion
+    cmp al, 0x36
+    je .Rshift
+    cmp al, 0xB6
+    je .clearScreenPortion
+    cmp al, 0x15
+    je .printY
+    cmp al, 0x95
+    je .clearScreenPortion
+    jmp .fin
+
+  .Lshift:
+    call print_Lshift
+    jmp .ciclo
+
+  .Rshift:
+    call print_Rshift
+    jmp .ciclo
+
+  .printY:
+    call print_Y
+    jmp .ciclo
+
+  .clearScreenPortion:
+    call clear_screen_portion
+    jmp .fin
+
+  .fin:
+    popad
+    iret
 
 ;;
 ;; Rutinas de atención de las SYSCALLS

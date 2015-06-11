@@ -55,5 +55,11 @@ void screen_pintar_relojes();
 void screen_actualizar_posicion_mapa(uint x, uint y);
 void screen_stop_game_show_winner(jugador_t *j);
 
+void screen_escribir_nombre(); // Como coño funcionaba si no lo tenia definido
+void clear_screen_portion();
+void print_Lshift();
+void print_Rshift();
+void print_Y();
+
 
 #endif  /* !__SCREEN_H__ */

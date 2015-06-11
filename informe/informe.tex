@@ -52,11 +52,49 @@ Pasos que realizamos para hacer el ejercicio 1:
   \item Direccionamos con cada uno de estos segmentos los primeros 500MB de memoria.
   \item Deshabilitamos las interrupciones.
   \item Habilitamos A20.
-  \item Cargamos el registro GDTR con la direccion base de la GDT, utilizando la instrucción LGDT.
+  \item Cargamos el registro GDTR con la dirección base de la GDT, utilizando la instrucción LGDT.
   \item Seteamos el bit PE del registro CR0 en 1.
   \item Pasamos a modo protegido haciendo un jump a la etiqueta \textbf{modoProtegido}.
-  \item Seteamos los selectores de segmentos. (A completar mejor, yo no saber nada)
+  \item Cargamos los selectores de segmentos. Asignamos a \textbf{ds} y \textbf{ss} el segmento de código nivel 0, y a \textbf{fs} el de video.
   \item Seteamos la base de la pila en la dirección de memoria 0x27000.
+  \item Escribimos las rutinas pertenecientes a la escritura e pantalla \textbf{screen\_inicializar} y \textbf{screen\_escribir\_nombre}, que se encargan de limpiar la pantalla,
+    junto con dos barras inferiores de distinto color, y de escribir el nombre de nuestro grupo en la esquina derecha superior. 
+\end{enumerate}
+
+\subsection{Ejercicio 2}
+Pasos que realizamos para hacer el ejercicio 2:
+\begin{enumerate}
+  \item Inicializamos las primeras 20 entradas de la tabla IDT (Interrupt Descriptor Table) para manejar las primeras 20 interrupciones del procesador.
+  \item Creamos un arreglo de chars con el nombre de cada una de las interrupciones.
+  \item Seteamos el Segment Selector de los Gate Descriptors en el segmento de código nivel 0 y el atributo en 0x8E00 indicando que son \textbf{Interrupt Gate}
+  \item Definimos en isr.h las 20 rutinas de atención de interrupciones.
+  \item Escribimos el código de cada rutina usando una Macro, imprimiendo cada error por pantalla llamando a la función \textbf{print\_error} 
+  \item Llamamos a la función \textbf{idt\_inicializar}, que crea las 20 entradas en la IDT y a LIDT, que carga la IDTR.
+\end{enumerate}
+
+\subsection{Ejercicio 3}
+Pasos que realizamos para hacer el ejercicio 3:
+\begin{enumerate}
+  \item Creamos las funciones \textbf{kernel\_create\_page\_directory} y \textbf{kernel\_create\_page\_table} que se encargan de crear el directorio y tabla de páginas para el kernel.
+    El directorio de páginas mapea las direcciones 0x00000000 a 0x003fffff. Activamos a cada una de las páginas sus atributos Read/Write y Present.
+  \item Seteamos a Cr3 en la base del directorio de páginas del kernel, con sus bits PCD y PWT en 0.
+  \item Seteamos el bit PG de Cr0.
+\end{enumerate} 
+
+\subsection{Ejercicio 4}
+Pasos que realizamos para hacer el ejercicio 4:
+\begin{enumerate}
+  \item
+\end{enumerate}
+
+\subsection{Ejercicio 5}
+Pasos que realizamos para hacer el ejercicio 5:
+\begin{enumerate}
+  \item Llamamos a las funciones \textbf{deshabilitar\_pic}, \textbf{resetear\_pic}, y \textbf{habilitar\_pic} en ese orden para remapear el PIC y habilitarlo. 
+  \item Habilitamos las interrupciones.
+  \item Creamos las entradas 32 y 33 en la IDT para las interrupciones de reloj y teclado respectivamente. 
+  \item Escribimos la rutina de atención de reloj llamando por cada clock a la función \textbf{game\_tick} que llama a la función \textbf{screen\_actualizar\_reloj\_global}.
+  \item Escribimos la rutina de atención de teclado leyendo del puerto 0x60 el Scan Code de la tecla oprimida. Para cada tecla utilizada en el juego se la imprime en la esquina derecha superior de la pantalla y luego se la limpia.
 \end{enumerate}
 
 \end{document}

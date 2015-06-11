@@ -13,7 +13,7 @@
 /* Definicion de la GDT */
 /* -------------------------------------------------------------------------- */
 
-gdt_entry gdt[13] = {
+gdt_entry gdt[15] = {
     /* Descriptor nulo*/
     /* Offset = 0x000 */
     [0] = (gdt_entry) {
@@ -123,6 +123,43 @@ gdt_entry gdt[13] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },    
 
+    /* Segmento Tarea Inicial*/
+    /* Offset = 0x068 */    
+    /* A REVISARR     */    
+    [13] = (gdt_entry) {
+        (unsigned short)    0x0067,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]   */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x0B,           /* type  CREO QUES ASI       */
+        (unsigned char)     0x00,           /* s            */
+        (unsigned char)     0x00,           /* dpl NO SE SABE */
+        (unsigned char)     0x01,           /* p            */
+        (unsigned char)     0x00,           /* limit[16:19] */
+        (unsigned char)     0x00,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x00,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
+
+    /* Segmento Tarea Inicial*/
+    /* Offset = 0x070 */    
+    /* A REVISARR     */    
+    [13] = (gdt_entry) {
+        (unsigned short)    0x0067,         /* limit[0:15]  */
+        (unsigned short)    0x0000,         /* base[0:15]  DONDE ESTA MI TSS */
+        (unsigned char)     0x00,           /* base[23:16]  */
+        (unsigned char)     0x09,           /* type  CREO QUES ASI       */
+        (unsigned char)     0x00,           /* s            */
+        (unsigned char)     0x00,           /* dpl NO SE SABE */
+        (unsigned char)     0x01,           /* p            */
+        (unsigned char)     0x00,           /* limit[16:19] */
+        (unsigned char)     0x00,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x00,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
 
 };
 
