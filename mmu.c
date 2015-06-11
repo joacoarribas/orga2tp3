@@ -31,12 +31,12 @@ uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata){
   uint* pt = dame_pagina_libre();
   // 0x003FFFFF
   //  0000 0000 00   00 0000 0000   0000 0000 0000
-  // (0000 0000 00) (11 1111 1111) (1111 1111 1111)
+  // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
 
   inicializar_ident_mapping(cr3,pt);
 
-  mmu_mapear_pagina(0x0400000, &cr3, PAG_INICIAL);
-  return CACA;  
+  mmu_mapear_pagina(0x0400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+  return CACA;
 }
 
 void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
