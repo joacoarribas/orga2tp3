@@ -25,18 +25,15 @@ void mmu_inicializar(){
   libres = 0;
 }
 
-
 uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata){
   uint* cr3 = dame_pagina_libre();
   uint* pt = dame_pagina_libre();
   // 0x003FFFFF
   //  0000 0000 00   00 0000 0000   0000 0000 0000
-  // (0000 0000 00) (11 1111 1111) (1111 1111 1111)
-
+  // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
   inicializar_ident_mapping(cr3,pt);
-
-  mmu_mapear_pagina(0x0400000, &cr3, PAG_INICIAL);
-  return CACA;  
+  mmu_mapear_pagina(0x0400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+  return CACA;
 }
 
 void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
@@ -83,54 +80,44 @@ void mmu_desmapear_pagina(unsigned int virtual, unsigned int cr3){
 
 }
 
-
 uint* dame_pagina_libre(){
   uint* proxPagina = base + libres*0x1000;
   libres++;
   return proxPagina;
 }
 
-void kernel_create_page_directory() {
+void idmap_page_directory(uint* dir) {
   int i = 0;
-  uint *t = (uint*)(0x27000);
-  t[i] = 0x28003;
-  for (i=1 ; i < 1024 ; i++) {
-    t[i] = 0x00000000;
-  }
-}
-void kernel_create_page_table() {
-  int i = 0;
-  int direction = 0x00000003;
-  uint *t = (uint*)(0x28000);
-  for(i=0; i < 1024 ; i++) {
-    t[i] =   direction;
-    direction += 0x00001000;
-  }
-}
-
-void task_create_page_directory(){
-  int i = 0;
-  uint *t = (uint*)(0x27000);
+  uint *t = dir;
   t[i] = 0x28003;
   for (i=1 ; i < 1024 ; i++) {
     t[i] = 0x00000000;
   }
 }
 
-void task_create_page_table(){
+void idmap_page_table(uint* dir) {
   int i = 0;
   int direction = 0x00000003;
-  uint *t = (uint*)(0x28000);
+  uint *t = dir;
   for(i=0; i < 1024 ; i++) {
     t[i] =   direction;
     direction += 0x00001000;
-  }  
+  }
 }
-
 
 void inicializar_ident_mapping(uint* cr3, uint* pt){
-
+  idmap_page_directory((uint*)cr3);
+  idmap_page_table(pt);
 }
+
+void kernel_create_page_directory(){
+  idmap_page_directory((uint*)0x27000);
+}
+
+void kernel_create_page_table(){
+  idmap_page_table((uint*)0x28000);
+}
+
 
 
 /* Direcciones fisicas de codigos */
