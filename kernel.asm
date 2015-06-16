@@ -22,6 +22,9 @@ extern idt_inicializar
 extern deshabilitar_pic
 extern resetear_pic
 extern habilitar_pic
+
+extern tss_inicializar
+extern cargar_tarea_inicial
 ;; Saltear seccion de datos
 jmp start
 
@@ -93,9 +96,6 @@ start:
     ;mov es, ax 
     ;mov gs, ax 
     ; Inicializar el juego
-    call idt_inicializar
-
-    lidt [IDT_DESC]
 
     ; Inicializar el manejador de memoria
 
@@ -116,31 +116,37 @@ start:
     ;;mov edx, 0
     ;;div edx 
 
-    ;xchg bx, bx
-    call deshabilitar_pic
-    call resetear_pic
-    call habilitar_pic
-    sti
-
-    ;call screen_actualizar_reloj_global
-
     ; Inicializar tss
+    call tss_inicializar
+    xchg bx, bx
+    lgdt [GDT_DESC]
 
     ; Inicializar tss de la tarea Idle
 
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+    call idt_inicializar
 
     ; Cargar IDT
+    lidt [IDT_DESC]
 
     ; Configurar controlador de interrupciones
+    ;call deshabilitar_pic
+    call resetear_pic
+    call habilitar_pic
 
     ; Cargar tarea inicial
+;    xchg bx, bx
+    mov ax, 0x68
+    ltr ax
+    ;call cargar_tarea_inicial
 
     ; Habilitar interrupciones
-
+    sti
+;xchg bx,bx
     ; Saltar a la primera tarea: Idle
+    jmp 0x70:0x00000000
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

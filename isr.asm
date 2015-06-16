@@ -147,4 +147,12 @@ _isr33:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
+global _isr70
+_isr70:
+;xchg bx, bx
+  pushad
+;  call fin_intr_pic1 No es necesario no?
+  mov eax, 0x42
+  popad
+  iret
 
