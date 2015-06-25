@@ -136,7 +136,7 @@ void tss_inicializar() {
 
     /* Para reevisar */
   for (i=0; i < 2*MAX_CANT_PIRATAS_VIVOS; i++){
-    completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
+    // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
     cargar_tss_en_gdt(&tss_jugadorA[i], i+15);
   }
 }
@@ -150,11 +150,25 @@ void completar_tss_para_tarea(pirata_t pirata) {
 //  }
 }
 
-void completar_tss(tss* t, int i) {
-    // Esta funcion tiene que recibir un nuevo cr3
+void completar_tss(tss* t, uint cr3, uint pila0) {
+// void completar_tss(int t, uint cr3, uint pila0) {
+  // int player = t / MAX_CANT_PIRATAS_VIVOS
+  // int pirata = t % MAX_CANT_PIRATAS_VIVO
+
+  // tss *t;
+  // switch (player) {
+  //   case 0:
+  //     t = tss_jugadorA[pirata];
+  //     break;
+  //   case 1:
+  //     t = tss_jugadorB[pirata];
+  //     break;
+
+  // }
+
   t->ptl     = 0x0;
   t->unused0 = 0x0;
-  t->esp0    = 0x0; // Nueva pagina libre 
+  t->esp0    = pila0; // Nueva pagina libre 
   t->ss0     = 0x48; // y sus selectores; deberia ir el selector de datos de nivel cero?
   t->unused1 = 0x0;
   t->esp1    = 0x0;

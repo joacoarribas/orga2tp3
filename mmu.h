@@ -19,13 +19,14 @@
 #define MAPA_BASE_VIRTUAL 0x800000
 
 
-void kernel_create_page_directory();
-void kernel_create_page_table();
+// void kernel_create_page_directory();
+// void kernel_create_page_table();
 
 void mmu_inicializar();
-uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata);
+uint* mmu_inicializar_dir_pirata();
 void mmu_mapear_pagina();
 void mmu_desmapear_pagina();
+uint* dame_pagina_libre();
 
 
 

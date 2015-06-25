@@ -26,7 +26,7 @@ void mmu_inicializar(){
   libres = 0;
 }
 
-uint* mmu_inicializar_dir_pirata(bool jugador, uint* pirata){
+uint* mmu_inicializar_dir_pirata(){
   uint* cr3 = dame_pagina_libre();
   uint* pt = dame_pagina_libre();
   // 0x003FFFFF

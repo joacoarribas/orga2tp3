@@ -12,6 +12,7 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 
 #include <stdarg.h>
 
+#include "gdt.h"
 
 #define POS_INIT_A_X                      1
 #define POS_INIT_A_Y                      1
@@ -22,6 +23,7 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #define MAX_SIN_CAMBIOS                 999
 
 #define BOTINES_CANTIDAD 8
+
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
@@ -128,6 +130,11 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->jugador = j; 
   pirata->id = id;
   pirata->estaVivo = 1;
+
+  // uint cr3 = (uint) mmu_inicializar_dir_pirata();
+  // uint pila0 = (uint) dame_pagina_libre();
+  // void completar_tss(index, cr3, pila0);
+
 }
 
 void game_tick(uint id_pirata)
