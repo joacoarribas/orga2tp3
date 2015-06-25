@@ -25,6 +25,8 @@ extern habilitar_pic
 
 extern tss_inicializar
 extern cargar_tarea_inicial
+
+extern game_inicializar
 ;; Saltear seccion de datos
 jmp start
 
@@ -96,6 +98,7 @@ start:
     ;mov es, ax 
     ;mov gs, ax 
     ; Inicializar el juego
+    call game_inicializar
 
     ; Inicializar el manejador de memoria
 

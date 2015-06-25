@@ -52,15 +52,15 @@ _isr%1:
     push eax
     call print_error
     ; Faltaria borrar la tarea
-    call sched_proxima_a_ejecutar
-    mov [selector], ax
-    jmp far [offset]
-;    #jmp $
-
-    .fin:
-      ; deberia limpiar la pantalla aca?
-      popad
-      iret
+;    call sched_proxima_a_ejecutar
+;    mov [selector], ax
+;    jmp far [offset]
+;;    #jmp $
+;
+;    .fin:
+;      ; deberia limpiar la pantalla aca?
+;      popad
+;      iret
 %endmacro
 
 
@@ -105,12 +105,12 @@ _isr32:
   pushad
   call fin_intr_pic1
   call sched_tick 
-  str cx
-  cmp ax, cx
-  je .fin
-
-  mov [selector], ax
-  jmp far [offset]
+;  str cx
+;  cmp ax, cx
+;  je .fin
+;
+;  mov [selector], ax
+;  jmp far [offset]
 
   .fin:
     popad

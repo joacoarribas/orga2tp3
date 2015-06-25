@@ -27,6 +27,15 @@ void screen_actualizar_reloj_global()
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 }
 
+void screen_actualizar_reloj_tarea(uint id)
+{
+    static uint reloj_global = 0;
+
+    reloj_global = (reloj_global + 1) % reloj_size;
+
+    screen_pintar(reloj[reloj_global], C_BW, 49, 79);
+}
+
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;

@@ -12,17 +12,6 @@ jugador_t scheduler[2];
 int indice_actual;
 
 void inicializar_sched() {
-  int i = 0;
-  for (i=0; i<8; i++){
-    jugadorA.piratas[i].index_gdt = 0x78+(i*8);
-    jugadorA.piratas[i].jugador = &jugadorA; 
-    jugadorA.piratas[i].id = i; 
-  }
-  for (i=8; i<16; i++) {
-    jugadorB.piratas[i].index_gdt = 0x78+(i*8);
-    jugadorB.piratas[i].jugador = &jugadorB; 
-    jugadorB.piratas[i].id = i; 
-  }
   scheduler[0] = jugadorA;
   scheduler[1] = jugadorB;
 

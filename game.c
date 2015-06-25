@@ -95,23 +95,38 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 
 void game_inicializar()
 {
+  game_jugadores_inicializar(&jugadorA, &jugadorB);
 }
 
 void game_jugador_inicializar_mapa(jugador_t *jug)
 {
 }
 
-void game_jugador_inicializar(jugador_t *j)
+void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
 {
-	static int index = 0;
-
-	j->index = index++;
+//	static int index = 0;
+//
+//	j->index = index++;
     // ~ completar ~
+  int index_gdt;
+  int i = 0;
+  for (i=0; i<8; i++){
+    index_gdt = 0x78+(i*8);
+    game_pirata_inicializar(&(jA->piratas[i]), jA, index_gdt, i);
+  }
+  for (i=8; i<16; i++) {
+    index_gdt = 0x78+(i*8);
+    game_pirata_inicializar(&(jB->piratas[i]), jB, index_gdt, i);
+  }
 
 }
 
 void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id)
 {
+  pirata->index_gdt = index;
+  pirata->jugador = j; 
+  pirata->id = id;
+  pirata->estaVivo = 1;
 }
 
 void game_tick(uint id_pirata)
