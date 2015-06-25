@@ -17,7 +17,8 @@ extern print_Rshift
 extern print_Y
 extern clear_screen_portion
 
-extern game_tick
+extern sched_tick
+extern sched_proxima_a_ejecutar
 
 ;; PIC
 extern fin_intr_pic1
@@ -41,15 +42,25 @@ extern sched_tarea_actual
 ;
 ;hola carola
 ;pepe chau
+offset : dd 0
+selector : dw 0
 
 %macro ISR 1
 global _isr%1
 _isr%1:
-;xchg bx, bx
     mov eax, %1
     push eax
     call print_error
-    jmp $
+    ; Faltaria borrar la tarea
+    call sched_proxima_a_ejecutar
+    mov [selector], ax
+    jmp far [offset]
+;    #jmp $
+
+    .fin:
+      ; deberia limpiar la pantalla aca?
+      popad
+      iret
 %endmacro
 
 
@@ -93,9 +104,17 @@ _isr32:
 ;xchg bx, bx
   pushad
   call fin_intr_pic1
-  call game_tick 
-  popad
-  iret
+  call sched_tick 
+  str cx
+  cmp ax, cx
+  je .fin
+
+  mov [selector], ax
+  jmp far [offset]
+
+  .fin:
+    popad
+    iret
 
 
 ;;
@@ -151,7 +170,6 @@ global _isr70
 _isr70:
 ;xchg bx, bx
   pushad
-;  call fin_intr_pic1 No es necesario no?
   mov eax, 0x42
   popad
   iret

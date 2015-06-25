@@ -118,7 +118,6 @@ start:
 
     ; Inicializar tss
     call tss_inicializar
-    xchg bx, bx
     lgdt [GDT_DESC]
 
     ; Inicializar tss de la tarea Idle
@@ -130,6 +129,7 @@ start:
 
     ; Cargar IDT
     lidt [IDT_DESC]
+    xchg bx ,bx
 
     ; Configurar controlador de interrupciones
     ;call deshabilitar_pic

@@ -24,10 +24,13 @@ struct jugador_t;
 
 typedef struct pirata_t
 {
-    uint index;
+    uint index_gdt;
     struct jugador_t *jugador;
+    uchar estaVivo; // 0 esta muerto, 1 esta vivo
+    uint id;
 
     // id unica, posicion, tipo, reloj
+    // booleano que diga si esta vivo o muerto
 } pirata_t;
 
 
