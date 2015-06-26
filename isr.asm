@@ -27,6 +27,15 @@ extern fin_intr_pic1
 extern sched_tick
 extern sched_tarea_actual
 
+;;Syscalls
+;extern syscall_mover
+;extern syscall_cavar
+;extern syscall_posicion
+
+;; Rutinas
+extern rutina_mover
+extern rutina_cavar
+extern rutina_posicion
 
 ;;
 ;; Definición de MACROS
@@ -174,3 +183,36 @@ _isr70:
   popad
   iret
 
+;---------------------------------------------------------------------------- ;;
+
+;global _isr46
+;_isr46:
+;;xchg bx, bx
+;  pushad
+;  cmp eax, 0x1  
+;  je .moverse
+;  cmp eax, 0x2
+;  je .cavar
+;  cmp eax, 0x3
+;  je .posicion
+;
+;  .moverse:
+;    push ecx
+;    ;call syscall_mover
+;    call rutina_mover
+;    jmp .fin
+;
+;  .cavar:
+;    ;call syscall_cavar
+;    call rutina_cavar
+;    jmp .fin
+;
+;  .posicion:
+;    push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
+;    ;call syscall_posicion
+;    call rutina_posicion
+;    jmp .fin
+;
+;  .fin:
+;  popad
+;  iret

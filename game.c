@@ -131,9 +131,11 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->estaVivo = 1;
 
-  // uint cr3 = (uint) mmu_inicializar_dir_pirata();
-  // uint pila0 = (uint) dame_pagina_libre();
-  // void completar_tss(index, cr3, pila0);
+  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
+
+   uint cr3 = (uint) mmu_inicializar_dir_pirata();
+   uint pila0 = (uint) dame_pagina_libre();
+   completar_tss(t, cr3, pila0);
 
 }
 
