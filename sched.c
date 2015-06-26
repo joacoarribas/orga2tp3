@@ -27,11 +27,11 @@ int sched_proxima_a_ejecutar() {
   
   int index = scheduler[indice_actual].index;
 
-  while (scheduler[indice_actual].piratas[index].estaVivo == 0 ) {
+  while (scheduler[indice_actual].piratas[index].estaVivo == 0 ) { //mientras el pirata este muerto, avanzar al siguiente
     index++;
   }
 //  return index;
-  return scheduler[indice_actual].piratas[index].index_gdt;
+  return scheduler[indice_actual].piratas[index].index_gdt; //devuelve indice en la GDT
 }
 
 int sched_tick() {

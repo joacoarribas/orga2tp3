@@ -121,7 +121,8 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
     index_gdt = 0x78+(i*8);
     game_pirata_inicializar(&(jB->piratas[i]), jB, index_gdt, i);
   }
-
+  jA->puntaje = 0;
+  jB->puntaje = 0;
 }
 
 void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id)

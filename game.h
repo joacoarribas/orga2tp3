@@ -11,6 +11,7 @@
 #include "defines.h"
 
 typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion;
+typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 
 #define MAX_CANT_PIRATAS_VIVOS           8
 
@@ -29,6 +30,8 @@ typedef struct pirata_t
     struct jugador_t *jugador;
     uchar estaVivo; // 0 esta muerto, 1 esta vivo
     uint id;
+    tipoPirata tipo;
+
 
     // id unica, posicion, tipo, reloj
     // booleano que diga si esta vivo o muerto
@@ -37,6 +40,7 @@ typedef struct pirata_t
 
 typedef struct jugador_t
 {
+    uint puntaje; //cantidad de monedas 
     uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     // coordenadas puerto, posiciones exploradas, mineros pendientes, etc

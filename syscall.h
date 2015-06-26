@@ -14,6 +14,7 @@
  * Syscalls
  */
 
+
 LS_INLINE unsigned int syscall_mover(direccion d) {
     int ret;
 
