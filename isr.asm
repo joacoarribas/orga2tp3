@@ -196,6 +196,7 @@ _isr46:
     push ecx
     push eax
     call game_syscall_pirata_mover
+    ;aca rompi la pila no ? pop pop ? HAREEEE
     jmp .fin
 
   .cavar:

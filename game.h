@@ -14,6 +14,7 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 
 #define MAX_CANT_PIRATAS_VIVOS           8
+#define MAX_CANT_MINEROS_PENDIENTES      20 //pensar este numero!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #define JUGADOR_A                         0
 #define JUGADOR_B                         1
@@ -26,12 +27,13 @@ struct jugador_t;
 
 typedef struct pirata_t
 {
-    uint index_gdt;
-    struct jugador_t *jugador;
-    uchar estaVivo; // 0 esta muerto, 1 esta vivo
     uint id;
+    uint index_gdt;
+    uchar estaVivo; // 0 esta muerto, 1 esta vivo
     tipoPirata tipo;
-
+    int pos_x;
+    int pos_y;
+    struct jugador_t *jugador;
 
     // id unica, posicion, tipo, reloj
     // booleano que diga si esta vivo o muerto
@@ -43,7 +45,11 @@ typedef struct jugador_t
     uint puntaje; //cantidad de monedas 
     uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
-    // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
+    pirata_t minerosPendientes[MAX_CANT_MINEROS_PENDIENTES];
+    int *vistas_x;  //guarda coordenada x de posiciones vistas
+    int *vistas_y;  //guarda coordenada y de posiciones vistas
+    //estas las puedo actualizar directamente usando game_calcular_posiciones_vistas
+  // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
 
 

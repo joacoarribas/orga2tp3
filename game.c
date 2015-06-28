@@ -169,6 +169,8 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
 {
+//uint game_dir2xy(direccion dir, int *x, int *y)
+//le paso las direc que me tire esta funcion
 }
 
 
