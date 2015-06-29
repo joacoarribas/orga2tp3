@@ -11,7 +11,7 @@
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 
-#define PAG_INICIAL 0x400000 //Todo: poner bien la página inicial
+#define PAG_INICIAL 0x500000 //Todo: poner bien la página inicial
 #define CACA (uint*)0xFEDEFA50DEAD
 uint* dame_pagina_libre();
 void inicializar_ident_mapping(uint* cr3, uint* pt);
@@ -33,8 +33,8 @@ uint* mmu_inicializar_dir_pirata(){
   //  0000 0000 00   00 0000 0000   0000 0000 0000
   // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
   inicializar_ident_mapping(cr3,pt);
-  mmu_mapear_pagina(0x066400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-  copiar_codigo_tarea();
+  mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+  copiar_codigo_tarea((int*)PAG_INICIAL);
   return cr3;
 }
 
@@ -124,8 +124,10 @@ void kernel_create_page_table(){
   idmap_page_table((uint*)0x28000);
 }
 
-void copiar_codigo_tarea(){
-  //TODO
+void copiar_codigo_tarea(int* dir){
+  for (int i=0x00; i<0x1000; i++){
+    *(dir) = *((int*)(0x10000+i));
+  }
 }
 
 void cerear_pagina(uint* dir){

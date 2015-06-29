@@ -137,7 +137,7 @@ void tss_inicializar() {
     /* Para reevisar */
   for (i=0; i < 2*MAX_CANT_PIRATAS_VIVOS; i++){
     // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
-    cargar_tss_en_gdt(&tss_jugadorA[i], i+15);
+    cargar_tss_desc_en_gdt(&tss_jugadorA[i], i+15);
   }
 }
 
@@ -177,7 +177,7 @@ void completar_tss(tss* t, uint cr3, uint pila0) {
   t->esp2    = 0x0;
   t->ss2     = 0x0;
   t->unused3 = 0x0;
-  t->cr3     = 0x00000; // Dir. del Kernel Page Directory
+  t->cr3     = cr3; // Dir. del Kernel Page Directory
   t->eip     = 0x00400000; // Dir. donde se encuentra el codigo 
   t->eflags  = 0x202; // Eflags con interrupciones habilitadas
   t->eax     = 0x0;
@@ -206,7 +206,7 @@ void completar_tss(tss* t, uint cr3, uint pila0) {
   t->iomap   = 0xFFFF;
 }
 
-void cargar_tss_en_gdt(tss *t, int i) {
+void cargar_tss_desc_en_gdt(tss *t, int i) {
     gdt[i] = (gdt_entry) {
         (unsigned short)    0x0067,         /* limit[0:15]  */
         (unsigned short)    ((uint) (t)) & 0x0000FFFF,         /* base[0:15]  DONDE ESTA MI TSS */

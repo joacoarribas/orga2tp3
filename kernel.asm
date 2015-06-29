@@ -90,13 +90,6 @@ start:
     call screen_inicializar
     call screen_escribir_nombre
 
-    ;FALTA PONER TODOS LOS SEGMENTOS IGUALES; ESTARIAMOS CREYENDO QUE HAY QUE HACERLO
-    ;mov ax, 1001000b
-    ;mov ds, ax 
-    ;mov fs, ax 
-    ;mov ss, ax 
-    ;mov es, ax 
-    ;mov gs, ax 
     ; Inicializar el juego
     call game_inicializar
 
