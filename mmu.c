@@ -38,6 +38,18 @@ uint* mmu_inicializar_dir_pirata(){
   return cr3;
 }
 
+uint mmu_pos_fisica(uint* cr3, uint virtual){
+  uint fisica;
+  uint virtual1 = virtual;
+  int PDE_index = virtual1 >> 22;
+  uint *PDE =(uint*)cr3[PDE_index] ; //no se si era necesario esto
+  int PTE_index = virtual1 >> 12 & 0x000003FF;
+  uint* PTE =(uint*)(PDE[PTE_index] & 0xFFFFF000);
+  virtual1 = virtual1 & 0x00000FFF; 
+  fisica = (uint)PTE + virtual1;
+  return fisica;
+}
+
 void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
 
   unsigned int directory_index = (unsigned int)virtual >> 22; // No sé si el casteo me hace la conversión a decimal
@@ -84,6 +96,7 @@ void mmu_desmapear_pagina(unsigned int virtual, uint* cr3){
   cr3[directory_index] = 0x00000000;
   // El memory leak ya fue vieja, no me importa nada.
 }
+
 
 uint* dame_pagina_libre(){
   uint* proxPagina = base + libres*0x1000;

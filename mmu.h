@@ -27,7 +27,7 @@ uint* mmu_inicializar_dir_pirata();
 void mmu_mapear_pagina();
 void mmu_desmapear_pagina();
 uint* dame_pagina_libre();
-
-
+uint mmu_pos_fisica();
+void copiar_codigo_tarea();
 
 #endif	/* !__MMU_H__ */

@@ -14,7 +14,7 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 
 #define MAX_CANT_PIRATAS_VIVOS           8
-#define MAX_CANT_MINEROS_PENDIENTES      20 //pensar este numero!!!!!!!!!!!!!!!!!!!!!!!!!
+#define MAX_CANT_MINEROS_PENDIENTES      8 //cantidad de botines que hay en el mapa acotada por la variable BOTINES_CANTIDAD
 
 #define JUGADOR_A                         0
 #define JUGADOR_B                         1

@@ -29,7 +29,7 @@ uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
                                         {49,  3, 50}, {49, 38, 50}, {64, 21, 100}, {34, 21, 100}
                                     };
-
+  
 jugador_t jugadorA;
 jugador_t jugadorB;
 
@@ -127,10 +127,12 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
 
 void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id)
 {
-  pirata->index_gdt = index;
-  pirata->jugador = j; 
   pirata->id = id;
-  pirata->estaVivo = 1;
+  pirata->index_gdt = index;
+  pirata->estaVivo = 0 ;
+  pirata->pos_x = 78; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_y = 1;
+  pirata->jugador = j; 
 
   tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
 
@@ -143,6 +145,30 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
 void game_tick(uint id_pirata)
 {
   screen_actualizar_reloj_global();
+}
+
+uint dame_pos_fisica(pirata_t *p, direccion dir){
+  uint fisica;
+  uint index = p->index_gdt;
+  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); 
+  uint pcr3 = t->cr3;
+  if (dir == IZQ){
+    uint actual = mmu_pos_fisica(pcr3,0x400000);
+    fisica = actual - 4094; //(le resto 4kb)
+  }
+  if (dir == DER){
+    uint actual = mmu_pos_fisica(pcr3,0x400000);
+    fisica = actual + 4094; //(le sumo 4kb)
+  }
+  if (dir == ABA){
+    uint actual = mmu_pos_fisica(pcr3,0x400000);
+    fisica = actual + MAPA_ANCHO * 4094; 
+  }
+  if (dir == ARR){
+    uint actual = mmu_pos_fisica(pcr3,0x400000);
+    fisica = actual - MAPA_ANCHO * 4094; 
+  }
+  return fisica;  
 }
 
 
@@ -176,7 +202,21 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-    // ~ completar
+  pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
+  uint index = p->index_gdt;
+  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); 
+  uint pcr3 = t->cr3;
+  int x = p->pos_x;
+  int y = p->pos_y;
+  game_dir2xy(dir,&x,&y);
+  if (game_posicion_valida(x,y)){
+    if (p->tipo == explorador){
+      uint fisica = dame_pos_fisica(p,dir);
+      copiar_codigo_tarea(); //hay que hacerla
+      mmu_mapear_pagina(0x400000,&pcr3,&fisica); //pcr3 le estoy poniendo cualquier cosa no ? por que es puntero a puntero chavaaaaaaaaaaaaaa aca restauro pagina fisica actual del pirata
+
+    }
+  } 
     return 0;
 }
 
@@ -187,10 +227,18 @@ uint game_syscall_cavar(uint id)
 	return 0;
 }
 
-uint game_syscall_pirata_posicion(uint id, int idx)
+uint game_syscall_pirata_posicion(uint id, int idx) //ver que onda los ids de los piratas de distintos equipos
 {
-    // ~ completar ~
-    return 0;
+  uint pos;
+  pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
+  if (idx == -1){ 
+    pos = (p->pos_y << 8) | p->pos_x; 
+  } else {
+    jugador_t *j = p->jugador;
+    pirata_t p1 = j->piratas[idx]; //dudoso esto, no se si a esto se refiere con el idx que me pasan
+    pos = (p1.pos_y << 8) | p1.pos_x; 
+  }  
+  return pos;
 }
 
 uint game_syscall_manejar(uint syscall, uint param1)
