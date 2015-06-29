@@ -34,7 +34,7 @@ uint* mmu_inicializar_dir_pirata(){
   // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
   inicializar_ident_mapping(cr3,pt);
   mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-  copiar_codigo_tarea((int*)PAG_INICIAL);
+  // copiar_codigo_tarea((int*)PAG_INICIAL);
   return cr3;
 }
 
@@ -80,6 +80,7 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
   //if (!present){
     PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x3)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
     table[table_index] = (unsigned int)PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
+  tlbflush();
   //}
   //else {
     //ERROR

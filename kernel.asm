@@ -26,6 +26,9 @@ extern habilitar_pic
 extern tss_inicializar
 extern cargar_tarea_inicial
 
+extern mmu_inicializar_dir_pirata
+extern prueba_lanzar_pirata
+
 extern game_inicializar
 ;; Saltear seccion de datos
 jmp start
@@ -125,7 +128,7 @@ start:
 
     ; Cargar IDT
     lidt [IDT_DESC]
-    xchg bx ,bx
+    ; xchg bx ,bx
 
     ; Configurar controlador de interrupciones
     ;call deshabilitar_pic
@@ -138,8 +141,19 @@ start:
     ltr ax
     ;call cargar_tarea_inicial
 
+
     ; Habilitar interrupciones
     sti
+
+    ;prueba tarea
+    xchg bx ,bx
+    call mmu_inicializar_dir_pirata
+    mov cr3, eax
+    call prueba_lanzar_pirata
+    ; mov ax, 0x88
+    ; ltr ax
+    jmp 0x0f:0x00000000
+    
 ;xchg bx,bx
     ; Saltar a la primera tarea: Idle
     jmp 0x70:0x00000000

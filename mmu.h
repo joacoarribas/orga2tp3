@@ -17,6 +17,8 @@
 
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
+#define PAG_INICIAL 0x500000 //Todo: poner bien la página inicial
+
 
 
 // void kernel_create_page_directory();

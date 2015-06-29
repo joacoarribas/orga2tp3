@@ -141,6 +141,11 @@ void tss_inicializar() {
   }
 }
 
+void reiniciar_tss_tarea(pirata_t p)
+{
+
+}
+
 void completar_tss_para_tarea(pirata_t pirata) {
   // Hay que llamar a mmu_inicializar_dir_pirata
 //  if ((*(pirata.jugador)) == jugadorA) {
@@ -188,17 +193,23 @@ void completar_tss(tss* t, uint cr3, uint pila0) {
   t->ebp     = 0x40ff4; // Pila del kernel
   t->esi     = 0x0;
   t->edi     = 0x0;
-  t->es      = 0x58; // Selector de segmentos de datos 0
+  // t->es      = 0x58; // Selector de segmentos de datos 0
+  t->es      = 0x18; // Selector de segmentos de datos 3
   t->unused4 = 0x0;
-  t->cs      = 0x50; // Selector de segmentos de codigo 0
+  // t->cs      = 0x50; // Selector de segmentos de codigo 0
+  t->cs      = 0x10; // Selector de segmentos de codigo 3
   t->unused5 = 0x0;
-  t->ss      = 0x58; // Selector de segmentos de datos 0
+  // t->ss      = 0x58; // Selector de segmentos de datos 0
+  t->ss      = 0x18; // Selector de segmentos de datos 3
   t->unused6 = 0x0;
-  t->ds      = 0x58; // Selector de segmentos de datos 0
+  // t->ds      = 0x58; // Selector de segmentos de datos 0
+  t->ds      = 0x18; // Selector de segmentos de datos 3
   t->unused7 = 0x0 ;
-  t->fs      = 0x58; // Selector de segmentos de datos 0
+  // t->fs      = 0x58; // Selector de segmentos de datos 0
+  t->fs      = 0x18; // Selector de segmentos de datos 3
   t->unused8 = 0x0;
-  t->gs      = 0x58; // Selector de segmentos de datos 0
+  // t->gs      = 0x58; // Selector de segmentos de datos 0
+  t->gs      = 0x18; // Selector de segmentos de datos 3
   t->unused9 = 0x0;
   t->ldt     = 0x0;
   t->unused10= 0x0;

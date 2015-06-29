@@ -171,10 +171,17 @@ uint dame_pos_fisica(pirata_t *p, direccion dir){
   return fisica;  
 }
 
+void prueba_lanzar_pirata(){
+  // jugadorA.piratas[0]
+  // mmu_mapear_pagina();
+  copiar_codigo_tarea((int*)0x400000);
+  // copiar_codigo_tarea((int*)PAG_INICIAL);
 
-void game_pirata_relanzar(pirata_t *pirata, jugador_t *j, uint tipo)
-{
 }
+// void game_pirata_relanzar(pirata_t* pPirata, jugador_t* pJ, uint tipo)
+// {
+//   reiniciar_tss_tarea(pPirata);
+// }
 
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 {
