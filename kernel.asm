@@ -152,7 +152,7 @@ start:
     call prueba_lanzar_pirata
     ; mov ax, 0x88
     ; ltr ax
-    jmp 0x0f:0x00000000
+    jmp 0x80:0x00000000
     
 ;xchg bx,bx
     ; Saltar a la primera tarea: Idle

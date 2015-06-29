@@ -140,7 +140,7 @@ void kernel_create_page_table(){
 
 void copiar_codigo_tarea(int* dir){
   for (int i=0x00; i<0x1000; i++){
-    *(dir) = *((int*)(0x10000+i));
+    *(dir+i) = *((int*)(0x10000+i));
   }
 }
 
