@@ -146,7 +146,7 @@ void game_tick(uint id_pirata)
 {
   screen_actualizar_reloj_global();
 }
-
+//devuelve la posicion fisica en la cual se va a parar el pirata
 uint dame_pos_fisica(pirata_t *p, direccion dir){
   uint fisica;
   uint index = p->index_gdt;
