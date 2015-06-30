@@ -160,19 +160,19 @@ uint dame_pos_fisica(pirata_t *p, direccion dir){
   uint pcr3 = t->cr3;
   if (dir == IZQ){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual - 4094; //(le resto 4kb)
+    fisica = actual - 4096; //(le resto 4kb)
   }
   if (dir == DER){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual + 4094; //(le sumo 4kb)
+    fisica = actual + 4096; //(le sumo 4kb)
   }
   if (dir == ABA){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual + MAPA_ANCHO * 4094; 
+    fisica = actual + MAPA_ANCHO * 4096; 
   }
   if (dir == ARR){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual - MAPA_ANCHO * 4094; 
+    fisica = actual - MAPA_ANCHO * 4096; 
   }
   return fisica;  
 }
@@ -274,6 +274,7 @@ pirata_t* game_pirata_en_posicion(uint x, uint y)
 
 void game_jugador_anotar_punto(jugador_t *j)
 {
+  j->puntaje = j->puntaje + 1;
 }
 
 
