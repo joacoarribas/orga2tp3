@@ -114,11 +114,11 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
   int index_gdt;
   int i = 0;
   for (i=0; i<8; i++){
-    index_gdt = 0x78+(i*8);
+    index_gdt = 15+i;
     game_pirata_inicializar(&(jA->piratas[i]), jA, index_gdt, i);
   }
   for (i=8; i<16; i++) {
-    index_gdt = 0x78+(i*8);
+    index_gdt = 15+i;
     game_pirata_inicializar(&(jB->piratas[i]), jB, index_gdt, i);
   }
   jA->puntaje = 0;
@@ -134,7 +134,7 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->pos_y = 1;
   pirata->jugador = j; 
 
-  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
+  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
 
    uint cr3 = (uint) mmu_inicializar_dir_pirata();
    uint pila0 = (uint) dame_pagina_libre();

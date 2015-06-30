@@ -49,6 +49,7 @@ tss tss_inicial = (tss) {
   .dtrap   = 0x0, 
   .iomap   = 0x0, 
 };
+
 tss tss_idle = (tss) {
   .ptl     = 0x0,
   .unused0 = 0x0,
@@ -182,15 +183,15 @@ void completar_tss(tss* t, uint cr3, uint pila0) {
   t->esp2    = 0x0;
   t->ss2     = 0x0;
   t->unused3 = 0x0;
-  t->cr3     = cr3; // Dir. del Kernel Page Directory
+  t->cr3     = 0x200000; // Dir. del Kernel Page Directory
   t->eip     = 0x00400000; // Dir. donde se encuentra el codigo 
   t->eflags  = 0x202; // Eflags con interrupciones habilitadas
   t->eax     = 0x0;
   t->ecx     = 0x0;
   t->edx     = 0x0;
   t->ebx     = 0x0;
-  t->esp     = 0x40ff4; // Pila del kernel
-  t->ebp     = 0x40ff4; // Pila del kernel
+  t->esp     = 0x400ff4; // Pila del kernel
+  t->ebp     = 0x400ff4; // Pila del kernel
   t->esi     = 0x0;
   t->edi     = 0x0;
   // t->es      = 0x58; // Selector de segmentos de datos 0

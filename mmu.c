@@ -60,7 +60,7 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
 
   if (present==0){
     table = dame_pagina_libre();
-    PDE = (uint*)((unsigned int)(table) + 0x3); // Guardo en la entrada del directorio de páginas la dirección base de la página que contiene la tabla de páginas y seteo los bits R/W y P en 1.
+    PDE = (uint*)((unsigned int)(table) + 0x7); // Guardo en la entrada del directorio de páginas la dirección base de la página que contiene la tabla de páginas y seteo los bits R/W y P en 1.
     (*pcr3)[directory_index] = (unsigned int)PDE; //Escribo en el directorio, porque PDE era una copia Agustín, prestá atención.
   }
   else {
@@ -78,7 +78,7 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
   //present = (int)PTE & 0x1;
 
   //if (!present){
-    PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x3)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
+    PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x7)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
     table[table_index] = (unsigned int)PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
   tlbflush();
   //}
@@ -139,8 +139,9 @@ void kernel_create_page_table(){
 }
 
 void copiar_codigo_tarea(int* dir){
-  for (int i=0x00; i<0x1000; i++){
-    *(dir+i) = *((int*)(0x10000+i));
+  int i;
+  for ( i=0x00; i<0x400; i+=0x1){
+    *(dir+i) = *((int*)(0x10000+i*4));
   }
 }
 

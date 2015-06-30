@@ -94,6 +94,8 @@ start:
     call screen_escribir_nombre
 
     ; Inicializar el juego
+    call tss_inicializar
+    lgdt [GDT_DESC]
     call game_inicializar
 
     ; Inicializar el manejador de memoria
@@ -116,8 +118,6 @@ start:
     ;;div edx 
 
     ; Inicializar tss
-    call tss_inicializar
-    lgdt [GDT_DESC]
 
     ; Inicializar tss de la tarea Idle
 
@@ -152,6 +152,8 @@ start:
     call prueba_lanzar_pirata
     ; mov ax, 0x88
     ; ltr ax
+    ; mov
+    ; mov
     jmp 0x80:0x00000000
     
 ;xchg bx,bx
