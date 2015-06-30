@@ -50,8 +50,14 @@ uint game_posicion_valida(int x, int y) {
 
 pirata_t* id_pirata2pirata(uint id_pirata)
 {
-    // ~ completar ~
-	return NULL;
+	pirata_t *p;
+  if (id_pirata < 8){
+  p = &(jugadorA.piratas[id_pirata]);
+  } else {
+  int i = id_pirata % 8;
+  p = &(jugadorB.piratas[i]);
+  }
+  return p;
 }
 
 uint game_dir2xy(direccion dir, int *x, int *y)
@@ -150,7 +156,7 @@ void game_tick(uint id_pirata)
 uint dame_pos_fisica(pirata_t *p, direccion dir){
   uint fisica;
   uint index = p->index_gdt;
-  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); 
+  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint pcr3 = t->cr3;
   if (dir == IZQ){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
@@ -211,16 +217,16 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 {
   pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
   uint index = p->index_gdt;
-  tss *t = (tss*)(gdt[index].base_0_15 + gdt[index].base_23_16 + gdt[index].base_31_24); 
+  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint pcr3 = t->cr3;
-  int x = p->pos_x;
-  int y = p->pos_y;
-  game_dir2xy(dir,&x,&y);
-  if (game_posicion_valida(x,y)){
+  int *x = &(p->pos_x);
+  int *y = &(p->pos_y);
+  game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
+  if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     if (p->tipo == explorador){
       uint fisica = dame_pos_fisica(p,dir);
-      copiar_codigo_tarea(); //hay que hacerla
-      mmu_mapear_pagina(0x400000,&pcr3,&fisica); //pcr3 le estoy poniendo cualquier cosa no ? por que es puntero a puntero chavaaaaaaaaaaaaaa aca restauro pagina fisica actual del pirata
+      mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((uint*)0x400000); 
 
     }
   } 
@@ -237,7 +243,7 @@ uint game_syscall_cavar(uint id)
 uint game_syscall_pirata_posicion(uint id, int idx) //ver que onda los ids de los piratas de distintos equipos
 {
   uint pos;
-  pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
+  pirata_t *p = id_pirata2pirata(id); //ver si esta funcion funca :D
   if (idx == -1){ 
     pos = (p->pos_y << 8) | p->pos_x; 
   } else {

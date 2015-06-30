@@ -184,7 +184,7 @@ global _isr46
 _isr46:
 ;en eax recibo la accion
 ;xchg bx, bx
-  pushad
+  pushad ;estoy aca ?
   cmp eax, 0x1  
   je .moverse
   cmp eax, 0x2

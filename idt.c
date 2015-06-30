@@ -68,6 +68,11 @@ char *errors[] = {
     idt[numero].attr = (unsigned short) 0x8E00;                                                                  \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
+#define IDT_ENTRY2(numero)                                                                                        \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
+    idt[numero].segsel = (unsigned short) 0x0040;                                                                  \
+    idt[numero].attr = (unsigned short) 0xEE00; /*dpl 3*/                                                                  \
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 void print_error(int a) {
   print(errors[a], 25, 20, 10); 
 }
@@ -97,5 +102,5 @@ void idt_inicializar() {
     IDT_ENTRY(19);
     IDT_ENTRY(32);
     IDT_ENTRY(33);
-    IDT_ENTRY(70); // 0x46
+    IDT_ENTRY2(70); // 0x46 DPL = 11
 }
