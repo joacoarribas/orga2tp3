@@ -160,19 +160,19 @@ uint dame_pos_fisica(pirata_t *p, direccion dir){
   uint pcr3 = t->cr3;
   if (dir == IZQ){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual - 4094; //(le resto 4kb)
+    fisica = actual - 4096; //(le resto 4kb)
   }
   if (dir == DER){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual + 4094; //(le sumo 4kb)
+    fisica = actual + 4096; //(le sumo 4kb)
   }
   if (dir == ABA){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual + MAPA_ANCHO * 4094; 
+    fisica = actual + MAPA_ANCHO * 4096; 
   }
   if (dir == ARR){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
-    fisica = actual - MAPA_ANCHO * 4094; 
+    fisica = actual - MAPA_ANCHO * 4096; 
   }
   return fisica;  
 }
@@ -215,7 +215,7 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-  pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
+  pirata_t *p = id_pirata2pirata(id); //funca esta ???
   uint index = p->index_gdt;
   tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint pcr3 = t->cr3;
@@ -272,6 +272,7 @@ pirata_t* game_pirata_en_posicion(uint x, uint y)
 
 void game_jugador_anotar_punto(jugador_t *j)
 {
+  j->puntaje = j->puntaje + 1;
 }
 
 
