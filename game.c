@@ -181,6 +181,7 @@ void prueba_lanzar_pirata(){
   // jugadorA.piratas[0]
   // mmu_mapear_pagina();
   copiar_codigo_tarea((int*)0x400000);
+  print("HARE", 50, 3, 16);
   // copiar_codigo_tarea((int*)PAG_INICIAL);
 
 }
@@ -216,20 +217,21 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
   pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
-  uint index = p->index_gdt;
-  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
-  uint pcr3 = t->cr3;
+  // uint index = p->index_gdt;
+  // tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
+  // uint pcr3 = t->cr3;
   int *x = &(p->pos_x);
   int *y = &(p->pos_y);
   game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
-  if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
-    if (p->tipo == explorador){
-      uint fisica = dame_pos_fisica(p,dir);
-      mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((uint*)0x400000); 
+  // if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
+  //   if (p->tipo == explorador){
+  //     uint fisica = dame_pos_fisica(p,dir);
+  //     mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
+  //     copiar_codigo_tarea((uint*)0x400000); 
 
-    }
-  } 
+  //   }
+  // } 
+  print("HARE", 50, (int)x,(int) y);
     return 0;
 }
 

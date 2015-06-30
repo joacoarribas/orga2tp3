@@ -170,18 +170,18 @@ _isr33:
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 
-global _isr70
-_isr70:
-;xchg bx, bx
-  pushad
-  mov eax, 0x42
-  popad
-  iret
+; global _isr70
+; _isr70:
+; ;xchg bx, bx
+;   pushad
+;   mov eax, 0x42
+;   popad
+;   iret
 
 ;---------------------------------------------------------------------------- ;;
 
-global _isr46
-_isr46:
+global _isr70
+_isr70:
 ;en eax recibo la accion
 ;xchg bx, bx
   pushad ;estoy aca ?
@@ -197,6 +197,8 @@ _isr46:
     push eax
     call game_syscall_pirata_mover
     ;aca rompi la pila no ? pop pop ? HAREEEE
+    pop eax
+    pop eax
     jmp .fin
 
   .cavar:
