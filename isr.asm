@@ -197,19 +197,25 @@ _isr70:
     push eax
     call game_syscall_pirata_mover
     ;aca rompi la pila no ? pop pop ? HAREEEE
-    pop eax
-    pop eax
+    pop ebx
+    pop edx
+    ;add esp, 16
     jmp .fin
 
   .cavar:
     push eax
     call game_syscall_cavar
+    pop ebx
+    ;add esp, 8
     jmp .fin
 
   .posicion:
     push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
     push eax
     call game_syscall_pirata_posicion
+    pop ebx
+    pop edx
+    ;add esp, 16
     jmp .fin
 
   .fin:
