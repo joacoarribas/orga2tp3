@@ -52,10 +52,10 @@ pirata_t* id_pirata2pirata(uint id_pirata)
 {
 	pirata_t *p;
   if (id_pirata < 8){
-  p = &(jugadorA.piratas[id_pirata]);
+    p = &(jugadorA.piratas[id_pirata]);
   } else {
-  int i = id_pirata % 8;
-  p = &(jugadorB.piratas[i]);
+    int i = id_pirata % 8;
+    p = &(jugadorB.piratas[i]);
   }
   return p;
 }
@@ -136,15 +136,15 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = 78; //el tablero va de 0 a 79 y de 0 a 54
-  pirata->pos_y = 1;
+  pirata->pos_x = 30; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_y = 30;
   pirata->jugador = j; 
 
   tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
 
-   uint cr3 = (uint) mmu_inicializar_dir_pirata();
-   uint pila0 = (uint) dame_pagina_libre();
-   completar_tss(t, cr3, pila0);
+  uint cr3 = (uint) mmu_inicializar_dir_pirata();
+  uint pila0 = (uint) dame_pagina_libre();
+  completar_tss(t, cr3, pila0);
 
 }
 
@@ -223,14 +223,14 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   int *x = &(p->pos_x);
   int *y = &(p->pos_y);
   game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
-  // if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
-  //   if (p->tipo == explorador){
-  //     uint fisica = dame_pos_fisica(p,dir);
-  //     mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
-  //     copiar_codigo_tarea((uint*)0x400000); 
+  //if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
+  //  if (p->tipo == explorador){
+      uint fisica = dame_pos_fisica(p,dir);
+      mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((uint*)0x400000); 
 
-  //   }
-  // } 
+//    }
+//  } 
   print("HARE", 50, 4, 17);
 
     return 0;

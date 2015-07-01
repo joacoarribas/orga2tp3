@@ -42,11 +42,15 @@ uint mmu_pos_fisica(uint* cr3, uint virtual){
   uint fisica;
   uint virtual1 = virtual;
   int PDE_index = virtual1 >> 22;
+  virtual1 = virtual;
   uint *PDE =(uint*)cr3[PDE_index] ; //no se si era necesario esto
-  int PTE_index = virtual1 >> 12 & 0x000003FF;
-  uint* PTE =(uint*)(PDE[PTE_index] & 0xFFFFF000);
+  int PTE_index = ((virtual1 >> 12) & 0x000003FF);
+  virtual1 = virtual;
+  //uint* PTE =(uint*)(PDE[PTE_index] & 0xFFFFF000);
+  uint* PTE = (uint*)(*PDE & 0xfffff000);
+  uint aux = (PTE[PTE_index]) & 0xfffff000;
   virtual1 = virtual1 & 0x00000FFF; 
-  fisica = (uint)PTE + virtual1;
+  fisica = aux + virtual1;
   return fisica;
 }
 
