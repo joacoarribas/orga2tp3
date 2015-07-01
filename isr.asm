@@ -32,6 +32,9 @@ extern game_syscall_pirata_mover
 extern game_syscall_cavar
 extern game_syscall_pirata_posicion
 
+;; Game
+extern game_id
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -193,6 +196,10 @@ _isr70:
   je .posicion
 
   .moverse:
+    str eax
+    push eax
+    call game_id
+    add esp, 4
     push ecx
     push eax
     call game_syscall_pirata_mover
@@ -200,12 +207,20 @@ _isr70:
     jmp .fin
 
   .cavar:
+    str eax
+    push eax
+    call game_id
+    add esp, 4
     push eax
     call game_syscall_cavar
     add esp, 4
     jmp .fin
 
   .posicion:
+    str eax
+    push eax
+    call game_id
+    add esp, 4
     push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
     push eax
     call game_syscall_pirata_posicion

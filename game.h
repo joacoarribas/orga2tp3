@@ -81,6 +81,9 @@ uint game_syscall_manejar(uint syscall, uint param1);
 void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
+int game_id();
+
+///////////////////////////
 
 
 #endif  /* !__GAME_H__ */

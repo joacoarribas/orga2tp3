@@ -74,6 +74,11 @@ uint game_dir2xy(direccion dir, int *x, int *y)
 	return 0;
 }
 
+int game_id(int index){
+  int aux = (index & 0xfff8) >> 3; //cereo atributos
+  return aux - 15;  //le resto 15 porque los inicialice desde el indice 15
+}
+
 uint game_valor_tesoro(uint x, uint y)
 {
 	int i;
@@ -110,6 +115,7 @@ void game_inicializar()
 void game_jugador_inicializar_mapa(jugador_t *jug)
 {
 }
+
 
 void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
 {
