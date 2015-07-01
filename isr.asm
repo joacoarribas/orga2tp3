@@ -213,6 +213,7 @@ _isr70:
     call game_syscall_pirata_posicion
     pop edx
     pop edx
+
     jmp .fin
 
   .fin:

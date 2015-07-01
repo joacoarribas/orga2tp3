@@ -217,9 +217,9 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
   pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
-  // uint index = p->index_gdt;
-  // tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
-  // uint pcr3 = t->cr3;
+  uint index = p->index_gdt;
+  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
+  uint pcr3 = t->cr3;
   int *x = &(p->pos_x);
   int *y = &(p->pos_y);
   game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
@@ -232,6 +232,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   //   }
   // } 
   print("HARE", 50, 4, 17);
+
     return 0;
 }
 
