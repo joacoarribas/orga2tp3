@@ -231,7 +231,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 
   //   }
   // } 
-  print("HARE", 50, (int)x,(int) y);
+  print("HARE", 50, 4, 17);
     return 0;
 }
 
