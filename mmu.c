@@ -71,23 +71,16 @@ uint* mmu_inicializar_dir_pirata(){
 
 uint mmu_pos_fisica(uint* cr3, uint virtual){
   uint fisica;
-  unsigned int directory_index = (unsigned int)virtual >> 22; 
+  unsigned int directory_index = virtual >> 22; 
   uint* PDE = (uint*)cr3[directory_index]; //cr3 fue inicializado como entero sin signo, luego (*pcr3) recorre el array con offset de 4 bytes. (dir = base + tamaño del tipo*subinidice)
   uint* table;
 
   table = (uint*)(((unsigned int)PDE & 0xFFFFF000)); // Limpio los bits de atributos. Queda la dirección física sola.
 
-  unsigned int table_index = (((unsigned int)virtual & 0x003FF000) >> 12);
+  unsigned int table_index = ((virtual & 0x003FF000) >> 12);
   uint* PTE = (uint*)table[table_index];
-
-  print("*PTE", 6, 6, 15);
-  print_hex(*PTE, 15, 7, 7, 15);
-  print("PTE", 9, 9, 15);
-  print_hex((uint)PTE, 15, 10, 10, 15);
  
   fisica = (((uint)PTE & 0xFFFFF000) + ((unsigned int)virtual & 0x00000FFF)); 
-  print("fisica", 30, 30, 15);
-  print_hex(fisica, 15, 31, 31, 15);
 
   return fisica;
 }
