@@ -7,6 +7,7 @@
 
 #include "mmu.h"
 #include "i386.h"
+#include "screen.h"
 #include <stdbool.h>
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
@@ -37,20 +38,57 @@ uint* mmu_inicializar_dir_pirata(){
   // copiar_codigo_tarea((int*)PAG_INICIAL);
   return cr3;
 }
+  //print_hex(*cr3, 15, 10, 10, 15);
+  //print_hex((uint)cr3, 16, 7, 7, 15);
+  //print_hex(virtual, 15, 13, 13, 15);
+  //
+  //print("PDE_index", 40, 40, 15);
+  //print_hex(PDE_index, 15, 41, 41, 15);
+  //
+  //print("*PDE", 30, 30, 15);
+  //print_hex(*PDE, 15, 31, 31, 15);
+  //print("PDE", 33, 33, 15);
+  //print_hex((uint)PDE, 15, 34, 34, 15);
+  //
+  //print("aux", 12, 12, 15);
+  //print_hex((uint)aux, 15, 13, 13, 15);
+  //print("*aux", 15, 15, 15);
+  //print_hex((uint)aux, 15, 16, 16, 15);
+  //print("aux", 9, 9, 15);
+  //print_hex((uint)aux, 15, 10, 10, 15);
+  //print("fisica", 3, 3, 15);
+  //print_hex(fisica, 15, 4, 4, 15);
+  //
+  //print("*PTE", 6, 6, 15);
+  //print_hex(*PDE, 15, 7, 7, 15);
+  //print("PTE", 9, 9, 15);
+  //print_hex((uint)PDE, 15, 10, 10, 15);
+  //
+  //print("aux", 12, 12, 15);
+  //print_hex((uint)aux, 15, 13, 13, 15);
+  //print("*aux", 15, 15, 15);
+  //print_hex((uint)*aux, 15, 16, 16, 15);
 
 uint mmu_pos_fisica(uint* cr3, uint virtual){
   uint fisica;
-  uint virtual1 = virtual;
-  int PDE_index = virtual1 >> 22;
-  virtual1 = virtual;
-  uint *PDE =(uint*)cr3[PDE_index] ; //no se si era necesario esto
-  int PTE_index = ((virtual1 >> 12) & 0x000003FF);
-  virtual1 = virtual;
-  //uint* PTE =(uint*)(PDE[PTE_index] & 0xFFFFF000);
-  uint* PTE = (uint*)(*PDE & 0xfffff000);
-  uint aux = (PTE[PTE_index]) & 0xfffff000;
-  virtual1 = virtual1 & 0x00000FFF; 
-  fisica = aux + virtual1;
+  unsigned int directory_index = (unsigned int)virtual >> 22; 
+  uint* PDE = (uint*)cr3[directory_index]; //cr3 fue inicializado como entero sin signo, luego (*pcr3) recorre el array con offset de 4 bytes. (dir = base + tamaño del tipo*subinidice)
+  uint* table;
+
+  table = (uint*)(((unsigned int)PDE & 0xFFFFF000)); // Limpio los bits de atributos. Queda la dirección física sola.
+
+  unsigned int table_index = (((unsigned int)virtual & 0x003FF000) >> 12);
+  uint* PTE = (uint*)table[table_index];
+
+  print("*PTE", 6, 6, 15);
+  print_hex(*PTE, 15, 7, 7, 15);
+  print("PTE", 9, 9, 15);
+  print_hex((uint)PTE, 15, 10, 10, 15);
+ 
+  fisica = (((uint)PTE & 0xFFFFF000) + ((unsigned int)virtual & 0x00000FFF)); 
+  print("fisica", 30, 30, 15);
+  print_hex(fisica, 15, 31, 31, 15);
+
   return fisica;
 }
 
@@ -84,6 +122,10 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
   //if (!present){
     PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x7)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
     table[table_index] = (unsigned int)PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
+  //print("table_index", 5, 5, 15);
+  //print_hex(table_index, 15, 6, 6, 15);
+  //print("PTE", 9, 9, 15);
+  //print_hex((uint)PTE, 15, 10, 10, 15);
   tlbflush();
   //}
   //else {

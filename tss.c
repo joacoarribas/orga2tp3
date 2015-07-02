@@ -91,8 +91,8 @@ tss tss_idle = (tss) {
   .iomap   = 0xFFFF
 };
 
-tss tss_jugadorA[MAX_CANT_PIRATAS_VIVOS];
-tss tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
+tss* tss_jugadorA[MAX_CANT_PIRATAS_VIVOS];
+tss* tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
 
 void tss_inicializar() {
   int i = 0;
@@ -138,7 +138,7 @@ void tss_inicializar() {
     /* Para reevisar */
   for (i=0; i < 2*MAX_CANT_PIRATAS_VIVOS; i++){
     // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
-    cargar_tss_desc_en_gdt(&tss_jugadorA[i], i+15);
+    cargar_tss_desc_en_gdt(tss_jugadorA[i], i+15);
   }
 }
 
@@ -156,21 +156,14 @@ void completar_tss_para_tarea(pirata_t pirata) {
 //  }
 }
 
-void completar_tss(tss* t, uint cr3, uint pila0) {
-// void completar_tss(int t, uint cr3, uint pila0) {
-  // int player = t / MAX_CANT_PIRATAS_VIVOS
-  // int pirata = t % MAX_CANT_PIRATAS_VIVO
-
-  // tss *t;
-  // switch (player) {
-  //   case 0:
-  //     t = tss_jugadorA[pirata];
-  //     break;
-  //   case 1:
-  //     t = tss_jugadorB[pirata];
-  //     break;
-
-  // }
+void completar_tss(uint id, uint cr3, uint pila0) {
+  tss* t;
+  if (id < 8) {
+    t = tss_jugadorA[id];
+  } else {
+    id -= 8;
+    t = tss_jugadorB[id];
+  }
 
   t->ptl     = 0x0;
   t->unused0 = 0x0;

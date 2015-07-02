@@ -59,7 +59,7 @@ void tss_inicializar();
 
 void completar_tss_para_tarea(pirata_t pirata);
 // void completar_tss(int t, uint cr3, uint pila0);
-void completar_tss(tss* t, uint cr3, uint pila0);
+void completar_tss(uint id, uint cr3, uint pila0);
 void cargar_tss_desc_en_gdt(tss* t, int i);
 
 #endif  /* !__TSS_H__ */

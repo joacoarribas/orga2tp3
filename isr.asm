@@ -202,6 +202,7 @@ _isr70:
     add esp, 4
     push ecx
     push eax
+    xchg bx, bx
     call game_syscall_pirata_mover
     add esp, 8
     jmp .fin

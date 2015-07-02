@@ -142,16 +142,15 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = 30; //el tablero va de 0 a 79 y de 0 a 54
-  pirata->pos_y = 30;
+  pirata->pos_x = 40; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_y = 40;
   pirata->jugador = j; 
 
-  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
+  //tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
 
   uint cr3 = (uint) mmu_inicializar_dir_pirata();
   uint pila0 = (uint) dame_pagina_libre();
-  completar_tss(t, cr3, pila0);
-
+  completar_tss(id, cr3, pila0);
 }
 
 void game_tick(uint id_pirata)
@@ -164,12 +163,14 @@ uint dame_pos_fisica(pirata_t *p, direccion dir){
   uint index = p->index_gdt;
   tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint pcr3 = t->cr3;
+  // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
   if (dir == IZQ){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
     fisica = actual - 4096; //(le resto 4kb)
   }
   if (dir == DER){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
+    //print_hex(actual, 15, 7, 7, 15);
     fisica = actual + 4096; //(le sumo 4kb)
   }
   if (dir == ABA){
@@ -180,7 +181,7 @@ uint dame_pos_fisica(pirata_t *p, direccion dir){
     uint actual = mmu_pos_fisica(pcr3,0x400000);
     fisica = actual - MAPA_ANCHO * 4096; 
   }
-  return fisica;  
+  return fisica;
 }
 
 void prueba_lanzar_pirata(){
@@ -223,21 +224,25 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
   pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
-  uint index = p->index_gdt;
-  tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
-  uint pcr3 = t->cr3;
+  //uint index = p->index_gdt;
+  //tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
+  //uint cr3 = t->cr3;
+  // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
   int *x = &(p->pos_x);
   int *y = &(p->pos_y);
   game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
   //if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
   //  if (p->tipo == explorador){
+      //uint fisica = dame_pos_fisica(p,dir);
+      print_hex(dir, 15, 40, 40, 15);
       uint fisica = dame_pos_fisica(p,dir);
-      mmu_mapear_pagina((uint*)0x400000,&pcr3,&fisica); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((uint*)0x400000); 
+      print_hex(fisica, 15, 4, 4, 15);
+      //mmu_mapear_pagina(0x400000, &cr3, fisica); //primero mapeo y dsp copio codigo no????
+      //copiar_codigo_tarea((int*)0x400000); 
 
 //    }
 //  } 
-  print("HARE", 50, 4, 17);
+  //print("HARE", 50, 4, 17);
 
     return 0;
 }
