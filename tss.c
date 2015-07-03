@@ -91,8 +91,8 @@ tss tss_idle = (tss) {
   .iomap   = 0xFFFF
 };
 
-tss* tss_jugadorA[MAX_CANT_PIRATAS_VIVOS];
-tss* tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
+tss tss_jugadorA[MAX_CANT_PIRATAS_VIVOS];
+tss tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
 
 void tss_inicializar() {
   int i = 0;
@@ -138,7 +138,7 @@ void tss_inicializar() {
     /* Para reevisar */
   for (i=0; i < 2*MAX_CANT_PIRATAS_VIVOS; i++){
     // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
-    cargar_tss_desc_en_gdt(tss_jugadorA[i], i+15);
+    cargar_tss_desc_en_gdt(&tss_jugadorA[i], i+15);
   }
 }
 
@@ -159,10 +159,10 @@ void completar_tss_para_tarea(pirata_t pirata) {
 void completar_tss(uint id, uint cr3, uint pila0) {
   tss* t;
   if (id < 8) {
-    t = tss_jugadorA[id];
+    t = &(tss_jugadorA[id]);
   } else {
     id -= 8;
-    t = tss_jugadorB[id];
+    t = &(tss_jugadorB[id]);
   }
 
   t->ptl     = 0x0;
@@ -187,22 +187,16 @@ void completar_tss(uint id, uint cr3, uint pila0) {
   t->ebp     = 0x400ff4; // Pila del kernel
   t->esi     = 0x0;
   t->edi     = 0x0;
-  // t->es      = 0x58; // Selector de segmentos de datos 0
   t->es      = 0x5b; // Selector de segmentos de datos 3
   t->unused4 = 0x0;
-  // t->cs      = 0x50; // Selector de segmentos de codigo 0
   t->cs      = 0x53; // Selector de segmentos de codigo 3
   t->unused5 = 0x0;
-  // t->ss      = 0x58; // Selector de segmentos de datos 0
   t->ss      = 0x5b; // Selector de segmentos de datos 3
   t->unused6 = 0x0;
-  // t->ds      = 0x58; // Selector de segmentos de datos 0
   t->ds      = 0x5b; // Selector de segmentos de datos 3
   t->unused7 = 0x0 ;
-  // t->fs      = 0x58; // Selector de segmentos de datos 0
   t->fs      = 0x5b; // Selector de segmentos de datos 3
   t->unused8 = 0x0;
-  // t->gs      = 0x58; // Selector de segmentos de datos 0
   t->gs      = 0x5b; // Selector de segmentos de datos 3
   t->unused9 = 0x0;
   t->ldt     = 0x0;

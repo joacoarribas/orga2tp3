@@ -197,14 +197,17 @@ _isr70:
 
   .moverse:
     str eax
+    push ecx
     push eax
     call game_id
-    add esp, 4
+    pop edx ; levanto en un registro cualquiera
+    pop ecx
     push ecx
     push eax
     xchg bx, bx
     call game_syscall_pirata_mover
-    add esp, 8
+    pop edx
+    pop edx
     jmp .fin
 
   .cavar:
@@ -213,6 +216,7 @@ _isr70:
     call game_id
     add esp, 4
     push eax
+    xchg bx, bx
     call game_syscall_cavar
     add esp, 4
     jmp .fin
@@ -224,6 +228,7 @@ _isr70:
     add esp, 4
     push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
     push eax
+    xchg bx, bx
     call game_syscall_pirata_posicion
     add esp, 8
     jmp .fin

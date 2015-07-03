@@ -128,7 +128,6 @@ start:
 
     ; Cargar IDT
     lidt [IDT_DESC]
-    ; xchg bx ,bx
 
     ; Configurar controlador de interrupciones
     ;call deshabilitar_pic
@@ -136,7 +135,6 @@ start:
     call habilitar_pic
 
     ; Cargar tarea inicial
-;    xchg bx, bx
     mov ax, 0x68
     ltr ax
     ;call cargar_tarea_inicial
@@ -146,7 +144,6 @@ start:
     sti
 
     ;prueba tarea
-    xchg bx ,bx
     call mmu_inicializar_dir_pirata
     mov cr3, eax
     call prueba_lanzar_pirata

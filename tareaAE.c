@@ -8,6 +8,7 @@
 #include "defines.h"
 #include "game.h"
 #include "syscall.h"
+#include "i386.h"
 
 void task(int x, int y) {
     /* Tarea */
@@ -16,6 +17,7 @@ void task(int x, int y) {
 
     while(1)
     {
+      breakpoint();
         int i;
         for (i = 0; i < restantex; i++)
             syscall_mover(DER);

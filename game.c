@@ -9,6 +9,7 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #include "mmu.h"
 #include "tss.h"
 #include "screen.h"
+#include "i386.h"
 
 #include <stdarg.h>
 
@@ -142,8 +143,8 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = 40; //el tablero va de 0 a 79 y de 0 a 54
-  pirata->pos_y = 40;
+  pirata->pos_x = 2; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_y = 2;
   pirata->jugador = j; 
 
   //tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
@@ -185,7 +186,7 @@ void prueba_lanzar_pirata(){
   // jugadorA.piratas[0]
   // mmu_mapear_pagina();
   copiar_codigo_tarea((int*)0x400000);
-  print("HARE", 50, 3, 16);
+  //print("HARE", 50, 3, 16);
   // copiar_codigo_tarea((int*)PAG_INICIAL);
 
 }
@@ -225,21 +226,23 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint cr3 = t->cr3;
   // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
-  int *x = &(p->pos_x);
-  int *y = &(p->pos_y);
-  game_dir2xy(dir,x,y); //convierte la pos actual y una direc en la nueva pos
+  int x = 0; 
+  int y = 0;
+
+  print("hola", p->pos_x, p->pos_y, 15);
+  game_dir2xy(dir,&x,&y); //convierte la pos actual y una direc en la nueva pos
+  p->pos_x = p->pos_x + x;
+  p->pos_y = p->pos_y + y;
+  print("hola2",p->pos_x, p->pos_y,15);
   //if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
   //  if (p->tipo == explorador){
-      //uint fisica = dame_pos_fisica(p,dir);
       uint fisica = dame_pos_fisica(p,dir, cr3);
-      print_hex(fisica, 15, 4, 4, 15);
+      breakpoint();
       mmu_mapear_pagina(0x400000, &cr3, fisica); //primero mapeo y dsp copio codigo no????
-      //copiar_codigo_tarea((int*)0x400000); 
+      copiar_codigo_tarea((int*)0x400000); 
 
 //    }
 //  } 
-  //print("HARE", 50, 4, 17);
-
     return 0;
 }
 

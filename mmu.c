@@ -102,33 +102,12 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
     table = (uint*)(((unsigned int)PDE & 0xFFFFF000)); // Limpio los bits de atributos. Queda la dirección física sola.
   }
 
-// ¿Sabía Ud. que:
-// a[i] is semantically equivalent to *(a+i), which in turn is equivalent to *(i+a), the expression can also be written as i[a] (although this form is rarely used).
-// Como en assembly!
-// KE
-
   unsigned int table_index = (unsigned int) (((unsigned int)virtual & 0x003FF000) >> 12);
-  // unsigned int table_index = (unsigned int) (((unsigned int)virtual & 0x003FF000) / (0x2^0xC));
   uint* PTE = (uint*)table[table_index];
-  //present = (int)PTE & 0x1;
 
-  //if (!present){
-    PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x7)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
-    table[table_index] = (unsigned int)PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
-  //print("table_index", 5, 5, 15);
-  //print_hex(table_index, 15, 6, 6, 15);
-  //print("PTE", 9, 9, 15);
-  //print_hex((uint)PTE, 15, 10, 10, 15);
+  PTE = (uint*)((unsigned int)(fisica) + (unsigned int)(0x7)); // Guardo en la entrada de la tabla de páginas la dirección base de la página de 4K y seteo los bits R/W y P en 1. Bits 9, 10 y 11 [deberían, y] siempre van a ser cero porque los punteros a páginas son múltiplo de 4K así que siempre cierra todo bonito y contento.
+  table[table_index] = (unsigned int)PTE; // Yo calculo que acá estoy escribiendo la tabla, y no la copia. Pero uno nunca sabe...
   tlbflush();
-  //}
-  //else {
-    //ERROR
-    // pagina = (uint*)((unsigned int)PDE & 0x11111000); // Limpio los bits de atributos. Queda la dirección física sola.
-  //}
-
-  // La variable página no me estaría importando porque el offset dentro de la página
-  // no lo estaría usando todavía. Pero, nuevamente, uno nunca sabe estas cosas.
-
 }
 
 void mmu_desmapear_pagina(unsigned int virtual, uint* cr3){
@@ -179,7 +158,7 @@ void kernel_create_page_table(){
 
 void copiar_codigo_tarea(int* dir){
   int i;
-  for ( i=0x00; i<0x400; i+=0x1){
+  for ( i=0x00; i<0x400; i++){
     *(dir+i) = *((int*)(0x10000+i*4));
   }
 }
