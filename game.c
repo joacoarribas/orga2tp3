@@ -234,43 +234,183 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   //  if (p->tipo == explorador){
       uint actual = mmu_pos_fisica(cr3,0x400000);
       uint fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+      
+      //mapeo las posiciones exploradas
+      uint auxiliar = fisica_a_moverse + 0x300000;
+      mmu_mapear_pagina(auxiliar, &cr3, fisica_a_moverse);
+      //breakpoint();
+
+      uint aux2;
+      uint auxf;
+      
       if (dir == IZQ){
-        //fisica1 = actual - MAPA_ANCHO * 4096 - 4096; // Arriba de la cual te moves
-        //fisica2 = actual + MAPA_ANCHO * 4096 - 4096; // Abajo de la cual te moves
+
+        //abajo a la izquierda
+        aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
+        auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
+        //arriba a la izquierda
+        aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
+        auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
+        //a la izquierda
+        aux2 = auxiliar - 0x1000;
+        auxf = fisica_a_moverse - 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);//der
+
         screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
         screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
       }
       if (dir == DER){
+
+        //abajo a la derecha
+        aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
+        auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
+        //arriba a la derecha
+        aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
+        auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
+        //a la derecha
+        aux2 = auxiliar + 0x1000;
+        auxf = fisica_a_moverse + 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);//der
+
         //fisica1 = actual - MAPA_ANCHO * 4096 + 4096; // Arriba de la cual te moves
         //fisica2 = actual + MAPA_ANCHO * 4096 + 4096; // Abajo de la cual te moves
         screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
         screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
       }
       if (dir == ABA){
+
+        //abajo
+        aux2 =auxiliar + MAPA_ANCHO * 0x1000;
+        auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
+        mmu_mapear_pagina(aux2, &cr3,auxf);
+      
+        //abajo a la izquierda
+        aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
+        auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+        
+        //abajo a la derecha
+        aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
+        auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
         //fisica1 = actual + MAPA_ANCHO * 4096 - 4096; // Izquierda
         //fisica2 = actual + MAPA_ANCHO * 4096 + 4096; // Derecha
         screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x-1);
         screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
       }
       if (dir == ARR){
+        
+        //arriba
+        aux2 =auxiliar - MAPA_ANCHO * 0x1000;
+        auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+      
+        //arriba a la derecha
+        aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
+        auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+      
+        //arriba a la izquierda
+        aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
+        auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+        mmu_mapear_pagina(aux2, &cr3, auxf);
+
         //fisica1 = actual - MAPA_ANCHO * 4096 - 4096; // Izquierda 
         //fisica2 = actual - MAPA_ANCHO * 4096 + 4096; // Derecha 
         screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x-1);
         screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
       }
-  //    breakpoint();
+
+      //mapeo momentaneamente para copiar el codigo de la tarea
       uint* virtual = dame_pagina_unica();
 
       mmu_mapear_pagina(virtual, &cr3, actual); //primero mapeo y dsp copio codigo no????
       mmu_mapear_pagina(0x400000, &cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
       copiar_codigo_tarea((int*)0x400000, virtual);
+
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //!!!!!!!!!!!!!!! SI PONGO EL CODIGO DE ARRIBA ANTES DE LOS IFS NO FUNCA, WTF??????
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
       //print_hex(actual,15, 2, 2,15);
+      //breakpoint();
+      //mmu_mapear_pagina((uint*)0x800000, &cr3,(uint*) 0x500000); //POR QUE NO LO HACESSSSSSS
       //print_hex(fisica_a_moverse,15, 4, 4,15);
       //print_hex(fisica1,15, 6, 6,15);
       //print_hex(fisica2,15, 8, 8,15);
-
-//      breakpoint();
-
+      //TAL VEZ LO DE ARRIBA DEBERIA EJECUTARSE ANTES
+      
+      
+      /*SI MAPEO 9 (JUST IN CASE) 
+      aux2 = auxiliar - 0x1000;
+      auxf = fisica_a_moverse - 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina((uint*)aux2, &cr3,(uint*)auxf); //izq
+      breakpoint();
+      
+      aux2 = auxiliar + 0x1000;
+      auxf = fisica_a_moverse + 0x1000;
+      breakpoint();
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      //mmu_mapear_pagina(aux2, &cr3, auxf);//der
+      mmu_mapear_pagina((uint*)aux2, &cr3,(uint*)auxf); //izq
+      breakpoint();
+  
+      aux2 =auxiliar + MAPA_ANCHO * 0x1000;
+      auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3,auxf);
+      breakpoint();
+      
+      aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
+      auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3, auxf);
+      breakpoint();
+      
+      aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
+      auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3, auxf);
+      breakpoint();
+      
+      aux2 =auxiliar - MAPA_ANCHO * 0x1000;
+      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3, auxf);
+      breakpoint();
+      
+      aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
+      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3, auxf);
+      breakpoint();
+      
+      aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
+      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+      print_hex(aux2,15, 8, 8,15);
+      print_hex(auxf,15, 16, 16,15);
+      mmu_mapear_pagina(aux2, &cr3, auxf);
+      
+      breakpoint();
+      */
     }
 //  } 
     return 0;

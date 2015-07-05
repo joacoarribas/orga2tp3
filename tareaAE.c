@@ -38,7 +38,9 @@ void task(int x, int y) {
             syscall_mover(ARR);
 
         restantey = restantey - 3;
+        breakpoint();
     }
+
 
     while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
 }
