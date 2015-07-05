@@ -179,7 +179,61 @@ uint dame_siguiente_pos_fisica(uint actual, direccion dir){
 void prueba_lanzar_pirata(){
   // jugadorA.piratas[0]
   // mmu_mapear_pagina();
+  
+
   copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
+
+  //EL PIRATA DEBERIA TENER MAPEADAS LAS 9 POS A SU ALREDEDOR, NO SE COMO INFLUYE ESTO EN EL MAPEO FINAL DEL MAPA
+
+  //NO LAS MAPEA POR QUEEEEEEEEEEEEEEEEEEEEEEEE
+
+  //uint auxiliar = 0x800000 + MAPA_ANCHO * 0x1000 + 0x1000;
+  //uint fisica_a_moverse = 0x500000 + MAPA_ANCHO * 0x1000 + 0x1000;
+
+  //mmu_mapear_pagina(auxiliar, (uint*)0x200000, fisica_a_moverse);
+  //    
+  //uint aux2;
+  //uint auxf;
+
+  //    aux2 = auxiliar - 0x1000;
+  //    auxf = fisica_a_moverse - 0x1000;
+  //    mmu_mapear_pagina((uint*)aux2, (uint*)0x200000,(uint*)auxf); //izq
+  //    //breakpoint();
+  //    
+  //    aux2 = auxiliar + 0x1000;
+  //    auxf = fisica_a_moverse + 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);//der
+  ////    breakpoint();
+  //
+  //    aux2 =auxiliar + MAPA_ANCHO * 0x1000;
+  //    auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000,auxf);
+  //  //  breakpoint();
+  //    
+  //    aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
+  //    auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);
+  //    //breakpoint();
+  //    
+  //    aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
+  //    auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);
+  //   // breakpoint();
+  //    
+  //    aux2 =auxiliar - MAPA_ANCHO * 0x1000;
+  //    auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);
+  //    //breakpoint();
+  //    
+  //    aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
+  //    auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);
+  //    //breakpoint();
+  //    
+  //    aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
+  //    auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+  //    mmu_mapear_pagina(aux2, (uint*)0x200000, auxf);
+  
   //print("HARE", 50, 3, 16);
   // copiar_codigo_tarea((int*)PAG_INICIAL);
 
@@ -351,7 +405,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       //TAL VEZ LO DE ARRIBA DEBERIA EJECUTARSE ANTES
       
       
-      /*SI MAPEO 9 (JUST IN CASE) 
+      /*SI MAPEO 9 (JUST IN CASE) NO LO BORREN POR AHORA! 
       aux2 = auxiliar - 0x1000;
       auxf = fisica_a_moverse - 0x1000;
       print_hex(aux2,15, 8, 8,15);

@@ -13,7 +13,7 @@
 void task(int x, int y) {
     /* Tarea */
     int restantex = MAPA_ANCHO-3;
-    int restantey = 41;// MAPA_ALTO-3;
+    int restantey = 42;// MAPA_ALTO-3;
 
     while(1)
     {
