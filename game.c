@@ -143,7 +143,7 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = 2; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_x = 1; //el tablero va de 0 a 79 y de 0 a 54
   pirata->pos_y = 2;
   pirata->jugador = j; 
 
@@ -159,24 +159,18 @@ void game_tick(uint id_pirata)
   screen_actualizar_reloj_global();
 }
 //devuelve la posicion fisica en la cual se va a parar el pirata
-uint dame_pos_fisica(pirata_t *p, direccion dir, uint cr3){
+uint dame_siguiente_pos_fisica(uint actual, direccion dir){
   uint fisica;
-  // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
   if (dir == IZQ){
-    uint actual = mmu_pos_fisica(cr3,0x400000);
     fisica = actual - 4096; //(le resto 4kb)
   }
   if (dir == DER){
-    uint actual = mmu_pos_fisica(cr3,0x400000);
-    //print_hex(actual, 15, 7, 7, 15);
     fisica = actual + 4096; //(le sumo 4kb)
   }
   if (dir == ABA){
-    uint actual = mmu_pos_fisica(cr3,0x400000);
     fisica = actual + MAPA_ANCHO * 4096; 
   }
   if (dir == ARR){
-    uint actual = mmu_pos_fisica(cr3,0x400000);
     fisica = actual - MAPA_ANCHO * 4096; 
   }
   return fisica;
@@ -185,7 +179,7 @@ uint dame_pos_fisica(pirata_t *p, direccion dir, uint cr3){
 void prueba_lanzar_pirata(){
   // jugadorA.piratas[0]
   // mmu_mapear_pagina();
-  copiar_codigo_tarea((int*)0x400000);
+  copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
   //print("HARE", 50, 3, 16);
   // copiar_codigo_tarea((int*)PAG_INICIAL);
 
@@ -228,23 +222,62 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
   int x = 0; 
   int y = 0;
+  //uint fisica1;
+  //uint fisica2;
 
-  print("hola", p->pos_x, p->pos_y, 15);
+  print("E", p->pos_x, p->pos_y, 2);
   game_dir2xy(dir,&x,&y); //convierte la pos actual y una direc en la nueva pos
   p->pos_x = p->pos_x + x;
   p->pos_y = p->pos_y + y;
-  print("hola2",p->pos_x, p->pos_y,15);
-  //if (game_posicion_valida(*x,*y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
+  print("E",p->pos_x, p->pos_y,2);
+  if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
   //  if (p->tipo == explorador){
-      uint fisica = dame_pos_fisica(p,dir, cr3);
-      breakpoint();
-      mmu_mapear_pagina(0x400000, &cr3, fisica); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000); 
+      uint actual = mmu_pos_fisica(cr3,0x400000);
+      uint fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+      if (dir == IZQ){
+        //fisica1 = actual - MAPA_ANCHO * 4096 - 4096; // Arriba de la cual te moves
+        //fisica2 = actual + MAPA_ANCHO * 4096 - 4096; // Abajo de la cual te moves
+        screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
+        screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
+      }
+      if (dir == DER){
+        //fisica1 = actual - MAPA_ANCHO * 4096 + 4096; // Arriba de la cual te moves
+        //fisica2 = actual + MAPA_ANCHO * 4096 + 4096; // Abajo de la cual te moves
+        screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
+        screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
+      }
+      if (dir == ABA){
+        //fisica1 = actual + MAPA_ANCHO * 4096 - 4096; // Izquierda
+        //fisica2 = actual + MAPA_ANCHO * 4096 + 4096; // Derecha
+        screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x-1);
+        screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
+      }
+      if (dir == ARR){
+        //fisica1 = actual - MAPA_ANCHO * 4096 - 4096; // Izquierda 
+        //fisica2 = actual - MAPA_ANCHO * 4096 + 4096; // Derecha 
+        screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x-1);
+        screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
+      }
+  //    breakpoint();
+      uint* virtual = dame_pagina_unica();
 
-//    }
+      mmu_mapear_pagina(virtual, &cr3, actual); //primero mapeo y dsp copio codigo no????
+      mmu_mapear_pagina(0x400000, &cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, virtual);
+      //print_hex(actual,15, 2, 2,15);
+      //print_hex(fisica_a_moverse,15, 4, 4,15);
+      //print_hex(fisica1,15, 6, 6,15);
+      //print_hex(fisica2,15, 8, 8,15);
+
+//      breakpoint();
+
+    }
 //  } 
     return 0;
 }
+
+      //print_hex(actual,15, 2, 2,15);
+      //print_hex(fisica,15, 4, 4,15);
 
 uint game_syscall_cavar(uint id)
 {

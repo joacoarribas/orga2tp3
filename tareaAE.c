@@ -13,11 +13,11 @@
 void task(int x, int y) {
     /* Tarea */
     int restantex = MAPA_ANCHO-3;
-    int restantey = MAPA_ALTO-3;
+    int restantey = 41;// MAPA_ALTO-3;
 
     while(1)
     {
-      breakpoint();
+      //breakpoint();
         int i;
         for (i = 0; i < restantex; i++)
             syscall_mover(DER);

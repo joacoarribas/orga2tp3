@@ -99,17 +99,17 @@ void screen_inicializar() {
       screen_pintar(32, C_BG_LIGHT_GREY, i, j);
     }
   }
-  for (i=44 ; i < 50 ; i++) {
+  for (i=45 ; i < 50 ; i++) {
     for (j=0 ; j < 80 ; j++) {
       screen_pintar(32, C_BG_BLACK, i, j);
     }
   }
-  for (i=44 ; i < 50 ; i++) {
+  for (i=45 ; i < 50 ; i++) {
     for (j=30 ; j < 38 ; j++) {
       screen_pintar(32, C_BG_RED, i, j);
     }
   }
-  for (i=44 ; i < 50 ; i++) {
+  for (i=45 ; i < 50 ; i++) {
     for (j=38 ; j < 46 ; j++) {
       screen_pintar(32, C_BG_BLUE, i, j);
     }
@@ -120,39 +120,39 @@ void screen_inicializar() {
   //  screen_pintar()
   //
   //}
-  print_dec(1, 1, 6, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 6);
-  print_dec(2, 1, 8, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 8);
-  print_dec(3, 1, 10, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 10);
-  print_dec(4, 1, 12, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 12);
-  print_dec(5, 1, 14, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 14);
-  print_dec(6, 1, 16, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 16);
-  print_dec(7, 1, 18, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 18);
-  print_dec(8, 1, 20, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_RED, 47, 20);
+  print_dec(1, 1, 6, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 6);
+  print_dec(2, 1, 8, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 8);
+  print_dec(3, 1, 10, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 10);
+  print_dec(4, 1, 12, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 12);
+  print_dec(5, 1, 14, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 14);
+  print_dec(6, 1, 16, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 16);
+  print_dec(7, 1, 18, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 18);
+  print_dec(8, 1, 20, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_RED, 48, 20);
 
-  print_dec(1, 1, 60, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 60);
-  print_dec(2, 1, 62, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 62);
-  print_dec(3, 1, 64, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 64);
-  print_dec(4, 1, 66, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 66);
-  print_dec(5, 1, 68, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 68);
-  print_dec(6, 1, 70, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 70);
-  print_dec(7, 1, 72, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 72);
-  print_dec(8, 1, 74, 45, C_FG_WHITE);
-  screen_pintar(88, C_FG_BLUE, 47, 74);
+  print_dec(1, 1, 60, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 60);
+  print_dec(2, 1, 62, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 62);
+  print_dec(3, 1, 64, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 64);
+  print_dec(4, 1, 66, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 66);
+  print_dec(5, 1, 68, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 68);
+  print_dec(6, 1, 70, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 70);
+  print_dec(7, 1, 72, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 72);
+  print_dec(8, 1, 74, 46, C_FG_WHITE);
+  screen_pintar(88, C_FG_BLUE, 48, 74);
 }
 
 void screen_escribir_nombre() {

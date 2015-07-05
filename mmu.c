@@ -12,7 +12,7 @@
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 
-#define PAG_INICIAL 0x500000 //Todo: poner bien la página inicial
+#define PAG_INICIAL 0x5A1000 //Todo: poner bien la página inicial
 #define CACA (uint*)0xFEDEFA50DEAD
 uint* dame_pagina_libre();
 void inicializar_ident_mapping(uint* cr3, uint* pt);
@@ -124,6 +124,12 @@ uint* dame_pagina_libre(){
   return proxPagina;
 }
 
+uint* dame_pagina_unica(){
+  uint* proxPagina = base + libres*0x1000;
+  cerear_pagina(proxPagina);
+  return proxPagina;
+}
+
 void idmap_page_directory(uint* dir) {
   int i = 0;
   uint *t = dir;
@@ -156,10 +162,10 @@ void kernel_create_page_table(){
   idmap_page_table((uint*)0x28000);
 }
 
-void copiar_codigo_tarea(int* dir){
+void copiar_codigo_tarea(int* dirDest, int* dirSrc){
   int i;
   for ( i=0x00; i<0x400; i++){
-    *(dir+i) = *((int*)(0x10000+i*4));
+    *(dirDest+i) = *(dirSrc+i);
   }
 }
 

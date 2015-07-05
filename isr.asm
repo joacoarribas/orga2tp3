@@ -204,7 +204,7 @@ _isr70:
     pop ecx
     push ecx
     push eax
-    xchg bx, bx
+    ;xchg bx, bx
     call game_syscall_pirata_mover
     pop edx
     pop edx

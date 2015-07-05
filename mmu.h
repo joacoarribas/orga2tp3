@@ -17,7 +17,7 @@
 
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
-#define PAG_INICIAL 0x500000 //Todo: poner bien la página inicial
+#define PAG_INICIAL 0x5A1000 //Todo: poner bien la página inicial
 
 
 
@@ -29,6 +29,7 @@ uint* mmu_inicializar_dir_pirata();
 void mmu_mapear_pagina();
 void mmu_desmapear_pagina();
 uint* dame_pagina_libre();
+uint* dame_pagina_unica();
 uint mmu_pos_fisica();
 void copiar_codigo_tarea();
 

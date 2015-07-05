@@ -144,6 +144,7 @@ start:
     sti
 
     ;prueba tarea
+;;    xchg bx,bx
     call mmu_inicializar_dir_pirata
     mov cr3, eax
     call prueba_lanzar_pirata
