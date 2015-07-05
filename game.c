@@ -143,8 +143,8 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = 1; //el tablero va de 0 a 79 y de 0 a 54
-  pirata->pos_y = 2;
+  pirata->pos_x = POS_INIT_A_X; //el tablero va de 0 a 79 y de 0 a 54
+  pirata->pos_y = POS_INIT_A_Y;
   pirata->jugador = j; 
 
   //tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
@@ -215,7 +215,7 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-  pirata_t *p = id_pirata2pirata(id); //esta funcion hay que hacerla
+  pirata_t *p = id_pirata2pirata(id); 
   uint index = p->index_gdt;
   tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24));
   uint cr3 = t->cr3;
@@ -226,7 +226,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   //uint fisica2;
 
   print("E", p->pos_x, p->pos_y, 2);
-  game_dir2xy(dir,&x,&y); //convierte la pos actual y una direc en la nueva pos
+  game_dir2xy(dir,&x,&y); //para donde te tenes que mover
   p->pos_x = p->pos_x + x;
   p->pos_y = p->pos_y + y;
   print("E",p->pos_x, p->pos_y,2);
