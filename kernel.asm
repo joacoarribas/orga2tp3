@@ -147,16 +147,16 @@ start:
 ;;    xchg bx,bx
     call mmu_inicializar_dir_pirata
     mov cr3, eax
-    call prueba_lanzar_pirata
+    ;call prueba_lanzar_pirata
     ; mov ax, 0x88
     ; ltr ax
     ; mov
     ; mov
-    jmp 0x80:0x00000000
+    ;jmp 0x80:0x00000000
     
 ;xchg bx,bx
     ; Saltar a la primera tarea: Idle
-    jmp 0x70:0x00000000
+    ;jmp 0x70:0x00000000
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

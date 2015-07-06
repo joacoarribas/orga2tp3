@@ -38,7 +38,6 @@ void task(int x, int y) {
             syscall_mover(ARR);
 
         restantey = restantey - 3;
-        breakpoint();
     }
 
 

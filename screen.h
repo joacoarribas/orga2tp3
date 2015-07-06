@@ -17,6 +17,9 @@
 
 #include "colors.h"
 #include "defines.h"
+
+#include "game.h"
+
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
     unsigned char c;
@@ -24,11 +27,11 @@ typedef struct ca_s {
 } ca;
 
 
-struct pirata_t;
-typedef struct pirata_t pirata_t;
+//struct pirata_t;
+//typedef struct pirata_t pirata_t;
 
-struct jugador_t;
-typedef struct jugador_t jugador_t;
+//struct jugador_t;
+//typedef struct jugador_t jugador_t;
 
 int ee_printf(const char *fmt, ...);
 

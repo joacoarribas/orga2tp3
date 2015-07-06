@@ -34,7 +34,7 @@ extern game_syscall_pirata_posicion
 
 ;; Game
 extern game_id
-
+extern prueba_lanzar_pirata
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -151,6 +151,14 @@ _isr33:
 
   .Lshift:
     call print_Lshift
+    call prueba_lanzar_pirata
+;    xor eax, eax
+;    push eax
+;    push eax
+;    mov eax, 1
+;    push eax
+
+    jmp 0x80:00000000
     jmp .ciclo
 
   .Rshift:
