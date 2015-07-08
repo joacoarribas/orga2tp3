@@ -88,7 +88,8 @@ void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 void prueba_lanzar_pirata(pirata_t *p);
-int game_id(int index);
+int game_id_from_selector(int index);
+int game_id_from_index(int index);
 
 
 ///////////////////////////

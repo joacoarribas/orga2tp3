@@ -37,7 +37,8 @@ extern game_syscall_pirata_posicion
 extern game_atender_teclado
 
 ;; Game
-extern game_id
+extern game_id_from_selector
+extern game_id_from_index
 extern prueba_lanzar_pirata
 ;;
 ;; Definición de MACROS
@@ -185,7 +186,7 @@ _isr70:
     str eax
     push ecx
     push eax
-    call game_id
+    call game_id_from_selector
     pop edx ; levanto en un registro cualquiera
     pop ecx
     push ecx
@@ -199,7 +200,7 @@ _isr70:
   .cavar:
     str eax
     push eax
-    call game_id
+    call game_id_from_selector
     add esp, 4
     push eax
     xchg bx, bx
@@ -210,7 +211,7 @@ _isr70:
   .posicion:
     str eax
     push eax
-    call game_id
+    call game_id_from_selector
     add esp, 4
     push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
     push eax

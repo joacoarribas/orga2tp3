@@ -89,10 +89,15 @@ uint game_dir2xy(direccion dir, int *x, int *y)
 	return 0;
 }
 
-int game_id(int index){
+int game_id_from_selector(int index){
   int aux = (index & 0xfff8) >> 3; //cereo atributos
-  aux = (aux -(15*8)) / 8;
-  return aux;  //le resto 15 porque los inicialice desde el indice 15
+  return aux - 15;  //le resto 15 porque los inicialice desde el indice 15
+}
+
+int game_id_from_index(int index){
+  index -= 0x78;
+  index /= 8;
+  return index;  //le resto 15 porque los inicialice desde el indice 15
 }
 
 uint game_valor_tesoro(uint x, uint y)
@@ -242,8 +247,10 @@ void prueba_lanzar_pirata(pirata_t *p){
   jugador_t *j = p->jugador;
 
   uint cr3 = p->cr3;
+  print_hex(cr3, 10, 24, 24, 3);
 
-  uint fisica_actual = mmu_pos_fisica(cr3, 0x400000);
+  //uint fisica_actual = mmu_pos_fisica(&cr3, 0x400000);
+  uint fisica_actual = PAG_INICIAL;
 
   if (fisica_actual == PAG_INICIAL) {
     if (j == &(jugadorA)) {
@@ -316,6 +323,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
       p->pos_y = y;
       }
     }
+
   
  screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
  screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
@@ -362,7 +370,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     //FALTA SI ES MINERO
     if (p->tipo == 0){
-      uint actual = mmu_pos_fisica(cr3,0x400000);
+      uint actual = mmu_pos_fisica(&cr3,0x400000);
       uint fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
         
         //mapeo las posiciones exploradas

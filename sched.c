@@ -22,11 +22,15 @@ void inicializar_sched() {
 }
 
 int sched_proxima_a_ejecutar() {
-  if (indice_actual == 0)
+
+  int res = 0x70;
+
+  if (indice_actual == 0){
     indice_actual++;
-  if (indice_actual == 1)
+  } else {
     indice_actual--;
-  
+  }
+
   int index = scheduler[indice_actual]->index;
 
   while ((index < 8) & (scheduler[indice_actual]->piratas[index].estaVivo == 0)) { //mientras el pirata este muerto, avanzar al siguiente
@@ -34,28 +38,31 @@ int sched_proxima_a_ejecutar() {
   }
 
   if (index < 8) {
-    uint hola = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
-    print_hex((uint)hola, 5, 11, 11, 3);
-    print_hex((uint)index, 5, 12, 12, 3);
-    return hola; 
+    res = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
+    //print_hex((uint)hola, 5, 11, 11, 3);
+  //  print_hex((uint)index, 5, 12, 12, 3);
   }
 
-  if (indice_actual == 0)
-    indice_actual++;
-  if (indice_actual == 1)
-    indice_actual--;
+  if (res == 0x70){
 
-  while ((index < 8) & (scheduler[indice_actual]->piratas[index].estaVivo == 0)) { //mientras el pirata este muerto, avanzar al siguiente
-    index++;
+    index = scheduler[indice_actual]->index;
+
+    if (indice_actual == 0){
+      indice_actual++;
+    } else {
+      indice_actual--;
+    }
+
+    while ((index < 8) & (scheduler[indice_actual]->piratas[index].estaVivo == 0)) { //mientras el pirata este muerto, avanzar al siguiente
+      index++;
+    }
+
+    if (index < 8) {
+      res = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
+    }
   }
 
-  if (index < 8) {
-    uint hola = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
-    print_hex((uint)hola, 5, 14, 14, 3);
-    return hola; 
-  }
-
-  return 0x70;
+  return res;
 }
 
 void sched_generar_pirata_jugadorA(){
@@ -67,9 +74,11 @@ void sched_generar_pirata_jugadorB(){
 }
 
 void sched_ejecutar_tarea(int index_gdt){
-  int id_pirata = game_id(index_gdt);
+  int id_pirata = game_id_from_index(index_gdt);
   pirata_t *p = id_pirata2pirata(id_pirata);
+  print_hex((uint)id_pirata, 5, 15, 15, 3);
   prueba_lanzar_pirata(p);
+  return;
 
 }
 
