@@ -22,6 +22,11 @@ typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 #define MAPA_ANCHO                       80
 #define MAPA_ALTO                        44
 
+#define POS_INIT_A_X                      1
+#define POS_INIT_A_Y                      1
+#define POS_INIT_B_X         MAPA_ANCHO - 2
+#define POS_INIT_B_Y          MAPA_ALTO - 2
+
 
 struct jugador_t;
 
@@ -29,6 +34,7 @@ typedef struct pirata_t
 {
     uint id;
     uint index_gdt;
+    uint cr3;
     uchar estaVivo; // 0 esta muerto, 1 esta vivo
     tipoPirata tipo;
     int pos_x;
@@ -81,7 +87,9 @@ uint game_syscall_manejar(uint syscall, uint param1);
 void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
-int game_id();
+void prueba_lanzar_pirata(pirata_t *p);
+int game_id(int index);
+
 
 ///////////////////////////
 

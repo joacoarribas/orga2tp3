@@ -12,7 +12,6 @@
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 
-#define PAG_INICIAL 0x5A1000 //Todo: poner bien la página inicial
 #define CACA (uint*)0xFEDEFA50DEAD
 uint* dame_pagina_libre();
 void inicializar_ident_mapping(uint* cr3, uint* pt);

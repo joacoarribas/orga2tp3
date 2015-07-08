@@ -17,7 +17,7 @@
 
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x800000
-#define PAG_INICIAL 0x5A1000 //Todo: poner bien la página inicial
+#define PAG_INICIAL 0x551000 //Todo: poner bien la página inicial
 
 
 

@@ -14,6 +14,8 @@
 void inicializar_sched();
 int sched_proxima_a_ejecutar(); 
 int sched_tick();
+void sched_generar_pirata_jugadorA();
+void sched_generar_pirata_jugadorB();
 
 
 #endif	/* !__SCHED_H__ */

@@ -19,6 +19,8 @@ extern clear_screen_portion
 
 extern sched_tick
 extern sched_proxima_a_ejecutar
+extern sched_generar_pirata_jugadorA
+extern sched_generar_pirata_jugadorB
 
 ;; PIC
 extern fin_intr_pic1
@@ -26,11 +28,13 @@ extern fin_intr_pic1
 ;; Sched
 extern sched_tick
 extern sched_tarea_actual
+extern sched_ejecutar_tarea
 
 ;; Syscalls
 extern game_syscall_pirata_mover
 extern game_syscall_cavar
 extern game_syscall_pirata_posicion
+extern game_atender_teclado
 
 ;; Game
 extern game_id
@@ -110,14 +114,20 @@ global _isr32
 _isr32:
 ;xchg bx, bx
   pushad
+  xor eax, eax
   call fin_intr_pic1
   call sched_tick 
-;  str cx
-;  cmp ax, cx
-;  je .fin
-;
-;  mov [selector], ax
-;  jmp far [offset]
+
+  str cx
+  cmp ax, cx
+  je .fin
+
+  push eax
+  call sched_ejecutar_tarea
+  pop eax
+
+  mov [selector], ax
+  jmp far [offset]
 
   .fin:
     popad
@@ -134,44 +144,11 @@ _isr33:
   pushad
   call fin_intr_pic1
   .ciclo:
+    xor eax, eax
     in al, 0x60
-    cmp al, 0x2A
-    je .Lshift
-    cmp al, 0xAA
-    je .clearScreenPortion
-    cmp al, 0x36
-    je .Rshift
-    cmp al, 0xB6
-    je .clearScreenPortion
-    cmp al, 0x15
-    je .printY
-    cmp al, 0x95
-    je .clearScreenPortion
-    jmp .fin
-
-  .Lshift:
-    call print_Lshift
-    call prueba_lanzar_pirata
-;    xor eax, eax
-;    push eax
-;    push eax
-;    mov eax, 1
-;    push eax
-
-    jmp 0x80:00000000
-    jmp .ciclo
-
-  .Rshift:
-    call print_Rshift
-    jmp .ciclo
-
-  .printY:
-    call print_Y
-    jmp .ciclo
-
-  .clearScreenPortion:
-    call clear_screen_portion
-    jmp .fin
+    push eax 
+    call game_atender_teclado
+    add esp, 4
 
   .fin:
     popad

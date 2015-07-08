@@ -176,7 +176,7 @@ void completar_tss(uint id, uint cr3, uint pila0) {
   t->esp2    = 0x0;
   t->ss2     = 0x0;
   t->unused3 = 0x0;
-  t->cr3     = 0x200000; // Dir. del Kernel Page Directory
+  t->cr3     = cr3; // POTENTE CAMBIE ESTO 
   t->eip     = 0x00400000; // Dir. donde se encuentra el codigo 
   t->eflags  = 0x202; // Eflags con interrupciones habilitadas
   t->eax     = 0x0;
