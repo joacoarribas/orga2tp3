@@ -251,18 +251,27 @@ void prueba_lanzar_pirata(pirata_t *p){
 
   //uint fisica_actual = mmu_pos_fisica(&cr3, 0x400000);
   uint fisica_actual = PAG_INICIAL;
+  breakpoint();
 
   if (fisica_actual == PAG_INICIAL) {
     if (j == &(jugadorA)) {
       if (p->tipo == 0) {
+        uint kernel_cr3 = 0x27000;
+        mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
         copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
       } else {
+        uint* virtual =(uint*) 0x3ff000;
+        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
         copiar_codigo_tarea((int*)0x400000, (int*)0x11000);
       }
     } else {
       if (p->tipo == 0) {
+        uint* virtual =(uint*) 0x3ff000;
+        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
         copiar_codigo_tarea((int*)0x400000, (int*)0x12000);
       } else {
+        uint* virtual =(uint*) 0x3ff000;
+        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
         copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
       }
     }

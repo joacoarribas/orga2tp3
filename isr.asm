@@ -124,7 +124,7 @@ _isr32:
   je .fin
 
   push eax
-  xchg bx, bx
+  ;xchg bx, bx
   call sched_ejecutar_tarea
   pop eax
 
