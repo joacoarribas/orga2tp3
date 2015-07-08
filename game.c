@@ -201,11 +201,12 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  pirata->pos_x = POS_INIT_A_X; //el tablero va de 0 a 79 y de 0 a 54
-  pirata->pos_y = POS_INIT_A_Y;
+  //pirata->pos_x = POS_INIT_A_X; //el tablero va de 0 a 79 y de 0 a 54
+  //pirata->pos_y = POS_INIT_A_Y;
   pirata->jugador = j; 
-  pirata->tipo = explorador;
-  //tss *t = (tss*)(gdt[index].base_0_15 + ((gdt[index].base_23_16) << 16) + ((gdt[index].base_31_24) << 24)); //saco la direccion base del descriptor de tss en la GDT, que es donde deberia estar la tss.
+  //pirata->tipo = explorador;
+  print_hex(pirata->index_gdt, 10, 9, 9, 3);
+  //breakpoint();
 
   uint cr3 = (uint) mmu_inicializar_dir_pirata();
   pirata->cr3 = cr3;
@@ -246,13 +247,13 @@ void prueba_lanzar_pirata(pirata_t *p){
 
   if (fisica_actual == PAG_INICIAL) {
     if (j == &(jugadorA)) {
-      if (p->tipo == explorador) {
+      if (p->tipo == 0) {
         copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
       } else {
         copiar_codigo_tarea((int*)0x400000, (int*)0x11000);
       }
     } else {
-      if (p->tipo == explorador) {
+      if (p->tipo == 0) {
         copiar_codigo_tarea((int*)0x400000, (int*)0x12000);
       } else {
         copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
@@ -276,9 +277,9 @@ pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 //POTENTE COMENTARIO SOBRE QUE CARAJO X E Y
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 {
-  breakpoint();
+  //breakpoint();
     pirata_t *p;
-  if (tipo == minero){
+  if (tipo == 1){
     int i = 0;
     while ((i < 8) & (j->piratas[i].estaVivo == 1)){
       i++;  
@@ -301,7 +302,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
     p->pos_x = x;
     p->pos_y = y;
   }
-  if (tipo == explorador){
+  if (tipo == 0){
     int i = 0;
     while ((i<8) & (j->piratas[i].estaVivo == 1)){  
       i++;
@@ -360,7 +361,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   print("E",p->pos_x, p->pos_y,2);
   if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     //FALTA SI ES MINERO
-    if (p->tipo == explorador){
+    if (p->tipo == 0){
       uint actual = mmu_pos_fisica(cr3,0x400000);
       uint fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
         
@@ -643,7 +644,7 @@ void game_atender_teclado(unsigned char tecla)
   }
   if (tecla == KB_shiftB) {
     print_Rshift();
-    sched_generar_pirata_jugadorA();
+    sched_generar_pirata_jugadorB();
   }
   if (tecla == 0x15) {
     print_Y();

@@ -30,6 +30,8 @@ extern mmu_inicializar_dir_pirata
 extern prueba_lanzar_pirata
 
 extern game_inicializar
+
+extern inicializar_sched 
 ;; Saltear seccion de datos
 jmp start
 
@@ -96,7 +98,6 @@ start:
     ; Inicializar el juego
     call tss_inicializar
     lgdt [GDT_DESC]
-    call game_inicializar
 
     ; Inicializar el manejador de memoria
 
@@ -113,6 +114,8 @@ start:
     or eax, 0x80000000 ;habilito paginacion
     mov cr0, eax
 
+    call game_inicializar
+    call inicializar_sched
     ; Error division por cero, funciona
     ;;mov edx, 0
     ;;div edx 
