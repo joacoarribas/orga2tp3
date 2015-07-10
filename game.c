@@ -133,95 +133,100 @@ void game_inicializar()
   game_jugadores_inicializar(&jugadorA, &jugadorB);
 }
 
-void game_jugador_inicializar_mapa(jugador_t *jug, uint cr3)
+void game_jugador_inicializar_mapa(jugador_t *jug)
 {
-  //if (jug == &(jugadorA)) {
-    uint fisica_a_moverse = 0x500000 + MAPA_ANCHO * 0x1000 + 0x1000;
-    uint auxiliar = 0x800000 + MAPA_ANCHO * 0x1000 + 0x1000;
-  //} else {
-  //  uint fisica_a_moverse = 0x500000 + MAPA_ANCHO * 0x1000 + 0x1000;
-  //  uint auxiliar = 0x800000 + MAPA_ANCHO * 0x1000 + 0x1000;
-  //}
+  if (jug == &jugadorA) {
+    jug->fisicas_vistas[0] = PAG_INICIAL_A;
+    jug->fisicas_vistas[1] = PAG_INICIAL_A + 0x1000; // Derecha de inicial
+    jug->fisicas_vistas[2] = PAG_INICIAL_A - 0x1000; // Izquierda de inicial
+    jug->fisicas_vistas[3] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000; // Abajo de inicial
+    jug->fisicas_vistas[4] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
+    jug->fisicas_vistas[5] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
+    jug->fisicas_vistas[6] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000; // Arriba de inicial
+    jug->fisicas_vistas[7] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
+    jug->fisicas_vistas[8] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
+  } else {
+    jug->fisicas_vistas[0] = PAG_INICIAL_B;
+    jug->fisicas_vistas[1] = PAG_INICIAL_B + 0x1000; // Derecha de inicial
+    jug->fisicas_vistas[2] = PAG_INICIAL_B - 0x1000; // Izquierda de inicial
+    jug->fisicas_vistas[3] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000; // Abajo de inicial
+    jug->fisicas_vistas[4] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
+    jug->fisicas_vistas[5] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
+    jug->fisicas_vistas[6] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000; // Arriba de inicial
+    jug->fisicas_vistas[7] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
+    jug->fisicas_vistas[8] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
+  }
+  int i = 0;
+  for (i=9 ; i <3360 ; i++)
+    jug->fisicas_vistas[i] = 0; 
 
-  mmu_mapear_pagina(auxiliar, &cr3, fisica_a_moverse);
-      
-  uint aux2;
-  uint auxf;
-
-  aux2 = auxiliar - 0x1000;
-  auxf = fisica_a_moverse - 0x1000;
-  mmu_mapear_pagina((uint*)aux2, &cr3,(uint*)auxf); //izq
-  
-  aux2 = auxiliar + 0x1000;
-  auxf = fisica_a_moverse + 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);//der
-  
-  aux2 =auxiliar + MAPA_ANCHO * 0x1000;
-  auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
-  mmu_mapear_pagina(aux2, &cr3,auxf);
-  
-  aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
-  auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);
-  
-  aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
-  auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);
-  
-  aux2 =auxiliar - MAPA_ANCHO * 0x1000;
-  auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);
-  
-  aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
-  auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);
-  
-  aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
-  auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-  mmu_mapear_pagina(aux2, &cr3, auxf);
-
+  jug->indice_fisicas_vistas_libre = 9;
 }
 
 
 void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
 {
   int index_gdt;
+  int index;
   int i = 0;
+  int clock_x = 6;
   for (i=0; i<8; i++){
     index_gdt = 0x78+(i*8);
-    game_pirata_inicializar(&(jA->piratas[i]), jA, index_gdt, i);
+    game_pirata_inicializar(&(jA->piratas[i]), jA, index_gdt, i, clock_x);
+    clock_x += 2;
   }
+  clock_x = 60;
   for (i=8; i<16; i++) {
     index_gdt = 0x78+(i*8);
-    game_pirata_inicializar(&(jB->piratas[i]), jB, index_gdt, i);
+    index = i-8;
+    game_pirata_inicializar(&(jB->piratas[index]), jB, index_gdt, i, clock_x);
+    clock_x += 2;
   }
   jA->puntaje = 0;
   jA->index = 0;
   jB->puntaje = 0;
   jB->index = 0;
+
+  game_jugador_inicializar_mapa(jA);
+  game_jugador_inicializar_mapa(jB);
 }
 
-void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id)
+void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id, int clock_x)
 {
   pirata->id = id;
   pirata->index_gdt = index;
   pirata->estaVivo = 0 ;
-  //pirata->pos_x = POS_INIT_A_X; //el tablero va de 0 a 79 y de 0 a 54
-  //pirata->pos_y = POS_INIT_A_Y;
   pirata->jugador = j; 
-  //pirata->tipo = explorador;
-  print_hex(pirata->index_gdt, 10, 9, 9, 3);
-  //breakpoint();
-
-  uint cr3 = (uint) mmu_inicializar_dir_pirata();
-  pirata->cr3 = cr3;
-
+  pirata->pos_clock_x = clock_x;
+  pirata->pos_clock_y = 47;
+  pirata->ya_corrio = 0;
+  uint* cr3 = dame_pagina_libre();
+  uint* pt = dame_pagina_libre();
+   
+  inicializar_ident_mapping(cr3,pt);
+  pirata->cr3 = (uint) cr3;
   uint pila0 = (uint) dame_pagina_libre();
-  completar_tss(id, cr3, pila0);
-  game_jugador_inicializar_mapa(j, cr3);
+  completar_tss(id, (uint)cr3, pila0);
+
+}
+void print_cr3(jugador_t *j) {
+  int i = 0;
+  for (i=0 ; i <8 ; i++) {
+    breakpoint();
+    print_hex(j->piratas[i].cr3, 15, 15 , 15 , 15);
+  }
+
+}
+void game_pirata_tick(uchar sel_segmento)
+{
+  if (sel_segmento != 0x70) {
+    int id_pirata = game_id_from_selector(sel_segmento);
+    pirata_t* p = id_pirata2pirata(id_pirata);
+    screen_actualizar_reloj_pirata(p);
+  }
 }
 
-void game_tick(uint id_pirata)
+void game_tick()
 {
   screen_actualizar_reloj_global();
 }
@@ -243,44 +248,36 @@ uint dame_siguiente_pos_fisica(uint actual, direccion dir){
   return fisica;
 }
 
-void prueba_lanzar_pirata(pirata_t *p){
-  jugador_t *j = p->jugador;
-
-  uint cr3 = p->cr3;
-  print_hex(cr3, 10, 24, 24, 3);
-
-  //uint fisica_actual = mmu_pos_fisica(&cr3, 0x400000);
-  uint fisica_actual = PAG_INICIAL;
-  breakpoint();
-
-  if (fisica_actual == PAG_INICIAL) {
-    if (j == &(jugadorA)) {
-      if (p->tipo == 0) {
-        uint kernel_cr3 = 0x27000;
-        mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
-        copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
-      } else {
-        uint* virtual =(uint*) 0x3ff000;
-        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
-        copiar_codigo_tarea((int*)0x400000, (int*)0x11000);
-      }
-    } else {
-      if (p->tipo == 0) {
-        uint* virtual =(uint*) 0x3ff000;
-        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
-        copiar_codigo_tarea((int*)0x400000, (int*)0x12000);
-      } else {
-        uint* virtual =(uint*) 0x3ff000;
-        mmu_mapear_pagina(virtual, (uint*)0x27000, PAG_INICIAL); //primero mapeo y dsp copio codigo no????
-        copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
-      }
-    }
-  }
-}
 // void game_pirata_relanzar(pirata_t* pPirata, jugador_t* pJ, uint tipo)
 // {
 //   reiniciar_tss_tarea(pPirata);
 // }
+//
+void dame_tipo(int index_gdt)
+{
+  int id = game_id_from_selector(index_gdt);
+  pirata_t *p = id_pirata2pirata(id); 
+  breakpoint();
+  print_hex((uint)index_gdt, 15, 17, 17, 15);
+  print_hex((uint)p->tipo, 15, 15, 15, 15);
+  print_hex((uint)id, 15, 13, 13, 15);
+}
+
+int pirata_target_Y(int index_gdt)
+{
+  int id = game_id_from_index(index_gdt);
+  pirata_t *p = id_pirata2pirata(id); 
+  
+	return p->target_y;
+}
+
+int pirata_target_X(int index_gdt)
+{
+  int id = game_id_from_index(index_gdt);
+  pirata_t *p = id_pirata2pirata(id); 
+  
+	return p->target_x;
+}
 
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 {
@@ -289,12 +286,9 @@ pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 	return NULL;
 }
 
-
-//POTENTE COMENTARIO SOBRE QUE CARAJO X E Y
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 {
-  //breakpoint();
-    pirata_t *p;
+  pirata_t *p;
   if (tipo == 1){
     int i = 0;
     while ((i < 8) & (j->piratas[i].estaVivo == 1)){
@@ -313,39 +307,67 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
       p = &(j->minerosPendientes[i]);
     //invariante: id, index_gdt, jugador de p son correctos
     }
-    p->estaVivo = 1;
-    p->tipo = tipo;
-    p->pos_x = x;
-    p->pos_y = y;
+    if (j == &jugadorA) {
+      p->pos_x = POS_INIT_A_X;
+      p->pos_y = POS_INIT_A_Y;
+    }
+    if (j == &jugadorB) {
+      p->pos_x = POS_INIT_B_X;
+      p->pos_y = POS_INIT_B_Y;
+    }
+    p->target_x = x;
+    p->target_y = y;
   }
   if (tipo == 0){
     int i = 0;
     while ((i<8) & (j->piratas[i].estaVivo == 1)){  
       i++;
     }
-    if(i < 8){
+    if(i < 8)
       p = &(j->piratas[i]);
       //invariante: id, index_gdt, jugador de p son correctos
-      p->estaVivo = 1;
-      p->tipo = tipo;
-      p->pos_x = x;
-      p->pos_y = y;
-      }
+    p->pos_x = x;
+    p->pos_y = y;
+    p->target_x = 0;
+    p->target_y = 0;
     }
 
+  p->estaVivo = 1;
+  p->tipo = tipo;
+  //breakpoint();
+  //print_hex((uint)p->tipo, 15, 15, 15, 15);
+
+  mmu_inicializar_dir_pirata(p);
+  //print_hex((uint)p->tipo, 15, 17, 17, 15);
+
+  if (j == &jugadorA) {
+    screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
+    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
+    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+  } else {
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y, p->pos_x-1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y,p->pos_x+1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x);
+    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
   
- screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
- screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
- screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
- screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
- screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
- screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
- screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
- screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
- screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
- screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
- screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
- screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+  }
 }
 
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
@@ -359,235 +381,242 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 //le paso las direc que me tire esta funcion
 }
 
+void print_pirata_mapa(pirata_t *p, direccion dir, int *vistasX, int *vistasY) {
+
+  jugador_t *j = p->jugador;
+  int x = 0; 
+  int y = 0;
+
+  if (j == &jugadorA) {
+    if (p->tipo == 0) { //explorador
+      print("E", p->pos_x, p->pos_y, 2);
+      game_dir2xy(dir,&x,&y); //para donde te tenes que mover
+      p->pos_x = p->pos_x + x;
+      p->pos_y = p->pos_y + y;
+      print("E",p->pos_x, p->pos_y,2);
+    } else {
+      print("M", p->pos_x, p->pos_y, 2);
+      game_dir2xy(dir,&x,&y); //para donde te tenes que mover
+      p->pos_x = p->pos_x + x;
+      p->pos_y = p->pos_y + y;
+      print("M",p->pos_x, p->pos_y,2);
+    }
+    if (dir == IZQ){
+      screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x-1;
+      vistasX[2] = p->pos_x-1;
+      vistasY[0] = p->pos_y;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y+1;
+    }
+
+    if (dir == DER){
+      screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+      vistasX[0] = p->pos_x+1;
+      vistasX[1] = p->pos_x+1;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y+1;
+    }
+    if (dir == ABA){
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y+1;
+      vistasY[1] = p->pos_y+1;
+      vistasY[2] = p->pos_y+1;
+    }
+    if (dir == ARR){
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y-1;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y-1;
+    }
+  } else {
+    if (p->tipo == 0) { //explorador
+      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
+      print("E", p->pos_x, p->pos_y, 9);
+      game_dir2xy(dir,&x,&y); //para donde te tenes que mover
+      p->pos_x = p->pos_x + x;
+      p->pos_y = p->pos_y + y;
+      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
+      print("E",p->pos_x, p->pos_y,9);
+    } else {
+      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
+      print("M", p->pos_x, p->pos_y, C_FG_BLUE);
+      game_dir2xy(dir,&x,&y); //para donde te tenes que mover
+      p->pos_x = p->pos_x + x;
+      p->pos_y = p->pos_y + y;
+      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
+      print("M",p->pos_x, p->pos_y,C_FG_BLUE);
+    }
+
+    if (dir == IZQ){
+      screen_pintar(32,C_FG_BLUE, p->pos_y, p->pos_x-1);
+      //screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x-1);
+    }
+    if (dir == DER){
+      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x+1);
+      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x+1);
+      //screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x+1);
+    }
+    if (dir == ABA){
+      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x);
+      //screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x+1);
+    }
+    if (dir == ARR){
+      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x);
+      //screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x+1);
+    }
+  }
+}
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
   pirata_t *p = id_pirata2pirata(id); 
+  jugador_t *j = p->jugador;
+  uint cr3Actual = p->cr3;
+  uint fisica_a_moverse;
+  uint actual;
+  int vistasX[3];
+  int vistasY[3];
 
-  uint cr3 = p->cr3;
-  // LEVANTA BIEN EL CR3 Y SU ID TODO PIO WACHO
-  int x = 0; 
-  int y = 0;
-  //uint fisica1;
-  //uint fisica2;
+  print_pirata_mapa(p, dir, vistasX, vistasY);
 
-  print("E", p->pos_x, p->pos_y, 2);
-  game_dir2xy(dir,&x,&y); //para donde te tenes que mover
-  p->pos_x = p->pos_x + x;
-  p->pos_y = p->pos_y + y;
-  print("E",p->pos_x, p->pos_y,2);
   if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     //FALTA SI ES MINERO
     if (p->tipo == 0){
-      uint actual = mmu_pos_fisica(&cr3,0x400000);
-      uint fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+      actual = p->fisica_actual; 
+      fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+      p->fisica_actual = fisica_a_moverse;
         
         //mapeo las posiciones exploradas
-      uint auxiliar = fisica_a_moverse + 0x300000;
-//        mmu_mapear_pagina(auxiliar, &cr3, fisica_a_moverse);
+      uint logica = fisica_a_moverse + 0x300000;
+      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
         //breakpoint();
       
-      uint aux2;
-      uint auxf;
-      jugador_t *j = p->jugador;
+      uint logica_aux_1;
+      uint logica_aux_2;
+      uint logica_aux_3;
+      uint fisica_aux_1;
+      uint fisica_aux_2;
+      uint fisica_aux_3;
+
+      if (dir == IZQ){
+        //abajo a la izquierda
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
+
+        //arriba a la izquierda
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+
+        //a la izquierda
+        logica_aux_3 = logica - 0x1000;
+        fisica_aux_3 = fisica_a_moverse - 0x1000;
+      }
+      if (dir == DER){
+        //abajo a la derecha
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+
+        //arriba a la derecha
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+
+        //a la derecha
+        logica_aux_3 = logica + 0x1000;
+        fisica_aux_3 = fisica_a_moverse + 0x1000;
+      }
+      if (dir == ABA){
+        //abajo
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000;
+      
+        //abajo a la izquierda
+        logica_aux_2 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_2 = fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+        
+        //abajo a la derecha
+        logica_aux_3 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_3 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+      }
+      if (dir == ARR){
+        //arriba
+        logica_aux_1 = logica - MAPA_ANCHO * 0x1000;
+        fisica_aux_1 = fisica_a_moverse - MAPA_ANCHO * 0x1000;
+      
+        //arriba a la derecha
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+      
+        //arriba a la izquierda
+        logica_aux_3 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_3 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+      }
+      uint indice = j->indice_fisicas_vistas_libre;
+      j->fisicas_vistas[indice] = fisica_aux_1;
+      indice++;
+      j->fisicas_vistas[indice] = fisica_aux_2;
+      indice++;
+      j->fisicas_vistas[indice] = fisica_aux_3;
+      indice++;
+      j->indice_fisicas_vistas_libre = indice;
       int i = 0;
-      while (i < 8){
-        
-        pirata_t pAux = j->piratas[i];
-        uint cr3 = pAux.cr3;
-
-        if (dir == IZQ){
-
-          //abajo a la izquierda
-          aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
-          auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          //arriba a la izquierda
-          aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
-          auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          //a la izquierda
-          aux2 = auxiliar - 0x1000;
-          auxf = fisica_a_moverse - 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);//der
-
-          screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
-        }
-        if (dir == DER){
-
-          //abajo a la derecha
-          aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
-          auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          //arriba a la derecha
-          aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
-          auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          //a la derecha
-          aux2 = auxiliar + 0x1000;
-          auxf = fisica_a_moverse + 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);//der
-
-          screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
-        }
-        if (dir == ABA){
-
-          //abajo
-          aux2 =auxiliar + MAPA_ANCHO * 0x1000;
-          auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
-          mmu_mapear_pagina(aux2, &cr3,auxf);
-        
-          //abajo a la izquierda
-          aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
-          auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-          
-          //abajo a la derecha
-          aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
-          auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
-          screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
-        }
-        if (dir == ARR){
-          
-          //arriba
-          aux2 =auxiliar - MAPA_ANCHO * 0x1000;
-          auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-        
-          //arriba a la derecha
-          aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
-          auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-        
-          //arriba a la izquierda
-          aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
-          auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-          mmu_mapear_pagina(aux2, &cr3, auxf);
-
-          screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
-          screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
-          screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+      for (i=0; i<8; i++) {
+        uint cr3 = j->piratas[i].cr3;
+        mmu_mapear_pagina(logica_aux_1, &cr3, fisica_aux_1);
+        mmu_mapear_pagina(logica_aux_2, &cr3, fisica_aux_2);
+        mmu_mapear_pagina(logica_aux_3, &cr3, fisica_aux_3);
+      }
+     // SI DESCUBRI BOTIN TENGO QUE CREAR TAREA MINERO
+      //game_calcular_posiciones_vistas(vistasX, vistasY, p->pos_x, p->pos_y);
+      i = 0;
+      while (i < 3){
+        if (descubrio_botin(vistasX[i], vistasY[i])){
+          //breakpoint();
+          //print_hex(vistasX[i], 15, 40, 40, 15);
+          //print_hex(vistasY[i], 15, 43, 43, 15);
+          game_jugador_lanzar_pirata(j, 1, vistasX[i], vistasY[i]); 
         }
         i++;
-      }
-      // SI DESCUBRI BOTIN TENGO QUE CREAR TAREA MINERO
-      //if (descubrio_botin(p->pos_x, p->pos_y)){
-      //  jugador_t *j = p->jugador;  
-      //  game_jugador_lanzar_pirata(j, minero, p->pos_x, p->pos_y); 
-      //}
+     }
+    } else {
+      actual = p->fisica_actual; 
+      fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+      p->fisica_actual = fisica_a_moverse;
+        
+      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
+        //breakpoint();
+  }
 
-      // SI DESCUBRI BOTIN TENGO QUE CREAR TAREA MINERO
-      //int vistasX;
-      //int vistasY;
-      //game_calcular_posiciones_vistas(&vistasX, &vistasY, p->pos_x, p->pos_y);
-      //i = 0;
-      //while (i < 9){
-      //  if (descubrio_botin((&vistasX)[i], (&vistasY)[i])){
-      //    jugador_t *j = p->jugador;  
-      //    game_jugador_lanzar_pirata(j, minero, p->pos_x, p->pos_y); 
-      //  }
-      //  i++;
-      //}
-    //mapeo momentaneamente para copiar el codigo de la tarea
-    //uint* virtual = dame_pagina_unica();
-      uint* virtual =(uint*) 0x3ff000;
-      mmu_mapear_pagina(virtual, &cr3, actual); //primero mapeo y dsp copio codigo no????
-      mmu_mapear_pagina(0x400000, &cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, virtual);
+      uint kernel_cr3 = 0x27000;
+      mmu_mapear_pagina(0x400000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, actual); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
 
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //!!!!!!!!!!!!!!! SI PONGO EL CODIGO DE ARRIBA ANTES DE LOS IFS NO FUNCA, WTF??????
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-      //print_hex(actual,15, 2, 2,15);
-      //breakpoint();
-      //mmu_mapear_pagina((uint*)0x800000, &cr3,(uint*) 0x500000); //POR QUE NO LO HACESSSSSSS
-      //print_hex(fisica_a_moverse,15, 4, 4,15);
-      //print_hex(fisica1,15, 6, 6,15);
-      //print_hex(fisica2,15, 8, 8,15);
-      //TAL VEZ LO DE ARRIBA DEBERIA EJECUTARSE ANTES
-      
-      
-      /*SI MAPEO 9 (JUST IN CASE) NO LO BORREN POR AHORA! 
-      aux2 = auxiliar - 0x1000;
-      auxf = fisica_a_moverse - 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina((uint*)aux2, &cr3,(uint*)auxf); //izq
-      breakpoint();
-      
-      aux2 = auxiliar + 0x1000;
-      auxf = fisica_a_moverse + 0x1000;
-      breakpoint();
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      //mmu_mapear_pagina(aux2, &cr3, auxf);//der
-      mmu_mapear_pagina((uint*)aux2, &cr3,(uint*)auxf); //izq
-      breakpoint();
-  
-      aux2 =auxiliar + MAPA_ANCHO * 0x1000;
-      auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3,auxf);
-      breakpoint();
-      
-      aux2 =auxiliar + MAPA_ANCHO * 0x1000 - 0x1000;
-      auxf =fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3, auxf);
-      breakpoint();
-      
-      aux2 =auxiliar + MAPA_ANCHO * 0x1000 + 0x1000;
-      auxf =fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3, auxf);
-      breakpoint();
-      
-      aux2 =auxiliar - MAPA_ANCHO * 0x1000;
-      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3, auxf);
-      breakpoint();
-      
-      aux2 =auxiliar - MAPA_ANCHO * 0x1000 + 0x1000;
-      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3, auxf);
-      breakpoint();
-      
-      aux2 =auxiliar - MAPA_ANCHO * 0x1000 - 0x1000;
-      auxf =fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-      print_hex(aux2,15, 8, 8,15);
-      print_hex(auxf,15, 16, 16,15);
-      mmu_mapear_pagina(aux2, &cr3, auxf);
-      
-      breakpoint();
-      */
-    }
+   // }
   } 
     return 0;
 }
-
-      //print_hex(actual,15, 2, 2,15);
-      //print_hex(fisica,15, 4, 4,15);
 
 uint game_syscall_cavar(uint id)
 {
@@ -616,8 +645,12 @@ uint game_syscall_manejar(uint syscall, uint param1)
     return 0;
 }
 
-void game_pirata_exploto(uint id)
+void game_pirata_exploto(uchar sel_segmento)
 {
+    int id_pirata = game_id_from_selector(sel_segmento);
+    pirata_t* p = id_pirata2pirata(id_pirata);
+    p->estaVivo = 0;
+    p->ya_corrio = 0;
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)
@@ -657,7 +690,6 @@ void game_atender_teclado(unsigned char tecla)
   if (tecla == KB_shiftA) {
     print_Lshift();
     sched_generar_pirata_jugadorA();
-    //prueba_lanzar_pirata();
   }
   if (tecla == KB_shiftB) {
     print_Rshift();

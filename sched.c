@@ -7,7 +7,6 @@ definicion de funciones del scheduler
 */
 
 #include "sched.h"
-//#include "game.h"
 #include "screen.h"
 #include "i386.h"
 
@@ -21,8 +20,63 @@ void inicializar_sched() {
   indice_actual = 0;
 }
 
-int sched_proxima_a_ejecutar() {
+int sched_dame_proximo_pirata(jugador_t *j) {
+  int res = 0x70;
+  int encontre = 0;
+  int todosMuertos = 0;
+  int index = 0;
 
+  // Me fijo si estan todos muertos
+  while ((index < 8) & (j->piratas[index].estaVivo == 0)) {
+    index++;
+  }
+
+  if (index == 8)
+    todosMuertos = 1;
+
+    // Pre : hay por lo menos una tarea para correr 
+  if (todosMuertos == 0) {
+    index = 0;
+    while ((index < 8) & (encontre == 0)) {
+      // Si el pirata esta muerto -> avanzo
+      if (j->piratas[index].estaVivo == 0) {
+        index++;
+      } else {
+        // Si el pirata esta vivo, pero ya corrio -> avanzo
+        if (j->piratas[index].ya_corrio == 1) {
+          index++;
+        // Si el pirata esta vivo y no corrio -> No aumento el indice y sigo 
+        } else {
+          encontre = 1;
+        }
+      }
+    }
+
+
+    if (index == 8) { // Si ya corrieron todas las tareas que estaban vivas
+      int i = 0;
+      // Seteo el ya_corrio de todas a cero
+      for (i=0 ; i<8 ; i++)
+        j->piratas[i].ya_corrio = 0; 
+
+      // Busco la primera que este viva y la devuelvo
+      i = 0;
+      while (j->piratas[i].estaVivo == 0)
+        i++;
+
+      res = j->piratas[i].index_gdt;
+      j->piratas[i].ya_corrio = 1;
+    
+    } else {
+      res = j->piratas[index].index_gdt;
+      j->piratas[index].ya_corrio = 1;
+    }
+  }
+
+  return res;
+}
+
+int sched_proxima_a_ejecutar() {
   int res = 0x70;
 
   if (indice_actual == 0){
@@ -31,21 +85,9 @@ int sched_proxima_a_ejecutar() {
     indice_actual--;
   }
 
-  int index = scheduler[indice_actual]->index;
-
-  while ((index < 8) & (scheduler[indice_actual]->piratas[index].estaVivo == 0)) { //mientras el pirata este muerto, avanzar al siguiente
-    index++;
-  }
-
-  if (index < 8) {
-    res = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
-    //print_hex((uint)hola, 5, 11, 11, 3);
-  //  print_hex((uint)index, 5, 12, 12, 3);
-  }
+  res = sched_dame_proximo_pirata(scheduler[indice_actual]);
 
   if (res == 0x70){
-
-    index = scheduler[indice_actual]->index;
 
     if (indice_actual == 0){
       indice_actual++;
@@ -53,45 +95,51 @@ int sched_proxima_a_ejecutar() {
       indice_actual--;
     }
 
-    while ((index < 8) & (scheduler[indice_actual]->piratas[index].estaVivo == 0)) { //mientras el pirata este muerto, avanzar al siguiente
-      index++;
-    }
-
-    if (index < 8) {
-      res = scheduler[indice_actual]->piratas[index].index_gdt; //devuelve indice en la GDT
-    }
+    res = sched_dame_proximo_pirata(scheduler[indice_actual]);
   }
 
   return res;
 }
 
 void sched_generar_pirata_jugadorA(){
-  game_jugador_lanzar_pirata(scheduler[0], 0, POS_INIT_A_X, POS_INIT_A_Y);
+  int i = 0;
+  int todosVivos = 1;
+  jugador_t *jug = scheduler[0];
+  while ((i < 8) & (todosVivos == 1)) {
+    if (jug->piratas[i].estaVivo == 0) {
+      todosVivos = 0;
+    }
+    i++;
+  } 
+  if (todosVivos == 0)
+    game_jugador_lanzar_pirata(jug, 0, POS_INIT_A_X, POS_INIT_A_Y);
 }
 
 void sched_generar_pirata_jugadorB(){
-  game_jugador_lanzar_pirata(scheduler[1], 0, POS_INIT_B_X, POS_INIT_A_Y);
+  int i = 0;
+  int todosVivos = 1;
+  jugador_t *jug = scheduler[1];
+  while ((i < 8) & (todosVivos == 1)) {
+    if (jug->piratas[i].estaVivo == 0) {
+      todosVivos = 0;
+    }
+    i++;
+  } 
+  if (todosVivos == 0)
+    game_jugador_lanzar_pirata(jug, 0, POS_INIT_B_X, POS_INIT_B_Y);
 }
 
-void sched_ejecutar_tarea(int index_gdt){
-  int id_pirata = game_id_from_index(index_gdt);
-  pirata_t *p = id_pirata2pirata(id_pirata);
-  print_hex((uint)id_pirata, 5, 15, 15, 3);
-  prueba_lanzar_pirata(p);
-  return;
-
-}
+//void sched_ejecutar_tarea(int index_gdt){
+//  int id_pirata = game_id_from_index(index_gdt);
+//  pirata_t *p = id_pirata2pirata(id_pirata);
+////  prueba_lanzar_pirata(p);
+//}
 
 int sched_tick() {
-  int index = scheduler[indice_actual]->index;
-  int id = scheduler[indice_actual]->piratas[index].id;
-  print_hex((uint)id, 5, 5, 5, 3);
+  game_tick();
 
-  game_tick(id);
-  uint hola =  sched_proxima_a_ejecutar();
-  print_hex((uint)hola, 5, 7, 7, 3);
-
-
-  return hola;
+  return sched_proxima_a_ejecutar();
 }
+
+
 

@@ -14,7 +14,6 @@
 
 #define CACA (uint*)0xFEDEFA50DEAD
 uint* dame_pagina_libre();
-void inicializar_ident_mapping(uint* cr3, uint* pt);
 void copiar_codigo_tarea();
 void cerear_pagina(uint* dir);
 
@@ -26,47 +25,49 @@ void mmu_inicializar(){
   libres = 0;
 }
 
-uint* mmu_inicializar_dir_pirata(){
-  uint* cr3 = dame_pagina_libre();
-  uint* pt = dame_pagina_libre();
+void mmu_inicializar_dir_pirata(pirata_t *p){
   // 0x003FFFFF
   //  0000 0000 00   00 0000 0000   0000 0000 0000
   // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
-  inicializar_ident_mapping(cr3,pt);
-  mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-  // copiar_codigo_tarea((int*)PAG_INICIAL);
-  return cr3;
+  jugador_t *j = p->jugador; 
+  uint cr3 = p->cr3;
+  uint kernel_cr3 = 0x27000;
+
+  if (j == &(jugadorA)) {
+    p->fisica_actual = PAG_INICIAL_A;
+
+    if (p->tipo == 0) {
+      mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_A); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
+    } else {
+      //breakpoint();
+      mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_A); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, (int*)0x11000);
+    }
+  } else {
+    p->fisica_actual = PAG_INICIAL_B;
+
+    if (p->tipo == 0) {
+      mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_B); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, (int*)0x12000);
+    } else {
+      mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_B); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
+      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
+    }
+  }
+  int i = 0;
+  while (j->fisicas_vistas[i] != 0) {
+    uint fisica_a_mapear = j->fisicas_vistas[i];
+    uint logica = fisica_a_mapear + 0x300000;
+    mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
+    i++;
+  }
+  // Le mapeo las 9 posiciones iniciales y más
 }
-  //print_hex(*cr3, 15, 10, 10, 15);
-  //print_hex((uint)cr3, 16, 7, 7, 15);
-  //print_hex(virtual, 15, 13, 13, 15);
-  //
-  //print("PDE_index", 40, 40, 15);
-  //print_hex(PDE_index, 15, 41, 41, 15);
-  //
-  //print("*PDE", 30, 30, 15);
-  //print_hex(*PDE, 15, 31, 31, 15);
-  //print("PDE", 33, 33, 15);
-  //print_hex((uint)PDE, 15, 34, 34, 15);
-  //
-  //print("aux", 12, 12, 15);
-  //print_hex((uint)aux, 15, 13, 13, 15);
-  //print("*aux", 15, 15, 15);
-  //print_hex((uint)aux, 15, 16, 16, 15);
-  //print("aux", 9, 9, 15);
-  //print_hex((uint)aux, 15, 10, 10, 15);
-  //print("fisica", 3, 3, 15);
-  //print_hex(fisica, 15, 4, 4, 15);
-  //
-  //print("*PTE", 6, 6, 15);
-  //print_hex(*PDE, 15, 7, 7, 15);
-  //print("PTE", 9, 9, 15);
-  //print_hex((uint)PDE, 15, 10, 10, 15);
-  //
-  //print("aux", 12, 12, 15);
-  //print_hex((uint)aux, 15, 13, 13, 15);
-  //print("*aux", 15, 15, 15);
-  //print_hex((uint)*aux, 15, 16, 16, 15);
 
 uint mmu_pos_fisica(uint* cr3, uint virtual){
   uint fisica;

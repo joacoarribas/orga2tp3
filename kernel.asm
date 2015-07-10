@@ -96,7 +96,6 @@ start:
     call screen_escribir_nombre
 
     ; Inicializar el juego
-    call inicializar_sched
     call tss_inicializar
     lgdt [GDT_DESC]
 
@@ -116,6 +115,7 @@ start:
     mov cr0, eax
 
     call game_inicializar
+    call inicializar_sched
     ; Error division por cero, funciona
     ;;mov edx, 0
     ;;div edx 

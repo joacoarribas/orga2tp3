@@ -16,6 +16,7 @@ extern print_Lshift
 extern print_Rshift
 extern print_Y
 extern clear_screen_portion
+extern clear_screen_error 
 
 extern sched_tick
 extern sched_proxima_a_ejecutar
@@ -35,11 +36,17 @@ extern game_syscall_pirata_mover
 extern game_syscall_cavar
 extern game_syscall_pirata_posicion
 extern game_atender_teclado
+extern game_pirata_tick
+extern game_pirata_exploto
+extern pirata_target_X
+extern pirata_target_Y
 
 ;; Game
 extern game_id_from_selector
 extern game_id_from_index
 extern prueba_lanzar_pirata
+
+extern dame_tipo
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -54,8 +61,6 @@ extern prueba_lanzar_pirata
 ;
 ;hola carola
 ;pepe chau
-offset : dd 0
-selector : dw 0
 
 %macro ISR 1
 global _isr%1
@@ -63,16 +68,20 @@ _isr%1:
     mov eax, %1
     push eax
     call print_error
-    ; Faltaria borrar la tarea
-;    call sched_proxima_a_ejecutar
-;    mov [selector], ax
-;    jmp far [offset]
-;;    #jmp $
-;
-;    .fin:
-;      ; deberia limpiar la pantalla aca?
-;      popad
-;      iret
+    add esp, 4
+
+    str ax
+    push ax
+    call game_pirata_exploto 
+    pop ax
+
+    jmp 0x70:0x00000000
+
+    .fin:
+    call clear_screen_error 
+      ; deberia limpiar la pantalla aca?
+      popad
+      iret
 %endmacro
 
 
@@ -115,21 +124,36 @@ global _isr32
 _isr32:
 ;xchg bx, bx
   pushad
-  xor eax, eax
   call fin_intr_pic1
+
+  xor eax, eax
+  xor ecx, ecx
   call sched_tick 
 
+  push ax
+  call game_pirata_tick
+  pop ax
+
   str cx
+  xchg bx , bx
   cmp ax, cx
   je .fin
 
-  push eax
-  ;xchg bx, bx
-  call sched_ejecutar_tarea
-  pop eax
+  ;push eax
+  ;call pirata_target_Y
+  ;mov [0x400FF8], eax
 
-  mov [selector], ax
-  jmp far [offset]
+  ;pop eax
+  ;push eax
+  ;call pirata_target_X
+  ;mov [0x400FF4], eax
+
+  ;pop eax
+  ;push eax
+  ;call dame_tipo
+  ;pop eax
+  mov [sched_tarea_selector], ax
+  jmp far [sched_tarea_offset]
 
   .fin:
     popad
@@ -183,6 +207,7 @@ _isr70:
   je .posicion
 
   .moverse:
+    xor eax, eax
     str eax
     push ecx
     push eax
@@ -193,11 +218,16 @@ _isr70:
     push eax
     ;xchg bx, bx
     call game_syscall_pirata_mover
+    xchg bx , bx
     pop edx
     pop edx
+    
+    jmp 0x70:0x00000000
+    xchg bx, bx
     jmp .fin
 
   .cavar:
+    xor eax, eax
     str eax
     push eax
     call game_id_from_selector
@@ -209,13 +239,14 @@ _isr70:
     jmp .fin
 
   .posicion:
+    xor eax, eax
     str eax
     push eax
     call game_id_from_selector
     add esp, 4
     push ecx  ;id del pirata que quiero ver la posicion, va de 0 a 7 o -1 si es el mismo pirata
     push eax
-    xchg bx, bx
+    ;xchg bx, bx
     call game_syscall_pirata_posicion
     add esp, 8
     jmp .fin

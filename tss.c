@@ -53,7 +53,7 @@ tss tss_inicial = (tss) {
 tss tss_idle = (tss) {
   .ptl     = 0x0,
   .unused0 = 0x0,
-  .esp0    = 0x0, // Preguntar por las pilas de nivel 0,1,2
+  .esp0    = 0x27000, // Preguntar por las pilas de nivel 0,1,2
   .ss0     = 0x48, // y sus selectores, deberia ir el selector de datos de nivel cero?
   .unused1 = 0x0,
   .esp1    = 0x0,
@@ -136,9 +136,13 @@ void tss_inicializar() {
     };
 
     /* Para reevisar */
-  for (i=0; i < 2*MAX_CANT_PIRATAS_VIVOS; i++){
+  for (i=0; i < MAX_CANT_PIRATAS_VIVOS; i++){
     // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
     cargar_tss_desc_en_gdt(&tss_jugadorA[i], i+15);
+  }
+  for (i=0; i < MAX_CANT_PIRATAS_VIVOS; i++){
+    // completar_tss(&tss_jugadorA[i], i+15); // Esta se va a llamar desdes completar_tss_para_tarea
+    cargar_tss_desc_en_gdt(&tss_jugadorB[i], i+15+8);
   }
 }
 
