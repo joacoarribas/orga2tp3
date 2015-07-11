@@ -16,6 +16,8 @@ int sched_proxima_a_ejecutar();
 int sched_tick();
 void sched_generar_pirata_jugadorA();
 void sched_generar_pirata_jugadorB();
-
+void sched_activar_debbuger();
+void sched_desactivar_debbuger(); //no se si es necesaria
+uint sched_estado_debbuger();
 
 #endif	/* !__SCHED_H__ */

@@ -74,7 +74,7 @@ char *errors[] = {
     idt[numero].attr = (unsigned short) 0xEE00; /*dpl 3*/                                                                  \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 void print_error(int a) {
-  print(errors[a], 25, 20, 10); 
+  print(errors[a], 23, 4, 10); 
 }
 
 

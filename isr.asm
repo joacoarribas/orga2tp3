@@ -17,11 +17,14 @@ extern print_Rshift
 extern print_Y
 extern clear_screen_portion
 extern clear_screen_error 
+extern print_interfaz_debbuger
+extern print_registros
 
 extern sched_tick
 extern sched_proxima_a_ejecutar
 extern sched_generar_pirata_jugadorA
 extern sched_generar_pirata_jugadorB
+extern sched_estado_debbuger
 
 ;; PIC
 extern fin_intr_pic1
@@ -30,6 +33,7 @@ extern fin_intr_pic1
 extern sched_tick
 extern sched_tarea_actual
 extern sched_ejecutar_tarea
+extern sched_desactivar_debbuger
 
 ;; Syscalls
 extern game_syscall_pirata_mover
@@ -65,6 +69,24 @@ extern dame_tipo
 %macro ISR 1
 global _isr%1
 _isr%1:
+    push ss
+    push gs
+    push fs
+    push es
+    push ds
+    push cs
+    ;push eip
+    push esp
+    push ebp
+    push edi
+    push esi
+    push edx
+    push ecx
+    push ebx
+    push eax
+    call print_registros
+    add esp, 56
+
     mov eax, %1
     push eax
     call print_error
@@ -74,7 +96,16 @@ _isr%1:
     push ax
     call game_pirata_exploto 
     pop ax
+    ;debbuger que onda
+    call sched_estado_debbuger
+    cmp eax, 0
+    je .sigo
+    call print_interfaz_debbuger
+    ;push eflag
+    ;tiene que llamar a la funcion loca que recibe todos los parametros para imprimir
+    call sched_desactivar_debbuger
 
+    .sigo:
     jmp 0x70:0x00000000
 
     .fin:
@@ -135,7 +166,7 @@ _isr32:
   pop ax
 
   str cx
-  xchg bx , bx
+;  xchg bx , bx
   cmp ax, cx
   je .fin
 
@@ -218,12 +249,12 @@ _isr70:
     push eax
     ;xchg bx, bx
     call game_syscall_pirata_mover
-    xchg bx , bx
+    ;xchg bx , bx
     pop edx
     pop edx
     
     jmp 0x70:0x00000000
-    xchg bx, bx
+    ;xchg bx, bx
     jmp .fin
 
   .cavar:

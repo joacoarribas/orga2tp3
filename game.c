@@ -697,7 +697,7 @@ void game_atender_teclado(unsigned char tecla)
   }
   if (tecla == 0x15) {
     print_Y();
-    //Hacer debug
+    sched_activar_debbuger(); 
   }
   if (tecla == 0xAA || tecla == 0xB6 || tecla == 0x95)
     clear_screen_portion();

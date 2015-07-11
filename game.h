@@ -102,7 +102,6 @@ int game_id_from_index(int index);
 
 void print_pirata_mapa(pirata_t *p, direccion dir, int *x , int *y);
 void print_cr3(jugador_t *j);
-
 ///////////////////////////
 
 
