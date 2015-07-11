@@ -24,12 +24,10 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #define CANT_POSICIONES_VISTAS            9
 #define MAX_SIN_CAMBIOS                 999
 
-#define BOTINES_CANTIDAD 8
-
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
-                                        {49,  3, 50}, {49, 40, 50}, {64, 21, 100}, {34, 21, 100}
+                                        {49,  3, 50}, {49, 40, 50}, {72, 34, 100}, {34, 21, 100}
                                     };
   
 jugador_t jugadorA;
@@ -39,20 +37,21 @@ void pintar_botines() {
   print("b", 30, 3, 15);
   print("b", 49, 3, 15);
   print("b", 30, 38, 15);
-  print("b", 49, 38, 15);
+  print("b", 49, 40, 15);
   print("b", 15, 21, 15);
-  print("b", 64, 21, 15);
+  print("b", 72, 34, 15);
   print("b", 45, 21, 15);
   print("b", 34, 21, 15);
 }
 
-uint descubrio_botin(int x, int y)
+uint descubrio_botin(jugador_t *j, int x, int y)
 {
   uint res = 0;
   int i = 0;
   while (i < BOTINES_CANTIDAD){
-    if ((botines[i][0] == x) & (botines[i][1] == y)){
+    if ((botines[i][0] == x) & (botines[i][1] == y) & (j->botines_vistos[i] == 0)){
       res = 1;
+      j->botines_vistos[i] = 1;
     }
     i++;
   }
@@ -211,6 +210,10 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
   jA->pos_puntaje_y = 46;
   jB->pos_puntaje_x = 41;
   jB->pos_puntaje_y = 46;
+  for (i=0 ; i<8 ; i++) {
+    jA->botines_vistos[i] = 0;
+    jB->botines_vistos[i] = 0;
+  }
 
   //breakpoint();
   game_jugador_inicializar_mapa(jA);
@@ -430,13 +433,14 @@ void print_pirata_mapa(pirata_t *p, direccion dir, int *vistasX, int *vistasY) {
       game_dir2xy(dir,&x,&y); //para donde te tenes que mover
       p->pos_x = p->pos_x + x;
       p->pos_y = p->pos_y + y;
-      print("E",p->pos_x, p->pos_y,2);
+      screen_pintar(32,C_FG_RED, p->pos_y ,p->pos_x);
+      print("E",p->pos_x, p->pos_y,4);
     } else {
       print("M", p->pos_x, p->pos_y, 2);
       game_dir2xy(dir,&x,&y); //para donde te tenes que mover
       p->pos_x = p->pos_x + x;
       p->pos_y = p->pos_y + y;
-      print("M",p->pos_x, p->pos_y,2);
+      print("M",p->pos_x, p->pos_y,4);
     }
     if (dir == IZQ){
       screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
@@ -491,7 +495,7 @@ void print_pirata_mapa(pirata_t *p, direccion dir, int *vistasX, int *vistasY) {
       p->pos_x = p->pos_x + x;
       p->pos_y = p->pos_y + y;
       screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
-      print("E",p->pos_x, p->pos_y,9);
+      print("E",p->pos_x, p->pos_y,15);
     } else {
       screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
       print("M", p->pos_x, p->pos_y, C_FG_BLUE);
@@ -499,28 +503,52 @@ void print_pirata_mapa(pirata_t *p, direccion dir, int *vistasX, int *vistasY) {
       p->pos_x = p->pos_x + x;
       p->pos_y = p->pos_y + y;
       screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x);
-      print("M",p->pos_x, p->pos_y,C_FG_BLUE);
+      print("M",p->pos_x, p->pos_y,15);
     }
 
     if (dir == IZQ){
-      screen_pintar(32,C_FG_BLUE, p->pos_y, p->pos_x-1);
-      //screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x-1);
-      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y, p->pos_x-1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y-1,p->pos_x-1);
+      //screen_pintar(32,C_BG_BLUE, p->pos_y+1,p->pos_x-1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x-1;
+      vistasX[2] = p->pos_x-1;
+      vistasY[0] = p->pos_y;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y+1;
     }
     if (dir == DER){
-      screen_pintar(32,C_FG_BLUE, p->pos_y,p->pos_x+1);
-      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x+1);
-      //screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y,p->pos_x+1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y-1,p->pos_x+1);
+      //screen_pintar(32,C_BG_BLUE, p->pos_y+1,p->pos_x+1);
+      vistasX[0] = p->pos_x+1;
+      vistasX[1] = p->pos_x+1;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y+1;
     }
     if (dir == ABA){
-      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x-1);
-      screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x);
-      //screen_pintar(32,C_FG_BLUE, p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y+1,p->pos_x);
+      //screen_pintar(32,C_BG_BLUE, p->pos_y+1,p->pos_x+1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y+1;
+      vistasY[1] = p->pos_y+1;
+      vistasY[2] = p->pos_y+1;
     }
     if (dir == ARR){
-      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x-1);
-      screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x);
+      screen_pintar(32,C_BG_BLUE, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_BG_BLUE, p->pos_y-1,p->pos_x);
       //screen_pintar(32,C_FG_BLUE, p->pos_y-1,p->pos_x+1);
+      vistasX[0] = p->pos_x-1;
+      vistasX[1] = p->pos_x;
+      vistasX[2] = p->pos_x+1;
+      vistasY[0] = p->pos_y-1;
+      vistasY[1] = p->pos_y-1;
+      vistasY[2] = p->pos_y-1;
     }
   }
 }
@@ -546,103 +574,110 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       
       //mapeo las posiciones exploradas
     uint logica = fisica_a_moverse + 0x300000;
+    //if (p->tipo == 0) {
+    //  mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
+    //} else {
+    //  breakpoint();
+      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
+    //}
+    
     if (p->tipo == 0) {
-      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-    } else {
-      breakpoint();
-      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-    }
-    
-    uint logica_aux_1;
-    uint logica_aux_2;
-    uint logica_aux_3;
-    uint fisica_aux_1;
-    uint fisica_aux_2;
-    uint fisica_aux_3;
+      uint logica_aux_1;
+      uint logica_aux_2;
+      uint logica_aux_3;
+      uint fisica_aux_1;
+      uint fisica_aux_2;
+      uint fisica_aux_3;
 
-    if (dir == IZQ){
-      //abajo a la izquierda
-      logica_aux_1 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
-      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
+      if (dir == IZQ){
+        //abajo a la izquierda
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
 
-      //arriba a la izquierda
-      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
-      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+        //arriba a la izquierda
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
 
-      //a la izquierda
-      logica_aux_3 = logica - 0x1000;
-      fisica_aux_3 = fisica_a_moverse - 0x1000;
-    }
-    if (dir == DER){
-      //abajo a la derecha
-      logica_aux_1 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
-      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+        //a la izquierda
+        logica_aux_3 = logica - 0x1000;
+        fisica_aux_3 = fisica_a_moverse - 0x1000;
+      }
+      if (dir == DER){
+        //abajo a la derecha
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
 
-      //arriba a la derecha
-      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
-      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+        //arriba a la derecha
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
 
-      //a la derecha
-      logica_aux_3 = logica + 0x1000;
-      fisica_aux_3 = fisica_a_moverse + 0x1000;
-    }
-    if (dir == ABA){
-      //abajo
-      logica_aux_1 = logica + MAPA_ANCHO * 0x1000;
-      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000;
-    
-      //abajo a la izquierda
-      logica_aux_2 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
-      fisica_aux_2 = fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+        //a la derecha
+        logica_aux_3 = logica + 0x1000;
+        fisica_aux_3 = fisica_a_moverse + 0x1000;
+      }
+      if (dir == ABA){
+        //abajo
+        logica_aux_1 = logica + MAPA_ANCHO * 0x1000;
+        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000;
       
-      //abajo a la derecha
-      logica_aux_3 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
-      fisica_aux_3 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-    }
-    if (dir == ARR){
-      //arriba
-      logica_aux_1 = logica - MAPA_ANCHO * 0x1000;
-      fisica_aux_1 = fisica_a_moverse - MAPA_ANCHO * 0x1000;
-    
-      //arriba a la derecha
-      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
-      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-    
-      //arriba a la izquierda
-      logica_aux_3 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
-      fisica_aux_3 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-    }
-    int i = 0;
-    for (i=0; i<8; i++) {
-      uint cr3 = j->piratas[i].cr3;
-      mmu_mapear_pagina(logica_aux_1, &cr3, fisica_aux_1);
-      mmu_mapear_pagina(logica_aux_2, &cr3, fisica_aux_2);
-      mmu_mapear_pagina(logica_aux_3, &cr3, fisica_aux_3);
-    }
-    i = 0;
-    if (p->tipo == 0) {
+        //abajo a la izquierda
+        logica_aux_2 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_2 = fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
+        
+        //abajo a la derecha
+        logica_aux_3 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_3 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+      }
+      if (dir == ARR){
+        //arriba
+        logica_aux_1 = logica - MAPA_ANCHO * 0x1000;
+        fisica_aux_1 = fisica_a_moverse - MAPA_ANCHO * 0x1000;
+      
+        //arriba a la derecha
+        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+      
+        //arriba a la izquierda
+        logica_aux_3 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+        fisica_aux_3 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+      }
+      int i = 0;
+      for (i=0; i<8; i++) {
+        uint cr3 = j->piratas[i].cr3;
+        mmu_mapear_pagina(logica_aux_1, &cr3, fisica_aux_1);
+        mmu_mapear_pagina(logica_aux_2, &cr3, fisica_aux_2);
+        mmu_mapear_pagina(logica_aux_3, &cr3, fisica_aux_3);
+      }
+      i = 0;
       while (i < 3){
-        if (descubrio_botin(vistasX[i], vistasY[i])){
-          game_jugador_lanzar_pirata(j, 1, vistasX[i]+2, vistasY[i]-2); 
+        if (descubrio_botin(j, vistasX[i], vistasY[i])){
+          game_jugador_lanzar_pirata(j, 1, vistasX[i], vistasY[i]); 
         }
         i++;
       }
     }
     uint kernel_cr3 = 0x27000;
-    mmu_mapear_pagina(0x400000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
+    mmu_mapear_pagina(0x3FE000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
     mmu_mapear_pagina(0x3FF000, &kernel_cr3, actual); //primero mapeo y dsp copio codigo no????
-    copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
+    copiar_codigo_tarea((int*)0x3FE000, (int*) 0x3FF000);
+    mmu_mapear_pagina(0x3FE000, &kernel_cr3, 0x3FE000); //primero mapeo y dsp copio codigo no????
     mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
   }
 
     return 0;
 }
+    // ESTE CODIGO FUNCIONA
+    //uint kernel_cr3 = 0x27000;
+    //mmu_mapear_pagina(0x400000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
+    //mmu_mapear_pagina(0x3FF000, &kernel_cr3, actual); //primero mapeo y dsp copio codigo no????
+    //copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
+    //mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
 
 void ver_si_exploto(uchar sel_segmento) {
   int id_pirata = game_id_from_selector(sel_segmento);
   pirata_t *p = id_pirata2pirata(id_pirata); 
   if (p->exploto == 1){
-    breakpoint();
+    //breakpoint();
     reiniciar_tss(p->id, p->pila0);
   }
   p->exploto = 0;
@@ -653,23 +688,23 @@ uint game_syscall_cavar(uint id)
   pirata_t *p = id_pirata2pirata(id); 
   jugador_t *j = p->jugador;
   int i = 0;
-
-  while (i < BOTINES_CANTIDAD){
-    if ((botines[i][0] == p->pos_x) & (botines[i][1] == p->pos_y)){
-      int monedas = botines[i][2];
-      while (monedas > 0) {
-        j->puntaje++;
-        botines[i][2]--;
-        monedas--;
-        print_puntaje(j);
-      }
+  int encontre = 0;
+  while ((i < BOTINES_CANTIDAD) & (encontre == 0)){
+    if ((botines[i][0] == p->pos_x+2) & (botines[i][1] == p->pos_y-2)){
+      j->puntaje++;
+      p->monedas_recolectadas++;
+      botines[i][2]--;
+      print_puntaje(j);
+      encontre = 1;
     }
     i++;
   }
-  p->estaVivo = 0;
-  p->ya_corrio = 0;
-  p->exploto = 1;
-  limpiar_clock(p);
+  if (p->monedas_recolectadas == botines[i][2]) {
+    p->estaVivo = 0;
+    p->ya_corrio = 0;
+    p->exploto = 1;
+    limpiar_clock(p);
+  }
 	return 0;
 }
 
