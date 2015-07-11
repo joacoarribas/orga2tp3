@@ -42,6 +42,16 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].a = color;
 }
 
+//void screen_copiar_pantalla(){
+//  int i = 0;
+//  while (i < 16){
+//    mmu_mapear_pagina((uint*)0x)
+//
+//    }
+//  
+//  }
+//
+
 uchar screen_valor_actual(uint fila, uint columna)
 {
     return p[fila][columna].c;
@@ -76,7 +86,7 @@ void print_interfaz_debbuger(){
     y++;  
   }
 }
-void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint cs, uint ds, uint es, uint fs, uint gs, uint ss){
+void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, short cs, short ds, short es, short fs, short gs, short ss, uint eflags){
   const char* c = "eax" ;  
   print(c, 25, 9, C_FG_LIGHT_GREEN);
   print_hex(eax, 8, 29, 9, C_FG_WHITE);
@@ -114,27 +124,27 @@ void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi,
 
   c = "cs";
   print(c, 26, 27, C_FG_LIGHT_GREEN);
-  print_hex(cs, 8, 29, 27, C_FG_WHITE);
+  print_hex(cs, 4, 29, 27, C_FG_WHITE);
 
   c = "ds";
   print(c, 26, 29, C_FG_LIGHT_GREEN);
-  print_hex(ds, 8, 29, 29, C_FG_WHITE);
+  print_hex(ds, 4, 29, 29, C_FG_WHITE);
 
   c = "es";
   print(c, 26, 31, C_FG_LIGHT_GREEN);
-  print_hex(es, 8, 29, 31, C_FG_WHITE);
+  print_hex(es, 4, 29, 31, C_FG_WHITE);
 
   c = "fs";
   print(c, 26, 33, C_FG_LIGHT_GREEN);
-  print_hex(fs, 8, 29, 33, C_FG_WHITE);
+  print_hex(fs, 4, 29, 33, C_FG_WHITE);
 
   c = "gs";
   print(c, 26, 35, C_FG_LIGHT_GREEN);
-  print_hex(gs, 8, 29, 35, C_FG_WHITE);
+  print_hex(gs, 4, 29, 35, C_FG_WHITE);
 
   c = "ss";
   print(c, 26, 37, C_FG_LIGHT_GREEN);
-  print_hex(ss, 8, 29, 37, C_FG_WHITE);
+  print_hex(ss, 4, 29, 37, C_FG_WHITE);
 
   c = "eflags";
   print(c, 26, 39, C_FG_LIGHT_GREEN);

@@ -19,5 +19,6 @@ void sched_generar_pirata_jugadorB();
 void sched_activar_debbuger();
 void sched_desactivar_debbuger(); //no se si es necesaria
 uint sched_estado_debbuger();
-
+void sched_setear_debbuger();
+uint sched_d_seteado();
 #endif	/* !__SCHED_H__ */

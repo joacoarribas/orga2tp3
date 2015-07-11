@@ -24,6 +24,7 @@ extern sched_tick
 extern sched_proxima_a_ejecutar
 extern sched_generar_pirata_jugadorA
 extern sched_generar_pirata_jugadorB
+extern sched_d_seteado
 extern sched_estado_debbuger
 
 ;; PIC
@@ -34,6 +35,9 @@ extern sched_tick
 extern sched_tarea_actual
 extern sched_ejecutar_tarea
 extern sched_desactivar_debbuger
+extern sched_seteado_debbuger
+extern sched_unsetear_debbuger
+extern sched_activar_debbuger
 
 ;; Syscalls
 extern game_syscall_pirata_mover
@@ -69,24 +73,34 @@ extern dame_tipo
 %macro ISR 1
 global _isr%1
 _isr%1:
-    push ss
+    pushad
+    call sched_d_seteado
+    cmp eax, 0
+    je .sigo
+    mov ebx, esp
+    push dword [ebx + 40] ;eflags
+   push word [ebx + 48] ;ss
     push gs
     push fs
     push es
     push ds
-    push cs
-    ;push eip
-    push esp
-    push ebp
-    push edi
-    push esi
-    push edx
-    push ecx
-    push ebx
-    push eax
+    push word [ebx + 36] ;cs
+    push dword [ebx + 32] ;eip
+    push dword [ebx + 12] ;esp
+    push dword [ebx + 8] ;ebp
+    push dword [ebx] ;edi 
+    push dword [ebx + 4] ;esi 
+    push dword [ebx + 20] ;edx
+    push dword [ebx + 24] ;ecx
+    push dword [ebx + 16] ;ebx 
+    push dword [ebx + 28] ;eax 
     call print_registros
     add esp, 56
 
+    call print_interfaz_debbuger
+    call sched_unsetear_debbuger
+    call sched_activar_debbuger
+    .sigo:
     mov eax, %1
     push eax
     call print_error
@@ -97,15 +111,9 @@ _isr%1:
     call game_pirata_exploto 
     pop ax
     ;debbuger que onda
-    call sched_estado_debbuger
-    cmp eax, 0
-    je .sigo
-    call print_interfaz_debbuger
     ;push eflag
     ;tiene que llamar a la funcion loca que recibe todos los parametros para imprimir
-    call sched_desactivar_debbuger
 
-    .sigo:
     jmp 0x70:0x00000000
 
     .fin:
@@ -156,6 +164,10 @@ _isr32:
 ;xchg bx, bx
   pushad
   call fin_intr_pic1
+
+  call sched_estado_debbuger
+  cmp eax, 1
+  je .fin
 
   xor eax, eax
   xor ecx, ecx

@@ -63,5 +63,5 @@ void clear_screen_portion();
 void print_Lshift();
 void print_Rshift();
 void print_Y();
-void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint cs, uint ds, uint es, uint fs, uint gs, uint ss);
+void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, short cs, short ds, short es, short fs, short gs, short ss, uint eflags);
 #endif  /* !__SCREEN_H__ */
