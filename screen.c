@@ -86,7 +86,7 @@ void print_interfaz_debbuger(){
     y++;  
   }
 }
-void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, uchar cs, uchar ds, uchar es, uchar fs, uchar gs, uchar ss, uint eflags){
+void print_registros(uint cr0, uint cr2, uint cr3, uint cr4, uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, uchar cs, uchar ds, uchar es, uchar fs, uchar gs, uchar ss, uint eflags, uint pila0, uint pila1, uint pila2, uint pila3, uint pila4){
   const char* c = "eax" ;  
   print(c, 25, 9, C_FG_LIGHT_GREEN);
   print_hex(eax, 8, 29, 9, C_FG_WHITE);
@@ -153,28 +153,28 @@ void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi,
 
   c = "cr0";
   print(c, 38, 9, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8,  42, 9, C_FG_WHITE);
+  print_hex(cr0, 8,  42, 9, C_FG_WHITE);
 
   c = "cr2";
   print(c, 38, 11, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 11, C_FG_WHITE);
+  print_hex(cr2, 8, 42, 11, C_FG_WHITE);
 
   c = "cr3";
   print(c, 38, 13, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 13, C_FG_WHITE);
+  print_hex(cr3, 8, 42, 13, C_FG_WHITE);
 
   c = "cr4";
   print(c, 38, 15, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 15, C_FG_WHITE);
+  print_hex(cr4, 8, 42, 15, C_FG_WHITE);
 
   c = "stack";
   print(c, 38, 27, C_FG_LIGHT_GREEN);
   
-  print_hex(cs, 8, 38, 29, C_FG_WHITE);
-  print_hex(cs, 8, 38, 30, C_FG_WHITE);
-  print_hex(cs, 8, 38, 31, C_FG_WHITE);
-  print_hex(cs, 8, 38, 32, C_FG_WHITE);
-  print_hex(cs, 8, 38, 33, C_FG_WHITE);
+  print_hex(pila0, 8, 38, 29, C_FG_WHITE);
+  print_hex(pila1, 8, 38, 30, C_FG_WHITE);
+  print_hex(pila2, 8, 38, 31, C_FG_WHITE);
+  print_hex(pila3, 8, 38, 32, C_FG_WHITE);
+  print_hex(pila4, 8, 38, 33, C_FG_WHITE);
   }
 
 

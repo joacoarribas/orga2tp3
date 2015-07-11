@@ -58,6 +58,12 @@ extern desmapearle_pila_tarea
 extern ver_si_exploto 
 
 extern dame_tipo
+
+extern rcr0
+extern rcr2
+extern rcr3
+extern rcr4
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -85,12 +91,15 @@ _isr%1:
     call sched_d_seteado
     cmp eax, 0
     je .sigo
-    ;mov ebx, [esp+12]
-    ;push dword [ebx]
-    ;push dword [ebx+4]
-    ;push dword [ebx+8]
-    ;push dword [ebx+12]
     mov ebx, esp
+    ;esto no estaria estando bien, tengo que ir a la pila de la tarea en la que salto excepcion
+    mov eax, [esp+12]
+    push dword [eax+16]
+    push dword [eax+12]
+    push dword [eax+8]
+    push dword [eax+4]
+    push dword [eax]
+    ;hasta aca esta mal, pa abajo esta bien
     push dword [ebx + 40] ;eflags
     push dword [ebx + 48] ;ss
     push gs
@@ -107,8 +116,17 @@ _isr%1:
     push dword [ebx + 24] ;ecx
     push dword [ebx + 16] ;ebx 
     push dword [ebx + 28] ;eax 
+   ; call rcr4 
+    push eax
+    ;call rcr3 
+    push eax 
+    ;call rcr2 
+    push eax
+    ;call rcr0 
+    push eax
+
     call print_registros
-    add esp, 56
+    add esp, 100
 
     call print_interfaz_debbuger
     call sched_unsetear_debbuger
