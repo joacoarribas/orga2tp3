@@ -86,8 +86,10 @@ int sched_dame_proximo_pirata(jugador_t *j) {
     if (index == 8) { // Si ya corrieron todas las tareas que estaban vivas
       int i = 0;
       // Seteo el ya_corrio de todas a cero
-      for (i=0 ; i<8 ; i++)
-        j->piratas[i].ya_corrio = 0; 
+      for (i=0 ; i<8 ; i++) {
+        if (j->piratas[i].estaVivo == 1)
+          j->piratas[i].ya_corrio = 0; 
+      }
 
       // Busco la primera que este viva y la devuelvo
       i = 0;

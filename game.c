@@ -29,11 +29,22 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
-                                        {49,  3, 50}, {49, 38, 50}, {64, 21, 100}, {34, 21, 100}
+                                        {49,  3, 50}, {49, 40, 50}, {64, 21, 100}, {34, 21, 100}
                                     };
   
 jugador_t jugadorA;
 jugador_t jugadorB;
+
+void pintar_botines() {
+  print("b", 30, 3, 15);
+  print("b", 49, 3, 15);
+  print("b", 30, 38, 15);
+  print("b", 49, 38, 15);
+  print("b", 15, 21, 15);
+  print("b", 64, 21, 15);
+  print("b", 45, 21, 15);
+  print("b", 34, 21, 15);
+}
 
 uint descubrio_botin(int x, int y)
 {
@@ -131,36 +142,46 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 void game_inicializar()
 {
   game_jugadores_inicializar(&jugadorA, &jugadorB);
+  pintar_botines();
 }
 
 void game_jugador_inicializar_mapa(jugador_t *jug)
 {
+  int fisicas_iniciales[9];
   if (jug == &jugadorA) {
-    jug->fisicas_vistas[0] = PAG_INICIAL_A;
-    jug->fisicas_vistas[1] = PAG_INICIAL_A + 0x1000; // Derecha de inicial
-    jug->fisicas_vistas[2] = PAG_INICIAL_A - 0x1000; // Izquierda de inicial
-    jug->fisicas_vistas[3] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000; // Abajo de inicial
-    jug->fisicas_vistas[4] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
-    jug->fisicas_vistas[5] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
-    jug->fisicas_vistas[6] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000; // Arriba de inicial
-    jug->fisicas_vistas[7] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
-    jug->fisicas_vistas[8] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
+    fisicas_iniciales[0] = PAG_INICIAL_A;
+    fisicas_iniciales[1] = PAG_INICIAL_A + 0x1000; // Derecha de inicial
+    fisicas_iniciales[2] = PAG_INICIAL_A - 0x1000; // Izquierda de inicial
+    fisicas_iniciales[3] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000; // Abajo de inicial
+    fisicas_iniciales[4] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
+    fisicas_iniciales[5] = PAG_INICIAL_A + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
+    fisicas_iniciales[6] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000; // Arriba de inicial
+    fisicas_iniciales[7] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
+    fisicas_iniciales[8] = PAG_INICIAL_A - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
   } else {
-    jug->fisicas_vistas[0] = PAG_INICIAL_B;
-    jug->fisicas_vistas[1] = PAG_INICIAL_B + 0x1000; // Derecha de inicial
-    jug->fisicas_vistas[2] = PAG_INICIAL_B - 0x1000; // Izquierda de inicial
-    jug->fisicas_vistas[3] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000; // Abajo de inicial
-    jug->fisicas_vistas[4] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
-    jug->fisicas_vistas[5] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
-    jug->fisicas_vistas[6] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000; // Arriba de inicial
-    jug->fisicas_vistas[7] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
-    jug->fisicas_vistas[8] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
+    fisicas_iniciales[0] = PAG_INICIAL_B;
+    fisicas_iniciales[1] = PAG_INICIAL_B + 0x1000; // Derecha de inicial
+    fisicas_iniciales[2] = PAG_INICIAL_B - 0x1000; // Izquierda de inicial
+    fisicas_iniciales[3] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000; // Abajo de inicial
+    fisicas_iniciales[4] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 + 0x1000; // Abajo-Derecha de inicial
+    fisicas_iniciales[5] = PAG_INICIAL_B + MAPA_ANCHO * 0x1000 - 0x1000; // Abajo-Izquierda de inicial
+    fisicas_iniciales[6] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000; // Arriba de inicial
+    fisicas_iniciales[7] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 + 0x1000; // Arriba-Derecha de inicial
+    fisicas_iniciales[8] = PAG_INICIAL_B - MAPA_ANCHO * 0x1000 - 0x1000; // Arriba-Izquierda de inicial
   }
-  int i = 0;
-  for (i=9 ; i <3360 ; i++)
-    jug->fisicas_vistas[i] = 0; 
 
-  jug->indice_fisicas_vistas_libre = 9;
+  int i = 0;
+  int j = 0;
+  uint cr3;
+  for (i=0 ; i<8 ; i++) {
+    pirata_t p = jug->piratas[i];
+    cr3 = p.cr3;
+    for (j=0 ; j<9 ; j++) {
+      uint fisica_a_mapear = fisicas_iniciales[j];
+      uint logica = fisica_a_mapear + 0x300000;
+      mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
+    }
+  }
 }
 
 
@@ -186,9 +207,15 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
   jA->index = 0;
   jB->puntaje = 0;
   jB->index = 0;
+  jA->pos_puntaje_x = 32;
+  jA->pos_puntaje_y = 46;
+  jB->pos_puntaje_x = 41;
+  jB->pos_puntaje_y = 46;
 
+  //breakpoint();
   game_jugador_inicializar_mapa(jA);
   game_jugador_inicializar_mapa(jB);
+  //breakpoint();
 }
 
 void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id, int clock_x)
@@ -200,12 +227,14 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->pos_clock_x = clock_x;
   pirata->pos_clock_y = 47;
   pirata->ya_corrio = 0;
+  pirata->exploto = 0;
   uint* cr3 = dame_pagina_libre();
   uint* pt = dame_pagina_libre();
    
   inicializar_ident_mapping(cr3,pt);
   pirata->cr3 = (uint) cr3;
   uint pila0 = (uint) dame_pagina_libre();
+  pirata->pila0 = pila0; 
   completar_tss(id, (uint)cr3, pila0);
 
 }
@@ -334,11 +363,9 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 
   p->estaVivo = 1;
   p->tipo = tipo;
-  //breakpoint();
-  //print_hex((uint)p->tipo, 15, 15, 15, 15);
+  p->ya_corrio = 0;
 
-  mmu_inicializar_dir_pirata(p);
-  //print_hex((uint)p->tipo, 15, 17, 17, 15);
+  mmu_inicializar_dir_pirata(p, x, y);
 
   if (j == &jugadorA) {
     screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
@@ -372,6 +399,16 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
 {
+}
+
+void mapearle_pila_tarea(){
+  uint kernel_cr3 = 0x27000;
+  mmu_mapear_pagina(0x400000, &kernel_cr3, 0x400000);
+}
+
+void desmapearle_pila_tarea(){
+  uint kernel_cr3 = 0x27000;
+  mmu_desmapear_pagina(0x400000, &kernel_cr3);
 }
 
 
@@ -502,126 +539,137 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 
   if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     //FALTA SI ES MINERO
-    if (p->tipo == 0){
-      actual = p->fisica_actual; 
-      fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
-      p->fisica_actual = fisica_a_moverse;
-        
-        //mapeo las posiciones exploradas
-      uint logica = fisica_a_moverse + 0x300000;
+    //if (p->tipo == 0){
+    actual = p->fisica_actual; 
+    fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
+    p->fisica_actual = fisica_a_moverse;
+      
+      //mapeo las posiciones exploradas
+    uint logica = fisica_a_moverse + 0x300000;
+    if (p->tipo == 0) {
       mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-        //breakpoint();
+    } else {
+      breakpoint();
+      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
+    }
+    
+    uint logica_aux_1;
+    uint logica_aux_2;
+    uint logica_aux_3;
+    uint fisica_aux_1;
+    uint fisica_aux_2;
+    uint fisica_aux_3;
+
+    if (dir == IZQ){
+      //abajo a la izquierda
+      logica_aux_1 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
+
+      //arriba a la izquierda
+      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+
+      //a la izquierda
+      logica_aux_3 = logica - 0x1000;
+      fisica_aux_3 = fisica_a_moverse - 0x1000;
+    }
+    if (dir == DER){
+      //abajo a la derecha
+      logica_aux_1 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+
+      //arriba a la derecha
+      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+
+      //a la derecha
+      logica_aux_3 = logica + 0x1000;
+      fisica_aux_3 = fisica_a_moverse + 0x1000;
+    }
+    if (dir == ABA){
+      //abajo
+      logica_aux_1 = logica + MAPA_ANCHO * 0x1000;
+      fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000;
+    
+      //abajo a la izquierda
+      logica_aux_2 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
+      fisica_aux_2 = fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
       
-      uint logica_aux_1;
-      uint logica_aux_2;
-      uint logica_aux_3;
-      uint fisica_aux_1;
-      uint fisica_aux_2;
-      uint fisica_aux_3;
-
-      if (dir == IZQ){
-        //abajo a la izquierda
-        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
-        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 - 0x1000;
-
-        //arriba a la izquierda
-        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
-        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-
-        //a la izquierda
-        logica_aux_3 = logica - 0x1000;
-        fisica_aux_3 = fisica_a_moverse - 0x1000;
-      }
-      if (dir == DER){
-        //abajo a la derecha
-        logica_aux_1 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
-        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-
-        //arriba a la derecha
-        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
-        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-
-        //a la derecha
-        logica_aux_3 = logica + 0x1000;
-        fisica_aux_3 = fisica_a_moverse + 0x1000;
-      }
-      if (dir == ABA){
-        //abajo
-        logica_aux_1 = logica + MAPA_ANCHO * 0x1000;
-        fisica_aux_1 = fisica_a_moverse + MAPA_ANCHO * 0x1000;
-      
-        //abajo a la izquierda
-        logica_aux_2 = logica + MAPA_ANCHO * 0x1000 - 0x1000;
-        fisica_aux_2 = fisica_a_moverse+ MAPA_ANCHO * 0x1000 - 0x1000;
-        
-        //abajo a la derecha
-        logica_aux_3 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
-        fisica_aux_3 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
-      }
-      if (dir == ARR){
-        //arriba
-        logica_aux_1 = logica - MAPA_ANCHO * 0x1000;
-        fisica_aux_1 = fisica_a_moverse - MAPA_ANCHO * 0x1000;
-      
-        //arriba a la derecha
-        logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
-        fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
-      
-        //arriba a la izquierda
-        logica_aux_3 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
-        fisica_aux_3 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
-      }
-      uint indice = j->indice_fisicas_vistas_libre;
-      j->fisicas_vistas[indice] = fisica_aux_1;
-      indice++;
-      j->fisicas_vistas[indice] = fisica_aux_2;
-      indice++;
-      j->fisicas_vistas[indice] = fisica_aux_3;
-      indice++;
-      j->indice_fisicas_vistas_libre = indice;
-      int i = 0;
-      for (i=0; i<8; i++) {
-        uint cr3 = j->piratas[i].cr3;
-        mmu_mapear_pagina(logica_aux_1, &cr3, fisica_aux_1);
-        mmu_mapear_pagina(logica_aux_2, &cr3, fisica_aux_2);
-        mmu_mapear_pagina(logica_aux_3, &cr3, fisica_aux_3);
-      }
-     // SI DESCUBRI BOTIN TENGO QUE CREAR TAREA MINERO
-      //game_calcular_posiciones_vistas(vistasX, vistasY, p->pos_x, p->pos_y);
-      i = 0;
+      //abajo a la derecha
+      logica_aux_3 = logica + MAPA_ANCHO * 0x1000 + 0x1000;
+      fisica_aux_3 = fisica_a_moverse + MAPA_ANCHO * 0x1000 + 0x1000;
+    }
+    if (dir == ARR){
+      //arriba
+      logica_aux_1 = logica - MAPA_ANCHO * 0x1000;
+      fisica_aux_1 = fisica_a_moverse - MAPA_ANCHO * 0x1000;
+    
+      //arriba a la derecha
+      logica_aux_2 = logica - MAPA_ANCHO * 0x1000 + 0x1000;
+      fisica_aux_2 = fisica_a_moverse - MAPA_ANCHO * 0x1000 + 0x1000;
+    
+      //arriba a la izquierda
+      logica_aux_3 = logica - MAPA_ANCHO * 0x1000 - 0x1000;
+      fisica_aux_3 = fisica_a_moverse - MAPA_ANCHO * 0x1000 - 0x1000;
+    }
+    int i = 0;
+    for (i=0; i<8; i++) {
+      uint cr3 = j->piratas[i].cr3;
+      mmu_mapear_pagina(logica_aux_1, &cr3, fisica_aux_1);
+      mmu_mapear_pagina(logica_aux_2, &cr3, fisica_aux_2);
+      mmu_mapear_pagina(logica_aux_3, &cr3, fisica_aux_3);
+    }
+    i = 0;
+    if (p->tipo == 0) {
       while (i < 3){
         if (descubrio_botin(vistasX[i], vistasY[i])){
-          //breakpoint();
-          //print_hex(vistasX[i], 15, 40, 40, 15);
-          //print_hex(vistasY[i], 15, 43, 43, 15);
-          game_jugador_lanzar_pirata(j, 1, vistasX[i], vistasY[i]); 
+          game_jugador_lanzar_pirata(j, 1, vistasX[i]+2, vistasY[i]-2); 
         }
         i++;
-     }
-    } else {
-      actual = p->fisica_actual; 
-      fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
-      p->fisica_actual = fisica_a_moverse;
-        
-      mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-        //breakpoint();
+      }
+    }
+    uint kernel_cr3 = 0x27000;
+    mmu_mapear_pagina(0x400000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
+    mmu_mapear_pagina(0x3FF000, &kernel_cr3, actual); //primero mapeo y dsp copio codigo no????
+    copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
+    mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
   }
 
-      uint kernel_cr3 = 0x27000;
-      mmu_mapear_pagina(0x400000, &kernel_cr3, fisica_a_moverse); //primero mapeo y dsp copio codigo no????
-      mmu_mapear_pagina(0x3FF000, &kernel_cr3, actual); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
-      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
-
-   // }
-  } 
     return 0;
+}
+
+void ver_si_exploto(uchar sel_segmento) {
+  int id_pirata = game_id_from_selector(sel_segmento);
+  pirata_t *p = id_pirata2pirata(id_pirata); 
+  if (p->exploto == 1){
+    breakpoint();
+    reiniciar_tss(p->id, p->pila0);
+  }
+  p->exploto = 0;
 }
 
 uint game_syscall_cavar(uint id)
 {
-    // ~ completar ~
+  pirata_t *p = id_pirata2pirata(id); 
+  jugador_t *j = p->jugador;
+  int i = 0;
 
+  while (i < BOTINES_CANTIDAD){
+    if ((botines[i][0] == p->pos_x) & (botines[i][1] == p->pos_y)){
+      int monedas = botines[i][2];
+      while (monedas > 0) {
+        j->puntaje++;
+        botines[i][2]--;
+        monedas--;
+        print_puntaje(j);
+      }
+    }
+    i++;
+  }
+  p->estaVivo = 0;
+  p->ya_corrio = 0;
+  p->exploto = 1;
+  limpiar_clock(p);
 	return 0;
 }
 

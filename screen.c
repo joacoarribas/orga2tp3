@@ -230,15 +230,18 @@ void screen_inicializar() {
     }
   }
   for (i=43 ; i < 50 ; i++) {
-    for (j=30 ; j < 38 ; j++) {
+    for (j=29 ; j < 38 ; j++) {
       screen_pintar(32, C_BG_RED, i, j);
     }
   }
   for (i=43 ; i < 50 ; i++) {
-    for (j=38 ; j < 46 ; j++) {
+    for (j=38 ; j < 47 ; j++) {
       screen_pintar(32, C_BG_BLUE, i, j);
     }
   }
+  uint puntaje = 0;
+  print_hex(puntaje, 3, 41, 46, 15);
+  print_hex(puntaje, 3, 32, 46, 15);
   //i = 45;
   //j = 8
   //while (j <= 24) {
@@ -297,6 +300,27 @@ void print_Rshift() {
 
 void print_Y() {
   print ("y", 72, 2, 15);
+}
+void print_puntaje(jugador_t *j) {
+
+  if (j == &jugadorA) {
+    print_hex(j->puntaje, 3, 32, 46, 15);
+  } else {
+    print_hex(j->puntaje, 3, 41, 46, 15);
+  }
+
+}
+
+void limpiar_clock(pirata_t *p) {
+
+  jugador_t *j = p->jugador;
+
+  if (j == &jugadorA) {
+    screen_pintar(88, C_FG_RED, p->pos_clock_y, p->pos_clock_x);
+  } else {
+    screen_pintar(88, C_FG_BLUE, p->pos_clock_y, p->pos_clock_x);
+  }
+
 }
 
 void clear_screen_portion() {
