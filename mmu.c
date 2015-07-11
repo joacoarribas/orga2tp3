@@ -68,18 +68,7 @@ void mmu_inicializar_dir_pirata(pirata_t *p, int x, int y){
       copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
     }
   }
-  if (p->ya_corrio == 0) {
-    int i = 0;
-    while (j->fisicas_vistas[i] != 0) {
-      uint fisica_a_mapear = j->fisicas_vistas[i];
-      uint logica = fisica_a_mapear + 0x300000;
-      mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
-      i++;
-    }
-  } else {
-    p->ya_corrio = 0;
-  }
-  // Le mapeo las 9 posiciones iniciales y más
+
 }
 
 uint mmu_pos_fisica(uint* cr3, uint virtual){
@@ -206,3 +195,16 @@ void cerear_pagina(uint* dir){
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
+
+  //if (p->ya_corrio == 0) {
+  //  int i = 0;
+  //  while (j->fisicas_vistas[i] != 0) {
+  //    uint fisica_a_mapear = j->fisicas_vistas[i];
+  //    uint logica = fisica_a_mapear + 0x300000;
+  //    mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
+  //    i++;
+  //  }
+  //} else {
+  //  p->ya_corrio = 0;
+  //}
+  // Le mapeo las 9 posiciones iniciales y más

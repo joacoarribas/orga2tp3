@@ -61,8 +61,6 @@ typedef struct jugador_t
     uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     pirata_t minerosPendientes[MAX_CANT_MINEROS_PENDIENTES];
-    uint fisicas_vistas[3360];  //guarda direcciones fisicas vistas 
-    uint indice_fisicas_vistas_libre;
     uint pos_puntaje_x;
     uint pos_puntaje_y;
     //estas las puedo actualizar directamente usando game_calcular_posiciones_vistas

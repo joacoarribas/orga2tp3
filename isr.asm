@@ -172,6 +172,7 @@ _isr32:
   cmp ax, cx
   je .fin
 
+  ;xchg bx, bx
   push ax
   call ver_si_exploto
   pop ax
@@ -241,18 +242,10 @@ _isr70:
     push eax
     ;xchg bx, bx
     call game_syscall_pirata_mover
-<<<<<<< HEAD
-=======
-    ;xchg bx , bx
->>>>>>> 1f3929d8e83f8e1936451aede6d3e8d851161616
     pop edx
     pop edx
     
     jmp 0x70:0x00000000
-<<<<<<< HEAD
-=======
-    ;xchg bx, bx
->>>>>>> 1f3929d8e83f8e1936451aede6d3e8d851161616
     jmp .fin
 
   .cavar:
