@@ -19,6 +19,7 @@ extern clear_screen_portion
 extern clear_screen_error 
 extern print_interfaz_debbuger
 extern print_registros
+extern screen_copiar_pantalla
 
 extern sched_tick
 extern sched_proxima_a_ejecutar
@@ -82,7 +83,7 @@ extern rcr4
 %macro ISR 1
 global _isr%1
 _isr%1:
-    xchg bx, bx
+    ;xchg bx, bx
     pushad
     mov eax, %1
     push eax
@@ -91,6 +92,10 @@ _isr%1:
     call sched_d_seteado
     cmp eax, 0
     je .sigo
+    ;calt
+    ;SI DESCOMENTO LA LINEA DE ABAJO TIRA PAGE FAULT UFA
+    ;screen_copiar_pantalla
+    xchg bx, bx
     mov ebx, esp
     ;esto no estaria estando bien, tengo que ir a la pila de la tarea en la que salto excepcion
     mov eax, [esp+12]

@@ -749,6 +749,7 @@ void game_atender_teclado(unsigned char tecla)
       sched_setear_debbuger(); 
     } else {
       sched_desactivar_debbuger();  
+      screen_inversa_copiar_pantalla();
     } 
   }
   if (tecla == 0xAA || tecla == 0xB6 || tecla == 0x95)
