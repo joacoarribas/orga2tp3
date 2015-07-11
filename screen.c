@@ -60,6 +60,112 @@ void print(const char * text, uint x, uint y, unsigned short attr) {
         }
     }
 }
+void print_interfaz_debbuger(){
+  int x = 23;
+  while (x < 52){
+    screen_pintar(32, C_FG_BLACK, 6, x);
+    screen_pintar(32, C_BG_MAGENTA, 7, x);
+    screen_pintar(32, C_FG_BLACK, 41, x);
+    x++;
+  }
+
+  int y = 6;
+  while (y < 42){
+    screen_pintar(32, C_FG_BLACK, y, 23);
+    screen_pintar(32, C_FG_BLACK, y, 51);
+    y++;  
+  }
+}
+void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint cs, uint ds, uint es, uint fs, uint gs, uint ss){
+  const char* c = "eax" ;  
+  print(c, 25, 9, C_FG_LIGHT_GREEN);
+  print_hex(eax, 8, 29, 9, C_FG_WHITE);
+  c = "ebx";
+  print(c, 25, 11, C_FG_LIGHT_GREEN);
+  print_hex(ebx, 8, 29, 11, C_FG_WHITE);
+  
+  c = "ecx";
+  print(c, 25, 13, C_FG_LIGHT_GREEN);
+  print_hex(ecx, 8, 29, 13, C_FG_WHITE);
+
+  c = "edx";
+  print(c, 25, 15, C_FG_LIGHT_GREEN);
+  print_hex(edx, 8, 29, 15, C_FG_WHITE);
+
+  c = "esi";
+  print(c, 25, 17, C_FG_LIGHT_GREEN);
+  print_hex(esi, 8, 29, 17, C_FG_WHITE);
+
+  c = "edi";
+  print(c, 25, 19, C_FG_LIGHT_GREEN);
+  print_hex(edi, 8, 29, 19, C_FG_WHITE);
+
+  c = "ebp";
+  print(c, 25, 21, C_FG_LIGHT_GREEN);
+  print_hex(ebp, 8, 29, 21, C_FG_WHITE);
+
+  c = "esp";
+  print(c, 25, 23, C_FG_LIGHT_GREEN);
+  print_hex(esp, 8, 29, 23, C_FG_WHITE);
+
+  c = "eip";
+  print(c, 25, 25, C_FG_LIGHT_GREEN);
+  print_hex(esp, 8, 29, 25, C_FG_WHITE);
+
+  c = "cs";
+  print(c, 26, 27, C_FG_LIGHT_GREEN);
+  print_hex(cs, 8, 29, 27, C_FG_WHITE);
+
+  c = "ds";
+  print(c, 26, 29, C_FG_LIGHT_GREEN);
+  print_hex(ds, 8, 29, 29, C_FG_WHITE);
+
+  c = "es";
+  print(c, 26, 31, C_FG_LIGHT_GREEN);
+  print_hex(es, 8, 29, 31, C_FG_WHITE);
+
+  c = "fs";
+  print(c, 26, 33, C_FG_LIGHT_GREEN);
+  print_hex(fs, 8, 29, 33, C_FG_WHITE);
+
+  c = "gs";
+  print(c, 26, 35, C_FG_LIGHT_GREEN);
+  print_hex(gs, 8, 29, 35, C_FG_WHITE);
+
+  c = "ss";
+  print(c, 26, 37, C_FG_LIGHT_GREEN);
+  print_hex(ss, 8, 29, 37, C_FG_WHITE);
+
+  c = "eflags";
+  print(c, 26, 39, C_FG_LIGHT_GREEN);
+  print_hex(0x0, 8, 33, 39, C_FG_WHITE);
+
+  c = "cr0";
+  print(c, 38, 9, C_FG_LIGHT_GREEN);
+  print_hex(0x0, 8,  42, 9, C_FG_WHITE);
+
+  c = "cr2";
+  print(c, 38, 11, C_FG_LIGHT_GREEN);
+  print_hex(0x0, 8, 42, 11, C_FG_WHITE);
+
+  c = "cr3";
+  print(c, 38, 13, C_FG_LIGHT_GREEN);
+  print_hex(0x0, 8, 42, 13, C_FG_WHITE);
+
+  c = "cr4";
+  print(c, 38, 15, C_FG_LIGHT_GREEN);
+  print_hex(0x0, 8, 42, 15, C_FG_WHITE);
+
+  c = "stack";
+  print(c, 38, 27, C_FG_LIGHT_GREEN);
+  
+  print_hex(cs, 8, 38, 29, C_FG_WHITE);
+  print_hex(cs, 8, 38, 30, C_FG_WHITE);
+  print_hex(cs, 8, 38, 31, C_FG_WHITE);
+  print_hex(cs, 8, 38, 32, C_FG_WHITE);
+  print_hex(cs, 8, 38, 33, C_FG_WHITE);
+  }
+
 
 void print_hex(uint numero, int size, uint x, uint y, unsigned short attr) {
     int i;

@@ -65,6 +65,5 @@ void print_Rshift();
 void print_Y();
 void print_puntaje(jugador_t *j);
 void limpiar_clock(pirata_t *p);
-
-
+void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint cs, uint ds, uint es, uint fs, uint gs, uint ss);
 #endif  /* !__SCREEN_H__ */

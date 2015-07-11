@@ -109,7 +109,6 @@ void print_cr3(jugador_t *j);
 void mapearle_pila_tarea();
 void desmapearle_pila_tarea();
 
-///////////////////////////
 
 
 #endif  /* !__GAME_H__ */
