@@ -25,7 +25,7 @@ void mmu_inicializar(){
   libres = 0;
 }
 
-void mmu_inicializar_dir_pirata(pirata_t *p){
+void mmu_inicializar_dir_pirata(pirata_t *p, int x, int y){
   // 0x003FFFFF
   //  0000 0000 00   00 0000 0000   0000 0000 0000
   // (0000 0000 00) (11 1111 1111) (1111 1111 1111)0x0400000
@@ -37,14 +37,23 @@ void mmu_inicializar_dir_pirata(pirata_t *p){
     p->fisica_actual = PAG_INICIAL_A;
 
     if (p->tipo == 0) {
+      //breakpoint();
       mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_A); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, (int*)0x10000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x3FF000, (int*)0x10000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
     } else {
       //breakpoint();
       mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_A); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, (int*)0x11000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x3FF000, (int*)0x11000);
+      int *pstack =  (int*) (0x3FF000 + 0x1000 -12);
+      *pstack = 0x0;
+      pstack++;
+      *pstack = x;
+      pstack++;
+      *pstack = y;
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
     }
   } else {
     p->fisica_actual = PAG_INICIAL_B;
@@ -59,12 +68,16 @@ void mmu_inicializar_dir_pirata(pirata_t *p){
       copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
     }
   }
-  int i = 0;
-  while (j->fisicas_vistas[i] != 0) {
-    uint fisica_a_mapear = j->fisicas_vistas[i];
-    uint logica = fisica_a_mapear + 0x300000;
-    mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
-    i++;
+  if (p->ya_corrio == 0) {
+    int i = 0;
+    while (j->fisicas_vistas[i] != 0) {
+      uint fisica_a_mapear = j->fisicas_vistas[i];
+      uint logica = fisica_a_mapear + 0x300000;
+      mmu_mapear_pagina(logica, &cr3, fisica_a_mapear);
+      i++;
+    }
+  } else {
+    p->ya_corrio = 0;
   }
   // Le mapeo las 9 posiciones iniciales y más
 }
@@ -111,7 +124,17 @@ void mmu_mapear_pagina(uint* virtual, uint** pcr3, uint* fisica){
 }
 
 void mmu_desmapear_pagina(unsigned int virtual, uint* cr3){
-  unsigned int directory_index = (unsigned int) (((unsigned int)virtual & 0xFFC00000) / (0x2^0x16)); // No sé si el casteo me hace la conversión a decimal
+  unsigned int directory_index = (unsigned int)virtual >> 22; // No sé si el casteo me hace la conversión a decimal
+  //uint* PDE = (uint*)cr3[directory_index]; //cr3 fue inicializado como entero sin signo, luego (*pcr3) recorre el array con offset de 4 bytes. (dir = base + tamaño del tipo*subinidice)
+  //uint* table;
+
+  //table = (uint*)(((unsigned int)PDE & 0xFFFFF000)); // Limpio los bits de atributos. Queda la dirección física sola.
+
+  //cerear_pagina(table);
+
+  //unsigned int table_index = (unsigned int) (((unsigned int)virtual & 0x003FF000) >> 12);
+  //table[table_index] = 0x00000000;
+
   cr3[directory_index] = 0x00000000;
   // El memory leak ya fue vieja, no me importa nada.
 }

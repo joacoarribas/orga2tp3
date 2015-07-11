@@ -160,6 +160,28 @@ void completar_tss_para_tarea(pirata_t pirata) {
 //  }
 }
 
+void reiniciar_tss(uint id, uint pila0) {
+  tss* t;
+  if (id < 8) {
+    t = &(tss_jugadorA[id]);
+  } else {
+    id -= 8;
+    t = &(tss_jugadorB[id]);
+  }
+  t->esp0    = pila0; // Nueva pagina libre 
+  t->eip     = 0x00400000; // Dir. donde se encuentra el codigo 
+  t->eflags  = 0x202; // Eflags con interrupciones habilitadas
+  t->eax     = 0x0;
+  t->ecx     = 0x0;
+  t->edx     = 0x0;
+  t->ebx     = 0x0;
+  t->esp     = 0x400ff4; // Pila del kernel
+  t->ebp     = 0x400ff4; // Pila del kernel
+  t->esi     = 0x0;
+  t->edi     = 0x0;
+
+}
+
 void completar_tss(uint id, uint cr3, uint pila0) {
   tss* t;
   if (id < 8) {

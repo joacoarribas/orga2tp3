@@ -63,6 +63,8 @@ void clear_screen_portion();
 void print_Lshift();
 void print_Rshift();
 void print_Y();
+void print_puntaje(jugador_t *j);
+void limpiar_clock(pirata_t *p);
 
 
 #endif  /* !__SCREEN_H__ */

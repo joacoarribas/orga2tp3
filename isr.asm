@@ -45,6 +45,9 @@ extern pirata_target_Y
 extern game_id_from_selector
 extern game_id_from_index
 extern prueba_lanzar_pirata
+extern mapearle_pila_tarea
+extern desmapearle_pila_tarea
+extern ver_si_exploto 
 
 extern dame_tipo
 ;;
@@ -135,23 +138,12 @@ _isr32:
   pop ax
 
   str cx
-  xchg bx , bx
   cmp ax, cx
   je .fin
 
-  ;push eax
-  ;call pirata_target_Y
-  ;mov [0x400FF8], eax
-
-  ;pop eax
-  ;push eax
-  ;call pirata_target_X
-  ;mov [0x400FF4], eax
-
-  ;pop eax
-  ;push eax
-  ;call dame_tipo
-  ;pop eax
+  push ax
+  call ver_si_exploto
+  pop ax
   mov [sched_tarea_selector], ax
   jmp far [sched_tarea_offset]
 
@@ -218,12 +210,10 @@ _isr70:
     push eax
     ;xchg bx, bx
     call game_syscall_pirata_mover
-    xchg bx , bx
     pop edx
     pop edx
     
     jmp 0x70:0x00000000
-    xchg bx, bx
     jmp .fin
 
   .cavar:
@@ -233,9 +223,10 @@ _isr70:
     call game_id_from_selector
     add esp, 4
     push eax
-    xchg bx, bx
+    ;xchg bx, bx
     call game_syscall_cavar
     add esp, 4
+    jmp 0x70:0x00000000
     jmp .fin
 
   .posicion:
@@ -249,8 +240,32 @@ _isr70:
     ;xchg bx, bx
     call game_syscall_pirata_posicion
     add esp, 8
+    jmp 0x70:0x00000000
     jmp .fin
 
   .fin:
   popad
   iret
+
+
+  ;xchg bx, bx
+  ;push eax
+  ;call mapearle_pila_tarea
+  ;pop eax
+
+  ;push eax
+  ;call pirata_target_Y
+  ;mov dword [0x400FFC], 0x20 
+  ;pop eax
+
+  ;push eax
+  ;call pirata_target_X
+  ;mov dword [0x400FF8], 0x23
+  ;pop eax
+
+  ;push eax
+  ;call desmapearle_pila_tarea
+  ;pop eax
+  ;push eax
+  ;call dame_tipo
+  ;pop eax

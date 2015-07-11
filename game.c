@@ -35,6 +35,17 @@ uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
 jugador_t jugadorA;
 jugador_t jugadorB;
 
+void pintar_botines() {
+  print("b", 30, 3, 15);
+  print("b", 49, 3, 15);
+  print("b", 30, 38, 15);
+  print("b", 49, 38, 15);
+  print("b", 15, 21, 15);
+  print("b", 64, 21, 15);
+  print("b", 45, 21, 15);
+  print("b", 34, 21, 15);
+}
+
 uint descubrio_botin(int x, int y)
 {
   uint res = 0;
@@ -131,6 +142,7 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 void game_inicializar()
 {
   game_jugadores_inicializar(&jugadorA, &jugadorB);
+  pintar_botines();
 }
 
 void game_jugador_inicializar_mapa(jugador_t *jug)
@@ -186,6 +198,10 @@ void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB)
   jA->index = 0;
   jB->puntaje = 0;
   jB->index = 0;
+  jA->pos_puntaje_x = 32;
+  jA->pos_puntaje_y = 46;
+  jB->pos_puntaje_x = 41;
+  jB->pos_puntaje_y = 46;
 
   game_jugador_inicializar_mapa(jA);
   game_jugador_inicializar_mapa(jB);
@@ -200,12 +216,14 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->pos_clock_x = clock_x;
   pirata->pos_clock_y = 47;
   pirata->ya_corrio = 0;
+  pirata->exploto = 0;
   uint* cr3 = dame_pagina_libre();
   uint* pt = dame_pagina_libre();
    
   inicializar_ident_mapping(cr3,pt);
   pirata->cr3 = (uint) cr3;
   uint pila0 = (uint) dame_pagina_libre();
+  pirata->pila0 = pila0; 
   completar_tss(id, (uint)cr3, pila0);
 
 }
@@ -337,8 +355,20 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
   //breakpoint();
   //print_hex((uint)p->tipo, 15, 15, 15, 15);
 
-  mmu_inicializar_dir_pirata(p);
+  mmu_inicializar_dir_pirata(p, x, y);
   //print_hex((uint)p->tipo, 15, 17, 17, 15);
+  //int *pstack =  (int*) (p->fisica_actual + 0x1000 -12);
+  ////print_hex((uint)pstack , 15, 15, 15, 15);
+  //*pstack = 0x0;
+  //pstack++;
+  ////print_hex((uint)pstack , 15, 17, 17, 15);
+  //*pstack = x;
+  ////print_hex((uint)*pstack, 15, 18, 17, 15);
+  //pstack++;
+  ////print_hex((uint)pstack , 15, 19, 19, 15);
+  //*pstack = y;
+  ////print_hex((uint)*pstack, 15, 20, 19, 15);
+  ////breakpoint();
 
   if (j == &jugadorA) {
     screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
@@ -372,6 +402,16 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
 {
+}
+
+void mapearle_pila_tarea(){
+  uint kernel_cr3 = 0x27000;
+  mmu_mapear_pagina(0x400000, &kernel_cr3, 0x400000);
+}
+
+void desmapearle_pila_tarea(){
+  uint kernel_cr3 = 0x27000;
+  mmu_desmapear_pagina(0x400000, &kernel_cr3);
 }
 
 
@@ -594,7 +634,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
           //breakpoint();
           //print_hex(vistasX[i], 15, 40, 40, 15);
           //print_hex(vistasY[i], 15, 43, 43, 15);
-          game_jugador_lanzar_pirata(j, 1, vistasX[i], vistasY[i]); 
+          game_jugador_lanzar_pirata(j, 1, vistasX[i]+2, vistasY[i]-2); 
         }
         i++;
      }
@@ -613,15 +653,40 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       copiar_codigo_tarea((int*)0x400000, (int*) 0x3FF000);
       mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
 
-   // }
   } 
     return 0;
 }
 
+void ver_si_exploto(uchar sel_segmento) {
+  int id_pirata = game_id_from_selector(sel_segmento);
+  pirata_t *p = id_pirata2pirata(id_pirata); 
+  if (p->exploto == 1)
+    reiniciar_tss(p->id, p->pila0);
+}
+
 uint game_syscall_cavar(uint id)
 {
-    // ~ completar ~
+  pirata_t *p = id_pirata2pirata(id); 
+  jugador_t *j = p->jugador;
+  print_hex(p->pos_x, 4, 15, 15, 15);
+  print_hex(p->pos_y, 4, 17, 17, 15);
+  int i = 0;
 
+  while (i < BOTINES_CANTIDAD){
+    if ((botines[i][0] == p->pos_x) & (botines[i][1] == p->pos_y)){
+      int monedas = botines[i][2];
+      while (monedas > 0) {
+        j->puntaje++;
+        botines[i][2]--;
+        monedas--;
+        print_puntaje(j);
+      }
+    }
+    i++;
+  }
+  p->estaVivo = 0;
+  p->exploto = 1;
+  limpiar_clock(p);
 	return 0;
 }
 

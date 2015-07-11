@@ -35,6 +35,8 @@ typedef struct pirata_t
     uint id;
     uint index_gdt;
     uint cr3;
+    uint pila0;
+    uchar exploto;
     uchar estaVivo; // 0 esta muerto, 1 esta vivo
     uint tipo; // 0 explorador, 1 minero
     uint fisica_actual;
@@ -61,6 +63,8 @@ typedef struct jugador_t
     pirata_t minerosPendientes[MAX_CANT_MINEROS_PENDIENTES];
     uint fisicas_vistas[3360];  //guarda direcciones fisicas vistas 
     uint indice_fisicas_vistas_libre;
+    uint pos_puntaje_x;
+    uint pos_puntaje_y;
     //estas las puedo actualizar directamente usando game_calcular_posiciones_vistas
   // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
@@ -102,6 +106,8 @@ int game_id_from_index(int index);
 
 void print_pirata_mapa(pirata_t *p, direccion dir, int *x , int *y);
 void print_cr3(jugador_t *j);
+void mapearle_pila_tarea();
+void desmapearle_pila_tarea();
 
 ///////////////////////////
 
