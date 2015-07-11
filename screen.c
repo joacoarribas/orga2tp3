@@ -86,10 +86,11 @@ void print_interfaz_debbuger(){
     y++;  
   }
 }
-void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, short cs, short ds, short es, short fs, short gs, short ss, uint eflags){
+void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, uchar cs, uchar ds, uchar es, uchar fs, uchar gs, uchar ss, uint eflags){
   const char* c = "eax" ;  
   print(c, 25, 9, C_FG_LIGHT_GREEN);
   print_hex(eax, 8, 29, 9, C_FG_WHITE);
+  
   c = "ebx";
   print(c, 25, 11, C_FG_LIGHT_GREEN);
   print_hex(ebx, 8, 29, 11, C_FG_WHITE);
@@ -120,7 +121,7 @@ void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi,
 
   c = "eip";
   print(c, 25, 25, C_FG_LIGHT_GREEN);
-  print_hex(esp, 8, 29, 25, C_FG_WHITE);
+  print_hex(eip, 8, 29, 25, C_FG_WHITE);
 
   c = "cs";
   print(c, 26, 27, C_FG_LIGHT_GREEN);
@@ -148,7 +149,7 @@ void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi,
 
   c = "eflags";
   print(c, 26, 39, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 33, 39, C_FG_WHITE);
+  print_hex(eflags, 8, 33, 39, C_FG_WHITE);
 
   c = "cr0";
   print(c, 38, 9, C_FG_LIGHT_GREEN);

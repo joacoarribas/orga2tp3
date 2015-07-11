@@ -76,18 +76,28 @@ extern dame_tipo
 %macro ISR 1
 global _isr%1
 _isr%1:
+    xchg bx, bx
     pushad
+    mov eax, %1
+    push eax
+    call print_error
+    add esp, 4
     call sched_d_seteado
     cmp eax, 0
     je .sigo
+    ;mov ebx, [esp+12]
+    ;push dword [ebx]
+    ;push dword [ebx+4]
+    ;push dword [ebx+8]
+    ;push dword [ebx+12]
     mov ebx, esp
     push dword [ebx + 40] ;eflags
-   push word [ebx + 48] ;ss
+    push dword [ebx + 48] ;ss
     push gs
     push fs
     push es
     push ds
-    push word [ebx + 36] ;cs
+    push dword [ebx + 36] ;cs
     push dword [ebx + 32] ;eip
     push dword [ebx + 12] ;esp
     push dword [ebx + 8] ;ebp
@@ -104,10 +114,6 @@ _isr%1:
     call sched_unsetear_debbuger
     call sched_activar_debbuger
     .sigo:
-    mov eax, %1
-    push eax
-    call print_error
-    add esp, 4
 
     str ax
     push ax
