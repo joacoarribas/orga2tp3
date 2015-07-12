@@ -83,7 +83,7 @@ extern rcr4
 %macro ISR 1
 global _isr%1
 _isr%1:
-    xchg bx, bx
+  xchg bx, bx
     pushad
     mov eax, %1
     push eax
@@ -102,14 +102,15 @@ _isr%1:
     call screen_copiar_pantalla
     add esp, 8
     ;xchg bx, bx
-    mov ebx, [esp+40]
+    mov ebx, [esp+12]
+    mov eax, esp
     ;esto no estaria estando bien, tengo que ir a la pila de la tarea en la que salto excepcion
-    mov eax, [ebx+20]
-    push dword [eax+16]
-    push dword [eax+12]
-    push dword [eax+8]
-    push dword [eax+4]
-    push dword [eax]
+    ;mov eax, [ebx+20]
+    push dword [ebx+36]
+    push dword [ebx+32]
+    push dword [ebx+28]
+    push dword [ebx+24]
+    push dword [ebx+20]
     ;hasta aca esta mal, pa abajo esta bien
     push dword [ebx + 8] ;eflags
     push dword [ebx + 16] ;ss
@@ -119,14 +120,14 @@ _isr%1:
     push ds
     push dword [ebx + 4] ;cs
     push dword [ebx] ;eip
-    push dword ebx ;esp
-    push dword [esp + 8] ;ebp
-    push dword [esp] ;edi 
-    push dword [esp + 4] ;esi 
-    push dword [esp + 20] ;edx
-    push dword [esp + 24] ;ecx
-    push dword [esp + 16] ;ebx 
-    push dword [esp + 28] ;eax 
+    push dword [ebx + 12] ;esp
+    push dword [eax + 8] ;ebp
+    push dword [eax] ;edi 
+    push dword [eax + 4] ;esi 
+    push dword [eax + 20] ;edx
+    push dword [eax + 24] ;ecx
+    push dword [eax + 16] ;ebx 
+    push dword [eax + 28] ;eax 
    ; call rcr4 
     push eax
     ;call rcr3 
