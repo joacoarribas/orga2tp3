@@ -6,7 +6,7 @@ definicion de funciones del scheduler
 */
 
 #include "screen.h"
-#include "game.h"
+//#include "game.h"
 #include "mmu.h"
 #include "i386.h"
 extern jugador_t jugadorA, jugadorB;
@@ -42,17 +42,20 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].a = color;
 }
 
-void screen_copiar_pantalla()
+void screen_copiar_pantalla(uint id)
 {
-  uint* cr3 = (uint*)0x27000;
-  mmu_mapear_pagina((uint*)0x450000, &cr3 ,(uint*)0x450000);
-  breakpoint();
-  copiar_codigo_tarea(0x450000, 0xB8000);
+  pirata_t *p = id_pirata2pirata(id);
+  uint pcr3 = p->cr3;
+  uint cr3 =0x27000;
+  mmu_mapear_pagina(0x450000, &pcr3 ,0x450000);
+  mmu_mapear_pagina(0x450000, &cr3 ,0x450000);
+  //breakpoint();
+  copiar_codigo_tarea((int*)0x450000, (int*)0xB8000);
 }
 
 void screen_inversa_copiar_pantalla()
 {
-  copiar_codigo_tarea(0xB8000,0x450000);
+  copiar_codigo_tarea((int*)0xB8000,(int*)0x450000);
 }
 
 

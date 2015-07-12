@@ -26,7 +26,7 @@
 \thispagestyle{empty}
 \materia{Organizaci\'on del Computador II}
 \submateria{Primer Cuatrimestre de 2015}
-\titulo{Trabajo Práctico Filtros}
+\titulo{Trabajo Práctico 3: System Programming}
 \subtitulo{Grupo: Super\_Smash\_Bros\_/\_Nintendo\_64}
 \integrante{Arribas, Joaqu\'in}{702/13}{joacoarribas@hotmail.com}
 \integrante{V\'azquez, J\'esica}{318/13}{jesis\_93@hotmail.com}
@@ -36,8 +36,13 @@
 \newpage
 
 \section{Objetivos Generales}
-El trabajo práctico consiste en una serie de ejercicios en los que se aplican de forma gradual los conceptos necesarios para construir un sistema operativo mínimo.
-El sistema será capaz de capturar cualquier excepción que puedan generar las tareas y tomar las acciones necesarias para quitar a esta del sistema.
+El trabajo práctico consiste en la implementación de un sistema mínimo multitasking que permite ejecutar hasta 16 tareas concurrentemente, utilizando todos (o casi todos) los recursos de un procesador de la familia Intel IA-32. Para esto, y de la misma manera que sucede en cualquier sistema multitasking, el sistema tiene:
+\begin{enumerate}
+  \item Un área local para almacenar código y datos de tareas.
+  \item Un área global para código o datos propios del sistema operativo.
+  \item Capacidad (muy sencilla y limitada) de gestionarle memoria al kernel.
+  \item Un scheduler que pone el procesador a disposición de las distintas tareas que se ejecutan.
+  \item El entorno y los recursos necesarios para poder ejecutarse en Modo Protegido.
 
 \section{Introducción}
 El trabajo práctico consiste en la implementación de un juego de dos jugadores llamado \textbf{Tierra pirata}.

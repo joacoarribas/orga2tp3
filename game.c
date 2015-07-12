@@ -748,7 +748,7 @@ void game_atender_teclado(unsigned char tecla)
     if (!sched_estado_debbuger()){
       sched_setear_debbuger(); 
     } else {
-      sched_desactivar_debbuger();  
+    //  sched_desactivar_debbuger();  
       screen_inversa_copiar_pantalla();
     } 
   }
