@@ -74,7 +74,7 @@ int sched_dame_proximo_pirata(jugador_t *j) {
       int i = 0;
       // Seteo el ya_corrio de todas a cero
       for (i=0 ; i<8 ; i++) {
-        if (j->piratas[i].estaVivo == 1)
+        //if (j->piratas[i].estaVivo == 1)
           j->piratas[i].ya_corrio = 0; 
       }
 
@@ -95,8 +95,61 @@ int sched_dame_proximo_pirata(jugador_t *j) {
   return res;
 }
 
+void hay_minero_pendiente(jugador_t *jug) {
+  int i = 0;
+  int todosVivos = 1;
+  int index_minero_pendiente = 0;
+  int target_x;
+  int target_y;
+  while ((index_minero_pendiente<8) & (jug->minerosPendientes[index_minero_pendiente].estaVivo == 0)) {
+    index_minero_pendiente++;
+  }
+
+  if (index_minero_pendiente < 8) {
+
+    i = 0;
+    while ((i < 8) & (todosVivos == 1)) {
+      if (jug->piratas[i].estaVivo == 0) {
+        todosVivos = 0;
+      }
+      i++;
+    } 
+    if (todosVivos == 0) {
+      i = 0;
+      while ((i < 8) & (jug->piratas[i].estaVivo == 1)) 
+        i++;
+
+      jug->minerosPendientes[index_minero_pendiente].estaVivo = 0;
+      jug->piratas[i].estaVivo = 1;
+      jug->piratas[i].ya_corrio = 0;
+      jug->piratas[i].exploto = 1;
+      jug->piratas[i].tipo = 1;
+      target_x = jug->minerosPendientes[index_minero_pendiente].target_x;
+      target_y = jug->minerosPendientes[index_minero_pendiente].target_y;
+      jug->piratas[i].target_x = jug->minerosPendientes[index_minero_pendiente].target_x;
+      jug->piratas[i].target_y = jug->minerosPendientes[index_minero_pendiente].target_y;
+      jug->piratas[i].pos_x = jug->minerosPendientes[index_minero_pendiente].pos_x;
+      jug->piratas[i].pos_y = jug->minerosPendientes[index_minero_pendiente].pos_y;
+      
+      //if (jug == &jugadorA) {
+      //  jug->piratas[i].pos_x = POS_INIT_A_X;
+      //  jug->piratas[i].pos_y = POS_INIT_A_Y;
+      //} else {
+      //  jug->piratas[i].pos_x = POS_INIT_B_X;
+      //  jug->piratas[i].pos_y = POS_INIT_B_Y;
+      //}
+
+      breakpoint();
+      mmu_inicializar_dir_pirata(&(jug->piratas[i]), target_x, target_y);
+    }
+  
+  }
+
+}
+
 int sched_proxima_a_ejecutar() {
   int res = 0x70;
+
 
   if (indice_actual == 0){
     indice_actual++;
@@ -104,6 +157,7 @@ int sched_proxima_a_ejecutar() {
     indice_actual--;
   }
 
+  hay_minero_pendiente(scheduler[indice_actual]);
   res = sched_dame_proximo_pirata(scheduler[indice_actual]);
 
   if (res == 0x70){
@@ -114,6 +168,7 @@ int sched_proxima_a_ejecutar() {
       indice_actual--;
     }
 
+    hay_minero_pendiente(scheduler[indice_actual]);
     res = sched_dame_proximo_pirata(scheduler[indice_actual]);
   }
 

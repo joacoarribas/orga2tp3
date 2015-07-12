@@ -43,7 +43,6 @@ void mmu_inicializar_dir_pirata(pirata_t *p, int x, int y){
       copiar_codigo_tarea((int*)0x3FF000, (int*)0x10000);
       mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
     } else {
-      //breakpoint();
       mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_A); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
       mmu_mapear_pagina(0x3FF000, &kernel_cr3, PAG_INICIAL_A); //primero mapeo y dsp copio codigo no????
       copiar_codigo_tarea((int*)0x3FF000, (int*)0x11000);
@@ -60,12 +59,20 @@ void mmu_inicializar_dir_pirata(pirata_t *p, int x, int y){
 
     if (p->tipo == 0) {
       mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_B); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, (int*)0x12000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x3FF000, (int*)0x12000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
     } else {
       mmu_mapear_pagina(0x400000, &cr3, PAG_INICIAL_B); //Mapeo a la dirección virtual 0x0400000 de la tarea, una página de lectura-escritura (para su código y su pila) que apunta a la memoria física de su ubicación en el mapa.
-      mmu_mapear_pagina(0x400000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
-      copiar_codigo_tarea((int*)0x400000, (int*)0x13000);
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, PAG_INICIAL_B); //primero mapeo y dsp copio codigo no????
+      copiar_codigo_tarea((int*)0x3FF000, (int*)0x13000);
+      int *pstack =  (int*) (0x3FF000 + 0x1000 -12);
+      *pstack = 0x0;
+      pstack++;
+      *pstack = x;
+      pstack++;
+      *pstack = y;
+      mmu_mapear_pagina(0x3FF000, &kernel_cr3, 0x3FF000); //primero mapeo y dsp copio codigo no????
     }
   }
 

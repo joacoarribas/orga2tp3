@@ -10,6 +10,7 @@
 #define __SCHED_H__
 
 #include "game.h"
+#include "mmu.h"
 
 void inicializar_sched();
 int sched_proxima_a_ejecutar(); 

@@ -168,7 +168,17 @@ void reiniciar_tss(uint id, uint pila0) {
     id -= 8;
     t = &(tss_jugadorB[id]);
   }
+  t->ptl     = 0x0;
+  t->unused0 = 0x0;
   t->esp0    = pila0; // Nueva pagina libre 
+  t->ss0     = 0x48; // y sus selectores; deberia ir el selector de datos de nivel cero?
+  t->unused1 = 0x0;
+  t->esp1    = 0x0;
+  t->ss1     = 0x0;
+  t->unused2 = 0x0;
+  t->esp2    = 0x0;
+  t->ss2     = 0x0;
+  t->unused3 = 0x0;
   t->eip     = 0x00400000; // Dir. donde se encuentra el codigo 
   t->eflags  = 0x202; // Eflags con interrupciones habilitadas
   t->eax     = 0x0;
@@ -179,6 +189,22 @@ void reiniciar_tss(uint id, uint pila0) {
   t->ebp     = 0x400ff4; // Pila del kernel
   t->esi     = 0x0;
   t->edi     = 0x0;
+  t->es      = 0x5b; // Selector de segmentos de datos 3
+  t->unused4 = 0x0;
+  t->cs      = 0x53; // Selector de segmentos de codigo 3
+  t->unused5 = 0x0;
+  t->ss      = 0x5b; // Selector de segmentos de datos 3
+  t->unused6 = 0x0;
+  t->ds      = 0x5b; // Selector de segmentos de datos 3
+  t->unused7 = 0x0 ;
+  t->fs      = 0x5b; // Selector de segmentos de datos 3
+  t->unused8 = 0x0;
+  t->gs      = 0x5b; // Selector de segmentos de datos 3
+  t->unused9 = 0x0;
+  t->ldt     = 0x0;
+  t->unused10= 0x0;
+  t->dtrap   = 0x0;
+  t->iomap   = 0xFFFF;
 
 }
 

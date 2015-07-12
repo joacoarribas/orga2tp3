@@ -321,6 +321,7 @@ pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 {
   pirata_t *p;
+  int es_minero_pendiente = 0;
   if (tipo == 1){
     int i = 0;
     while ((i < 8) & (j->piratas[i].estaVivo == 1)){
@@ -332,6 +333,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
     //invariante: id, index_gdt, jugador de p son correctos
     } else {
     //lo que hago si no habia lugar
+      es_minero_pendiente = 1;
       i = 0;
       while (j->minerosPendientes[i].estaVivo == 1){ //termina porque como mucho son 8
         i++;  
@@ -365,38 +367,40 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
     }
 
   p->estaVivo = 1;
+
   p->tipo = tipo;
   p->ya_corrio = 0;
 
-  mmu_inicializar_dir_pirata(p, x, y);
+  if (es_minero_pendiente == 0) {
+    mmu_inicializar_dir_pirata(p, x, y);
 
-  if (j == &jugadorA) {
-    screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
-    screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
-    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
-    screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
-  } else {
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y, p->pos_x-1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y,p->pos_x+1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x);
-    screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
-  
+    if (j == &jugadorA) {
+      screen_pintar(32,C_BG_GREEN, p->pos_y, p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x);
+      screen_pintar(32,C_BG_GREEN, p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x);
+      screen_pintar(32,C_BG_GREEN, p->pos_y-1,p->pos_x+1);
+    } else {
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y, p->pos_x-1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y,p->pos_x+1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x-1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y+1,p->pos_x+1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x-1);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x);
+      screen_pintar(32,C_MAKE_BG(9), p->pos_y-1,p->pos_x+1);
+    }
   }
 }
 
@@ -703,6 +707,7 @@ uint game_syscall_cavar(uint id)
     p->estaVivo = 0;
     p->ya_corrio = 0;
     p->exploto = 1;
+    p->monedas_recolectadas = 0;
     limpiar_clock(p);
   }
 	return 0;

@@ -22,6 +22,8 @@ typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 #define MAPA_ANCHO                       80
 #define MAPA_ALTO                        42
 
+#define BOTINES_CANTIDAD 8
+
 #define POS_INIT_A_X                      1
 #define POS_INIT_A_Y                      2
 #define POS_INIT_B_X         MAPA_ANCHO - 2
@@ -39,6 +41,7 @@ typedef struct pirata_t
     uchar exploto;
     uchar estaVivo; // 0 esta muerto, 1 esta vivo
     uint tipo; // 0 explorador, 1 minero
+    uint monedas_recolectadas;
     uint fisica_actual;
     uchar ya_corrio;
     int pos_x;
@@ -63,6 +66,7 @@ typedef struct jugador_t
     pirata_t minerosPendientes[MAX_CANT_MINEROS_PENDIENTES];
     uint pos_puntaje_x;
     uint pos_puntaje_y;
+    uint botines_vistos[BOTINES_CANTIDAD];
     //estas las puedo actualizar directamente usando game_calcular_posiciones_vistas
   // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
