@@ -57,6 +57,7 @@ extern prueba_lanzar_pirata
 extern mapearle_pila_tarea
 extern desmapearle_pila_tarea
 extern ver_si_exploto 
+extern verificar_fin_juego
 
 extern dame_tipo
 
@@ -203,6 +204,7 @@ _isr32:
   pushad
   call fin_intr_pic1
 
+  call verificar_fin_juego
   call sched_estado_debbuger
   cmp eax, 1
   je .fin

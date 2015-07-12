@@ -22,7 +22,7 @@ typedef enum tipoPirata_e {explorador = 0x0, minero = 0x1} tipoPirata;
 #define MAPA_ANCHO                       80
 #define MAPA_ALTO                        42
 
-#define BOTINES_CANTIDAD 8
+#define BOTINES_CANTIDAD  8 
 
 #define POS_INIT_A_X                      1
 #define POS_INIT_A_Y                      2
@@ -110,6 +110,8 @@ void print_pirata_mapa(pirata_t *p, direccion dir, int *x , int *y);
 void print_cr3(jugador_t *j);
 void mapearle_pila_tarea();
 void desmapearle_pila_tarea();
+void verificar_fin_juego();
+void game_escribir_ganador();
 
 
 

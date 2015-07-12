@@ -152,7 +152,6 @@ void hay_minero_pendiente(jugador_t *jug) {
       //  jug->piratas[i].pos_y = POS_INIT_B_Y;
       //}
 
-      breakpoint();
       mmu_inicializar_dir_pirata(&(jug->piratas[i]), target_x, target_y);
     }
   

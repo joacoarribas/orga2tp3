@@ -27,22 +27,22 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {30, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
-                                        {49,  3, 50}, {49, 40, 50}, {72, 34, 100}, {34, 21, 100}
+                                        {49,  3, 50}, {49, 38, 50}, {72, 34, 100}, {34, 21, 100}
                                     };
   
 jugador_t jugadorA;
 jugador_t jugadorB;
 
-void pintar_botines() {
-  print("b", 30, 3, 15);
-  print("b", 49, 3, 15);
-  print("b", 30, 38, 15);
-  print("b", 49, 40, 15);
-  print("b", 15, 21, 15);
-  print("b", 72, 34, 15);
-  print("b", 45, 21, 15);
-  print("b", 34, 21, 15);
-}
+//void pintar_botines() {
+//  print("b", 30, 3, 15);
+//  print("b", 49, 3, 15);
+//  print("b", 30, 38, 15);
+//  print("b", 49, 40, 15);
+//  print("b", 15, 21, 15);
+//  print("b", 72, 34, 15);
+//  print("b", 45, 21, 15);
+//  print("b", 34, 21, 15);
+//}
 
 uint descubrio_botin(jugador_t *j, int x, int y)
 {
@@ -70,7 +70,7 @@ uint game_xy2lineal (uint x, uint y) {
 }
 
 uint game_posicion_valida(int x, int y) {
-	return (x >= 0 && y >= 0 && x < MAPA_ANCHO && y < MAPA_ALTO);
+	return ((x >= 0) & (y >= 0) & (x < MAPA_ANCHO) & (y < MAPA_ALTO));
 }
 
 pirata_t* id_pirata2pirata(uint id_pirata)
@@ -141,7 +141,7 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 void game_inicializar()
 {
   game_jugadores_inicializar(&jugadorA, &jugadorB);
-  pintar_botines();
+  //pintar_botines();
 }
 
 void game_jugador_inicializar_mapa(jugador_t *jug)
@@ -419,10 +419,37 @@ void desmapearle_pila_tarea(){
 }
 
 
-void game_explorar_posicion(jugador_t *jugador, int c, int f)
+void verificar_fin_juego()
 {
-//uint game_dir2xy(direccion dir, int *x, int *y)
-//le paso las direc que me tire esta funcion
+  int i = 0;
+  int termino = 1;
+  while ((i < BOTINES_CANTIDAD) & (termino == 1)) {
+    if (botines[i][2] != 0)
+      termino = 0;
+    i++;
+  } 
+  if (termino == 1){
+    game_escribir_ganador();
+  }
+}
+
+void game_escribir_ganador() {
+  jugador_t *jugA = &jugadorA;
+  jugador_t *jugB = &jugadorB;
+
+
+  if (jugA->puntaje >= jugB->puntaje) {
+    print("Felicitaciones jugador A por haber ganado!", 20, 20, 15);
+    print("Puntaje total", 20, 21, 15);
+    print_hex(jugA->puntaje, 3, 33, 22, 15);
+  } else {
+    print("¡Felicitaciones jugador B por haber ganado!", 20, 20, 15);
+    print("Puntaje total", 20, 21, 15);
+    print_hex(jugB->puntaje, 3, 33, 22, 15);
+  
+  }
+  while(1){}
+
 }
 
 void print_pirata_mapa(pirata_t *p, direccion dir, int *vistasX, int *vistasY) {
@@ -566,24 +593,37 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   uint actual;
   int vistasX[3];
   int vistasY[3];
+  int x;
+  int y;
 
-  print_pirata_mapa(p, dir, vistasX, vistasY);
+  if (dir == DER) {
+    x = p->pos_x + 2;
+    y = p->pos_y;
+  }
+  if (dir == IZQ) {
+    x = p->pos_x - 2;
+    y = p->pos_y;
+  }
+  if (dir == ABA) {
+    x = p->pos_x;
+    y = p->pos_y + 1;
+  }
+  if (dir == ARR) {
+    x = p->pos_x;
+    y = p->pos_y - 2;
+  }
 
-  if (game_posicion_valida(p->pos_x,p->pos_y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
+  if (game_posicion_valida(x,y)){ //pregunto si ese movimiento me deja en una pos valida del mapa
     //FALTA SI ES MINERO
     //if (p->tipo == 0){
+    print_pirata_mapa(p, dir, vistasX, vistasY);
     actual = p->fisica_actual; 
     fisica_a_moverse = dame_siguiente_pos_fisica(actual, dir);
     p->fisica_actual = fisica_a_moverse;
       
       //mapeo las posiciones exploradas
     uint logica = fisica_a_moverse + 0x300000;
-    //if (p->tipo == 0) {
-    //  mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-    //} else {
-    //  breakpoint();
       mmu_mapear_pagina(0x400000, &cr3Actual, fisica_a_moverse);
-    //}
     
     if (p->tipo == 0) {
       uint logica_aux_1;
@@ -697,13 +737,13 @@ uint game_syscall_cavar(uint id)
     if ((botines[i][0] == p->pos_x+2) & (botines[i][1] == p->pos_y-2)){
       j->puntaje++;
       p->monedas_recolectadas++;
-      botines[i][2]--;
       print_puntaje(j);
       encontre = 1;
     }
     i++;
   }
-  if (p->monedas_recolectadas == botines[i][2]) {
+  i--;
+  if (p->monedas_recolectadas >= botines[i][2]) {
     p->estaVivo = 0;
     p->ya_corrio = 0;
     p->exploto = 1;
