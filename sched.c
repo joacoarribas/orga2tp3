@@ -12,8 +12,8 @@ definicion de funciones del scheduler
 
 jugador_t* scheduler[2];
 int indice_actual;
-int debug_activo;
-
+int debug_activo; //si entro a modo debug 1
+int debug_seteado; //si quiero que entre a modo debug cuando se produzca una excepcion 1
 
 void inicializar_sched() {
   scheduler[0] = &jugadorA;
@@ -21,6 +21,7 @@ void inicializar_sched() {
 
   indice_actual = 0;
   debug_activo = 0; //0 no esta activo, 1 esta activo
+  debug_seteado = 0;
 }
 
 void sched_activar_debbuger(){
@@ -33,8 +34,20 @@ void sched_desactivar_debbuger(){
   debug_activo = 0;
   }
 
+void sched_setear_debbuger(){
+  debug_seteado = 1;
+  }  
+
+void sched_unsetear_debbuger(){
+  debug_seteado = 0;
+  }
+
 uint sched_estado_debbuger(){ //si es cero, esta desactivado, si es uno, esta activado
   return debug_activo;
+  }
+
+uint sched_d_seteado(){
+  return debug_seteado;
   }
 
 int sched_dame_proximo_pirata(jugador_t *j) {

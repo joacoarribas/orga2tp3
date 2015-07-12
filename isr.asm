@@ -19,11 +19,13 @@ extern clear_screen_portion
 extern clear_screen_error 
 extern print_interfaz_debbuger
 extern print_registros
+extern screen_copiar_pantalla
 
 extern sched_tick
 extern sched_proxima_a_ejecutar
 extern sched_generar_pirata_jugadorA
 extern sched_generar_pirata_jugadorB
+extern sched_d_seteado
 extern sched_estado_debbuger
 
 ;; PIC
@@ -34,6 +36,9 @@ extern sched_tick
 extern sched_tarea_actual
 extern sched_ejecutar_tarea
 extern sched_desactivar_debbuger
+extern sched_seteado_debbuger
+extern sched_unsetear_debbuger
+extern sched_activar_debbuger
 
 ;; Syscalls
 extern game_syscall_pirata_mover
@@ -54,6 +59,12 @@ extern desmapearle_pila_tarea
 extern ver_si_exploto 
 
 extern dame_tipo
+
+extern rcr0
+extern rcr2
+extern rcr3
+extern rcr4
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -72,43 +83,75 @@ extern dame_tipo
 %macro ISR 1
 global _isr%1
 _isr%1:
-    push ss
-    push gs
-    push fs
-    push es
-    push ds
-    push cs
-    ;push eip
-    push esp
-    push ebp
-    push edi
-    push esi
-    push edx
-    push ecx
-    push ebx
-    push eax
-    call print_registros
-    add esp, 56
-
+    xchg bx, bx
+    pushad
     mov eax, %1
     push eax
     call print_error
     add esp, 4
+    call sched_d_seteado
+    cmp eax, 0
+    je .sigo
+    ;calt
+    ;SI DESCOMENTO LA LINEA DE ABAJO TIRA PAGE FAULT UFA
+    xor eax, eax
+    str eax
+    push eax
+    call game_id_from_selector
+    push eax
+    call screen_copiar_pantalla
+    add esp, 8
+    ;xchg bx, bx
+    mov ebx, [esp+40]
+    ;esto no estaria estando bien, tengo que ir a la pila de la tarea en la que salto excepcion
+    mov eax, [ebx+20]
+    push dword [eax+16]
+    push dword [eax+12]
+    push dword [eax+8]
+    push dword [eax+4]
+    push dword [eax]
+    ;hasta aca esta mal, pa abajo esta bien
+    push dword [ebx + 8] ;eflags
+    push dword [ebx + 16] ;ss
+    push gs
+    push fs
+    push es
+    push ds
+    push dword [ebx + 4] ;cs
+    push dword [ebx] ;eip
+    push dword ebx ;esp
+    push dword [esp + 8] ;ebp
+    push dword [esp] ;edi 
+    push dword [esp + 4] ;esi 
+    push dword [esp + 20] ;edx
+    push dword [esp + 24] ;ecx
+    push dword [esp + 16] ;ebx 
+    push dword [esp + 28] ;eax 
+   ; call rcr4 
+    push eax
+    ;call rcr3 
+    push eax 
+    ;call rcr2 
+    push eax
+    ;call rcr0 
+    push eax
+
+    call print_registros
+    add esp, 100
+
+    call print_interfaz_debbuger
+    call sched_unsetear_debbuger
+    call sched_activar_debbuger
+    .sigo:
 
     str ax
     push ax
     call game_pirata_exploto 
     pop ax
     ;debbuger que onda
-    call sched_estado_debbuger
-    cmp eax, 0
-    je .sigo
-    call print_interfaz_debbuger
     ;push eflag
     ;tiene que llamar a la funcion loca que recibe todos los parametros para imprimir
-    call sched_desactivar_debbuger
 
-    .sigo:
     jmp 0x70:0x00000000
 
     .fin:
@@ -159,6 +202,10 @@ _isr32:
 ;xchg bx, bx
   pushad
   call fin_intr_pic1
+
+  call sched_estado_debbuger
+  cmp eax, 1
+  je .fin
 
   xor eax, eax
   xor ecx, ecx

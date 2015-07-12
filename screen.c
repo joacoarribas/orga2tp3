@@ -6,9 +6,9 @@ definicion de funciones del scheduler
 */
 
 #include "screen.h"
-#include "game.h"
-
-
+//#include "game.h"
+#include "mmu.h"
+#include "i386.h"
 extern jugador_t jugadorA, jugadorB;
 
 
@@ -41,6 +41,23 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].c = c;
     p[fila][columna].a = color;
 }
+
+void screen_copiar_pantalla(uint id)
+{
+  pirata_t *p = id_pirata2pirata(id);
+  uint pcr3 = p->cr3;
+  uint cr3 =0x27000;
+  mmu_mapear_pagina(0x450000, &pcr3 ,0x450000);
+  mmu_mapear_pagina(0x450000, &cr3 ,0x450000);
+  //breakpoint();
+  copiar_codigo_tarea((int*)0x450000, (int*)0xB8000);
+}
+
+void screen_inversa_copiar_pantalla()
+{
+  copiar_codigo_tarea((int*)0xB8000,(int*)0x450000);
+}
+
 
 uchar screen_valor_actual(uint fila, uint columna)
 {
@@ -76,10 +93,11 @@ void print_interfaz_debbuger(){
     y++;  
   }
 }
-void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint cs, uint ds, uint es, uint fs, uint gs, uint ss){
+void print_registros(uint cr0, uint cr2, uint cr3, uint cr4, uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi, uint ebp, uint esp, uint eip, uchar cs, uchar ds, uchar es, uchar fs, uchar gs, uchar ss, uint eflags, uint pila0, uint pila1, uint pila2, uint pila3, uint pila4){
   const char* c = "eax" ;  
   print(c, 25, 9, C_FG_LIGHT_GREEN);
   print_hex(eax, 8, 29, 9, C_FG_WHITE);
+  
   c = "ebx";
   print(c, 25, 11, C_FG_LIGHT_GREEN);
   print_hex(ebx, 8, 29, 11, C_FG_WHITE);
@@ -110,60 +128,60 @@ void print_registros(uint eax, uint ebx, uint ecx, uint edx, uint esi, uint edi,
 
   c = "eip";
   print(c, 25, 25, C_FG_LIGHT_GREEN);
-  print_hex(esp, 8, 29, 25, C_FG_WHITE);
+  print_hex(eip, 8, 29, 25, C_FG_WHITE);
 
   c = "cs";
   print(c, 26, 27, C_FG_LIGHT_GREEN);
-  print_hex(cs, 8, 29, 27, C_FG_WHITE);
+  print_hex(cs, 4, 29, 27, C_FG_WHITE);
 
   c = "ds";
   print(c, 26, 29, C_FG_LIGHT_GREEN);
-  print_hex(ds, 8, 29, 29, C_FG_WHITE);
+  print_hex(ds, 4, 29, 29, C_FG_WHITE);
 
   c = "es";
   print(c, 26, 31, C_FG_LIGHT_GREEN);
-  print_hex(es, 8, 29, 31, C_FG_WHITE);
+  print_hex(es, 4, 29, 31, C_FG_WHITE);
 
   c = "fs";
   print(c, 26, 33, C_FG_LIGHT_GREEN);
-  print_hex(fs, 8, 29, 33, C_FG_WHITE);
+  print_hex(fs, 4, 29, 33, C_FG_WHITE);
 
   c = "gs";
   print(c, 26, 35, C_FG_LIGHT_GREEN);
-  print_hex(gs, 8, 29, 35, C_FG_WHITE);
+  print_hex(gs, 4, 29, 35, C_FG_WHITE);
 
   c = "ss";
   print(c, 26, 37, C_FG_LIGHT_GREEN);
-  print_hex(ss, 8, 29, 37, C_FG_WHITE);
+  print_hex(ss, 4, 29, 37, C_FG_WHITE);
 
   c = "eflags";
   print(c, 26, 39, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 33, 39, C_FG_WHITE);
+  print_hex(eflags, 8, 33, 39, C_FG_WHITE);
 
   c = "cr0";
   print(c, 38, 9, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8,  42, 9, C_FG_WHITE);
+  print_hex(cr0, 8,  42, 9, C_FG_WHITE);
 
   c = "cr2";
   print(c, 38, 11, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 11, C_FG_WHITE);
+  print_hex(cr2, 8, 42, 11, C_FG_WHITE);
 
   c = "cr3";
   print(c, 38, 13, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 13, C_FG_WHITE);
+  print_hex(cr3, 8, 42, 13, C_FG_WHITE);
 
   c = "cr4";
   print(c, 38, 15, C_FG_LIGHT_GREEN);
-  print_hex(0x0, 8, 42, 15, C_FG_WHITE);
+  print_hex(cr4, 8, 42, 15, C_FG_WHITE);
 
   c = "stack";
   print(c, 38, 27, C_FG_LIGHT_GREEN);
   
-  print_hex(cs, 8, 38, 29, C_FG_WHITE);
-  print_hex(cs, 8, 38, 30, C_FG_WHITE);
-  print_hex(cs, 8, 38, 31, C_FG_WHITE);
-  print_hex(cs, 8, 38, 32, C_FG_WHITE);
-  print_hex(cs, 8, 38, 33, C_FG_WHITE);
+  print_hex(pila0, 8, 38, 29, C_FG_WHITE);
+  print_hex(pila1, 8, 38, 30, C_FG_WHITE);
+  print_hex(pila2, 8, 38, 31, C_FG_WHITE);
+  print_hex(pila3, 8, 38, 32, C_FG_WHITE);
+  print_hex(pila4, 8, 38, 33, C_FG_WHITE);
   }
 
 

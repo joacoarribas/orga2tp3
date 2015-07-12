@@ -785,7 +785,12 @@ void game_atender_teclado(unsigned char tecla)
   }
   if (tecla == 0x15) {
     print_Y();
-    sched_activar_debbuger(); 
+    if (!sched_estado_debbuger()){
+      sched_setear_debbuger(); 
+    } else {
+    //  sched_desactivar_debbuger();  
+      screen_inversa_copiar_pantalla();
+    } 
   }
   if (tecla == 0xAA || tecla == 0xB6 || tecla == 0x95)
     clear_screen_portion();
