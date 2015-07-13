@@ -22,4 +22,7 @@ void sched_desactivar_debbuger(); //no se si es necesaria
 uint sched_estado_debbuger();
 void sched_setear_debbuger();
 uint sched_d_seteado();
+void arreglar_tecla();
+void reanudar_juego();
+int sched_todos_vivos();
 #endif	/* !__SCHED_H__ */

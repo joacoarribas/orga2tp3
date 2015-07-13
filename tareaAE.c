@@ -13,24 +13,25 @@
 void task(int x, int y) {
     /* Tarea */
     int restantex = MAPA_ANCHO-3;
-    int restantey = 42;// MAPA_ALTO-3;
+    int restantey =  MAPA_ALTO-3;
 
     while(1)
     {
       //breakpoint();
         int i;
         for (i = 0; i < restantex; i++){
-breakpoint();
-          int hola = 0;
-          int caca = 1;
-          hola = caca/hola;
+//breakpoint();
             syscall_mover(DER);
         }
 
         restantex = restantex - 3;
 
-        for (i = 0; i < restantey; i++)
+        for (i = 0; i < restantey; i++) {
+//          int hola = 0;
+//          int caca = 1;
+//          hola = caca/hola;
             syscall_mover(ABA);
+        }
 
         restantey = restantey - 3;
 

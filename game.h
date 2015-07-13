@@ -61,7 +61,6 @@ typedef struct jugador_t
 
 {
     uint puntaje; //cantidad de monedas 
-    uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     pirata_t minerosPendientes[MAX_CANT_MINEROS_PENDIENTES];
     uint pos_puntaje_x;
@@ -81,19 +80,10 @@ pirata_t* id_pirata2pirata(uint id);
 
 // ~ auxiliares sugeridas o requeridas (segun disponga enunciado) ~
 void game_pirata_inicializar(pirata_t *pirata, jugador_t *jugador, uint index, uint id, int clock_x);
-void game_pirata_erigir(pirata_t *pirata, jugador_t *j, uint tipo);
-void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y);
 void game_pirata_exploto(uchar id);
 
 void game_jugadores_inicializar(jugador_t *jA, jugador_t *jB);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
-pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo);
-void game_jugador_anotar_punto(jugador_t *j);
-void game_explorar_posicion(jugador_t *jugador, int x, int y);
-
-uint game_valor_tesoro(uint x, uint y);
-void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y);
-pirata_t* game_pirata_en_posicion(uint x, uint y);
 
 uint game_syscall_pirata_posicion(uint id, int idx);
 uint game_syscall_pirata_mover(uint id, direccion key);
@@ -107,9 +97,6 @@ int game_id_from_selector(int index);
 int game_id_from_index(int index);
 
 void print_pirata_mapa(pirata_t *p, direccion dir, int *x , int *y);
-void print_cr3(jugador_t *j);
-void mapearle_pila_tarea();
-void desmapearle_pila_tarea();
 void verificar_fin_juego();
 void game_escribir_ganador();
 

@@ -42,20 +42,16 @@ void screen_pintar(uchar c, uchar color, uint fila, uint columna)
     p[fila][columna].a = color;
 }
 
-void screen_copiar_pantalla(uint id)
+void screen_copiar_pantalla()
 {
-  pirata_t *p = id_pirata2pirata(id);
-  uint pcr3 = p->cr3;
-  uint cr3 =0x27000;
-  mmu_mapear_pagina(0x450000, &pcr3 ,0x450000);
-  mmu_mapear_pagina(0x450000, &cr3 ,0x450000);
-  //breakpoint();
-  copiar_codigo_tarea((int*)0x450000, (int*)0xB8000);
+  copiar_codigo_tarea((int*)0x3FE000, (int*)0xB8000);
+  copiar_codigo_tarea((int*)0x3FF000, (int*)0xB9000);
 }
 
 void screen_inversa_copiar_pantalla()
 {
-  copiar_codigo_tarea((int*)0xB8000,(int*)0x450000);
+  copiar_codigo_tarea((int*)0xB8000,(int*)0x3FE000);
+  copiar_codigo_tarea((int*)0xB9000,(int*)0x3FF000);
 }
 
 
@@ -203,11 +199,16 @@ void print_hex(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
-void clear_screen_error() {
-
-  screen_pintar(32, C_BG_LIGHT_GREY, 20, 10); 
-
-}
+//void clear_screen_error() {
+//  int i = 0;
+//  int j = 0;
+//  for(i=0 ; i<4024 ; i++)
+//    j++;
+//
+//  for(i=23 ; i<50 ; i++)
+//    screen_pintar(32, C_BG_LIGHT_GREY, 4, i); 
+//
+//}
 
 void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     int i;

@@ -58,6 +58,7 @@ extern mapearle_pila_tarea
 extern desmapearle_pila_tarea
 extern ver_si_exploto 
 extern verificar_fin_juego
+extern game_terminar_si_es_hora
 
 extern dame_tipo
 
@@ -84,24 +85,23 @@ extern rcr4
 %macro ISR 1
 global _isr%1
 _isr%1:
-  xchg bx, bx
+  ;xchg bx, bx
     pushad
     mov eax, %1
     push eax
+    call screen_copiar_pantalla
     call print_error
     add esp, 4
+
+    str ax
+    push ax
+    call game_pirata_exploto 
+    pop ax
+
     call sched_d_seteado
     cmp eax, 0
     je .sigo
-    ;calt
-    ;SI DESCOMENTO LA LINEA DE ABAJO TIRA PAGE FAULT UFA
-    xor eax, eax
-    str eax
-    push eax
-    call game_id_from_selector
-    push eax
-    call screen_copiar_pantalla
-    add esp, 8
+
     ;xchg bx, bx
     mov ebx, [esp+12]
     mov eax, esp
@@ -130,35 +130,29 @@ _isr%1:
     push dword [eax + 16] ;ebx 
     push dword [eax + 28] ;eax 
    ; call rcr4 
+    mov eax, cr4
     push eax
     ;call rcr3 
+    mov eax, cr3
     push eax 
     ;call rcr2 
+    mov eax, cr2
     push eax
     ;call rcr0 
+    mov eax, cr0
     push eax
 
     call print_registros
     add esp, 100
 
     call print_interfaz_debbuger
-    call sched_unsetear_debbuger
+    ;call sched_unsetear_debbuger
     call sched_activar_debbuger
     .sigo:
-
-    str ax
-    push ax
-    call game_pirata_exploto 
-    pop ax
-    ;debbuger que onda
-    ;push eflag
-    ;tiene que llamar a la funcion loca que recibe todos los parametros para imprimir
-
+    ;call clear_screen_error 
     jmp 0x70:0x00000000
 
     .fin:
-    call clear_screen_error 
-      ; deberia limpiar la pantalla aca?
       popad
       iret
 %endmacro
@@ -206,6 +200,7 @@ _isr32:
   call fin_intr_pic1
 
   call verificar_fin_juego
+  call game_terminar_si_es_hora
   call sched_estado_debbuger
   cmp eax, 1
   je .fin
@@ -328,26 +323,3 @@ _isr70:
   .fin:
   popad
   iret
-
-
-  ;xchg bx, bx
-  ;push eax
-  ;call mapearle_pila_tarea
-  ;pop eax
-
-  ;push eax
-  ;call pirata_target_Y
-  ;mov dword [0x400FFC], 0x20 
-  ;pop eax
-
-  ;push eax
-  ;call pirata_target_X
-  ;mov dword [0x400FF8], 0x23
-  ;pop eax
-
-  ;push eax
-  ;call desmapearle_pila_tarea
-  ;pop eax
-  ;push eax
-  ;call dame_tipo
-  ;pop eax

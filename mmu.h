@@ -28,6 +28,7 @@
 void mmu_inicializar();
 void mmu_inicializar_dir_pirata(pirata_t *p, int x, int y);
 void mmu_mapear_pagina();
+void mmu_mapear_pagina_solo_lectura();
 void mmu_desmapear_pagina();
 uint* dame_pagina_libre();
 uint* dame_pagina_unica();

@@ -46,6 +46,10 @@ uint sched_estado_debbuger(){ //si es cero, esta desactivado, si es uno, esta ac
   return debug_activo;
   }
 
+void reanudar_juego() {
+  debug_activo = 0;
+}
+
 uint sched_d_seteado(){
   return debug_seteado;
   }
@@ -143,14 +147,6 @@ void hay_minero_pendiente(jugador_t *jug) {
       jug->piratas[i].target_y = jug->minerosPendientes[index_minero_pendiente].target_y;
       jug->piratas[i].pos_x = jug->minerosPendientes[index_minero_pendiente].pos_x;
       jug->piratas[i].pos_y = jug->minerosPendientes[index_minero_pendiente].pos_y;
-      
-      //if (jug == &jugadorA) {
-      //  jug->piratas[i].pos_x = POS_INIT_A_X;
-      //  jug->piratas[i].pos_y = POS_INIT_A_Y;
-      //} else {
-      //  jug->piratas[i].pos_x = POS_INIT_B_X;
-      //  jug->piratas[i].pos_y = POS_INIT_B_Y;
-      //}
 
       mmu_inicializar_dir_pirata(&(jug->piratas[i]), target_x, target_y);
     }
@@ -200,6 +196,26 @@ void sched_generar_pirata_jugadorA(){
   if (todosVivos == 0)
     game_jugador_lanzar_pirata(jug, 0, POS_INIT_A_X, POS_INIT_A_Y);
 }
+int sched_todos_vivos(){
+  int i = 0;
+  int todosVivos = 1;
+  jugador_t *jug = scheduler[0];
+  while ((i < 8) & (todosVivos == 1)) {
+    if (jug->piratas[i].estaVivo == 0) {
+      todosVivos = 0;
+    }
+    i++;
+  } 
+  jug = scheduler[1];
+  while ((i < 8) & (todosVivos == 1)) {
+    if (jug->piratas[i].estaVivo == 0) {
+      todosVivos = 0;
+    }
+    i++;
+  } 
+
+  return todosVivos;
+}
 
 void sched_generar_pirata_jugadorB(){
   int i = 0;
@@ -214,12 +230,6 @@ void sched_generar_pirata_jugadorB(){
   if (todosVivos == 0)
     game_jugador_lanzar_pirata(jug, 0, POS_INIT_B_X, POS_INIT_B_Y);
 }
-
-//void sched_ejecutar_tarea(int index_gdt){
-//  int id_pirata = game_id_from_index(index_gdt);
-//  pirata_t *p = id_pirata2pirata(id_pirata);
-////  prueba_lanzar_pirata(p);
-//}
 
 int sched_tick() {
   game_tick();

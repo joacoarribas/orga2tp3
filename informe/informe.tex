@@ -43,9 +43,10 @@ El trabajo práctico consiste en la implementación de un sistema mínimo multit
   \item Capacidad (muy sencilla y limitada) de gestionarle memoria al kernel.
   \item Un scheduler que pone el procesador a disposición de las distintas tareas que se ejecutan.
   \item El entorno y los recursos necesarios para poder ejecutarse en Modo Protegido.
+\end{enumerate}
 
 \section{Introducción}
-El trabajo práctico consiste en la implementación de un juego de dos jugadores llamado \textbf{Tierra pirata}.
+El trabajo práctico consiste en la implementación de un juego con un máximo de dos jugadores llamado \textbf{Tierra pirata}.
 Los piratas son considerados tareas del sistema operativo que se mueven por la memoria.
 
 \section{Ejercicios}
@@ -58,12 +59,14 @@ Pasos que realizamos para hacer el ejercicio 1:
   \item Deshabilitamos las interrupciones.
   \item Habilitamos A20.
   \item Cargamos el registro GDTR con la dirección base de la GDT, utilizando la instrucción LGDT.
-  \item Seteamos el bit PE del registro CR0 en 1.
+  \item Seteamos el bit PE del registro CR0 en 1 para habilitar \textbf{modoProtegido}.
   \item Pasamos a modo protegido haciendo un jump a la etiqueta \textbf{modoProtegido}.
   \item Cargamos los selectores de segmentos. Asignamos a \textbf{ds} y \textbf{ss} el segmento de código nivel 0, y a \textbf{fs} el de video.
-  \item Seteamos la base de la pila en la dirección de memoria 0x27000.
-  \item Escribimos las rutinas pertenecientes a la escritura e pantalla \textbf{screen\_inicializar} y \textbf{screen\_escribir\_nombre}, que se encargan de limpiar la pantalla,
-    junto con dos barras inferiores de distinto color, y de escribir el nombre de nuestro grupo en la esquina derecha superior. 
+  \item Seteamos la base de la pila del kernel en la dirección de memoria 0x27000.
+  \item Escribimos las rutinas pertenecientes a la escritura en pantalla \textbf{screen\_inicializar} y \textbf{screen\_escribir\_nombre}, que se encargan de limpiar la pantalla,
+    junto con dos barras inferiores de distinto color para cada jugador, indicando a sus costados 
+    la cantidad de piratas vivos/muertos que tienen en el momento
+    ,y de escribir el nombre de nuestro grupo en la esquina derecha superior. 
 \end{enumerate}
 
 \subsection{Ejercicio 2}
@@ -71,7 +74,7 @@ Pasos que realizamos para hacer el ejercicio 2:
 \begin{enumerate}
   \item Inicializamos las primeras 20 entradas de la tabla IDT (Interrupt Descriptor Table) para manejar las primeras 20 interrupciones del procesador.
   \item Creamos un arreglo de chars con el nombre de cada una de las interrupciones.
-  \item Seteamos el Segment Selector de los Gate Descriptors en el segmento de código nivel 0 y el atributo en 0x8E00 indicando que son \textbf{Interrupt Gate}
+  \item Seteamos el Segment Selector de los Gate Descriptors en el segmento de código nivel 0 y el atributo en 0x8E00 indicando que son \textbf{Interrupt Gate} con DPL igual a 0.
   \item Definimos en isr.h las 20 rutinas de atención de interrupciones.
   \item Escribimos el código de cada rutina usando una Macro, imprimiendo cada error por pantalla llamando a la función \textbf{print\_error} 
   \item Llamamos a la función \textbf{idt\_inicializar}, que crea las 20 entradas en la IDT y a LIDT, que carga la IDTR.
@@ -81,25 +84,223 @@ Pasos que realizamos para hacer el ejercicio 2:
 Pasos que realizamos para hacer el ejercicio 3:
 \begin{enumerate}
   \item Creamos las funciones \textbf{kernel\_create\_page\_directory} y \textbf{kernel\_create\_page\_table} que se encargan de crear el directorio y tabla de páginas para el kernel.
-    El directorio de páginas mapea las direcciones 0x00000000 a 0x003fffff. Activamos a cada una de las páginas sus atributos Read/Write y Present.
-  \item Seteamos a Cr3 en la base del directorio de páginas del kernel, con sus bits PCD y PWT en 0.
-  \item Seteamos el bit PG de Cr0.
+    El directorio de páginas, ubicado en la posición de memoria 0x27000, y la tabla de páginas en la 0x28000.
+    Mapeamos las direcciones 0x00000000 a 0x003FFFFF utilizando \textbf{identity mapping}. Activamos a cada una de las páginas sus atributos Read/Write y Present.
+  \item Seteamos al Cr3 en la base del directorio de páginas del kernel, con sus bits PCD y PWT en 0.
+  \item Seteamos el bit PG de Cr0 para activar paginación.
 \end{enumerate} 
 
 \subsection{Ejercicio 4}
 Pasos que realizamos para hacer el ejercicio 4:
 \begin{enumerate}
-  \item
+  \item Creamos una variable \textbf{libres} la cual se inicializa en cero al llamar a \textbf{mmu\_inicializar}. Esta variable se utiliza como
+    contador para determinar cual es la próxima página a ser utilizada. La base a partir de la cual pedimos páginas libres es 0x100000. 
+  \item Escribimos la rutina \textbf{mmu\_inicializar\_dir\_pirata} que se encarga de lo siguiente:
+    \begin{enumerate}
+      \item Recibe por parametro un puntero a pirata, una posición x, y una posición y.
+      \item Crea tres variables, el jugador al cual pertenece ese pirata, el cr3, y el kernel\_cr3, el cual esta en la posición de memoria 0x27000.
+      \item Si el pirata pertenece al jugadorA, su página inicial corresponde a la posición de memoria física 0x5A1000, 
+        si corresponde al jugadorB en la 0x11CE000. Tambien se le inicializa al pirata su atributo
+        \textbf{fisica\_actual} en la página inicial.
+      \item Dependiendo si es minero o explorador, se le copiara su correspondiente código en la dirección virtual 0x400000.
+      \item Se le mapea al cr3 del pirata y al del kernel la página inicial del jugador correspondiente. Al pirata en la 0x400000 virtual y al kernel
+        en su ultima página libre 0x3FF000 y se copia el código correspondiente al tipo del pirata. Es necesario que el kernel tenga mapeada la posición física en la cual se quiere copiar el código de la tarea.
+      \item Si el pirata era un explorador, se le escribe en la pila los parametros x e y, que son las posiciones a las cuales tiene que ir a buscar el botín.
+      \item Luego se le reestablece el identity mapping al kernel en la posición de memoria 0x3FF000.
+    \end{enumerate}
+    \item Escribimos el código necesario para mapear una página. Las funciones \textbf{mmu\_mapear\_página} y \textbf{mmu\_mapear\_página\_solo\_lectura} difieren
+      únicamente en el permiso de escritura. La función recibe por parametro las direcciones virtual y física a ser mapeadas y el cr3 al cual se lo quiere mapear:
+      \begin{enumerate}
+        \item Se shiftea 22 bits la dirección virtual, para obtener el \textbf{directory\_index}.
+        \item Si la página no esta presente se crea una nueva, de lo contrario se obtiene por medio de una mascara la tabla.
+        \item Se shiftea 12 bits la dirección virtual, y se obtiene el \textbf{table\_index}.
+        \item Se llena la entrada del Page Table con la dirección de memoria física junto con sus atributos.
+        \item Se llama a \textbf{tlbflush} para invalidar la cache 
+      \end{enumerate}
+    
+      No utilizamos la función desmapear página.
 \end{enumerate}
+
+\newpage
 
 \subsection{Ejercicio 5}
 Pasos que realizamos para hacer el ejercicio 5:
 \begin{enumerate}
-  \item Llamamos a las funciones \textbf{deshabilitar\_pic}, \textbf{resetear\_pic}, y \textbf{habilitar\_pic} en ese orden para remapear el PIC y habilitarlo. 
+  \item Llamamos a las funciones \textbf{resetear\_pic}, y \textbf{habilitar\_pic} en ese orden para remapear el PIC y habilitarlo. 
   \item Habilitamos las interrupciones.
   \item Creamos las entradas 32 y 33 en la IDT para las interrupciones de reloj y teclado respectivamente. 
   \item Escribimos la rutina de atención de reloj llamando por cada clock a la función \textbf{game\_tick} que llama a la función \textbf{screen\_actualizar\_reloj\_global}.
   \item Escribimos la rutina de atención de teclado leyendo del puerto 0x60 el Scan Code de la tecla oprimida. Para cada tecla utilizada en el juego se la imprime en la esquina derecha superior de la pantalla y luego se la limpia.
 \end{enumerate}
+
+\subsection{Ejercicio 6}
+Pasos que realizamos para hacer el ejercicio 6:
+\begin{enumerate}
+  \item Seteamos los valores pertenecientes a la tss de la tarea inicial y a la de la Idle. La tss\_inicial es necesaria
+    para cargar el contexto del código inicial del kernel y así poder empezar el switch de tareas. 
+    La idle tiene sus selectores de código y datos en nivel cero. La pila es la misma que la del kernel y el Eip en 0x16000.
+  \item Creamos la función \textbf{tss\_inicializar} la cual se encarga de crear dos descriptores de segmento en la GDT para la tarea
+    inicial y la Idle, y 16 más para los piratas de los jugadores. El dpl de todas es cero.
+  \item Volvemos a cargar la GDT utilizando la función LGDT.
+  \item Cargamos el selector de segmentos de la tarea inicial (0x68) en el Task Register.
+  \item Saltamos a la tarea Idle.
+\end{enumerate}
+
+\subsection{Ejercicio 7}
+\subsubsection{Estructuras}
+Ahora contaremos las funciones que utilizamos para darle forma al juego y a su manera de funcionar.
+
+\begin{itemize}
+  \item Para inicializar las estructuras del juego (jugadores y piratas) creamos la función \textbf{game\_inicializar} que lo único 
+    que hace es llamar a \textbf{game\_jugadores\_inicializar} pasandole por parametro un puntero al jugadorA y al jugadorB.
+    Esta última función realiza lo siguiente: 
+    \begin{enumerate}
+      \item Le setea a los jugadores sus puntajes en cero, sus respectivas posiciones de puntaje en el mapa, y 
+      un vector de que botínes encontró, en cero.
+      \item Por cada pirata de cada jugador se llama a \textbf{game\_pirata\_inicializar} pasandole por parametro el puntero al pirata,
+        el jugador al cual pertenece, el selector de segmentos en la GDT, su id único, y la posición donde estara su clock.
+      Esta función hace lo siguiente:
+      \begin{enumerate}
+        \item Le asigna al pirata su selector de segmentos en la GDT y su id único.
+        \item Le asigna el jugador al cual pertenece.
+        \item Le setea sus atributos \textbf{estaVivo}, \textbf{ya\_corrio}, y \textbf{explotó} en cero.
+          El primero indica si un pirata esta listo para ser ejecutado o no.
+          El segundo indica si en una iteración del scheduler por un jugador ese pirata ya ha sido ejecutado o no.
+          El tercero indica si por alguna razón ese pirata tuvo que ser desalojado.
+        \item Le setea la posición de su clock en el mapa.
+        \item Le crea un único cr3, un Page Table, y una pila de nivel cero pidiendo páginas libre. El cr3 lo seguira utilizando aunque se muera, es decir que es único para 
+          cada pirata y se mantiene todo el juego.
+        \item Inicializa el identity mapping para el pirata.
+        \item Completa su tss con selectores de segmento de código y dato nivel tres, la pila en la dirección virtual
+          0x400FF4, el Eip en la 0x400000 y flags con interrupciones activadas, ss0 segmento datos nivel cero, y un cr3 y pila de nivel cero con páginas libres.
+      \end{enumerate}
+      \newpage
+    \item Luego llama para cada jugador a \textbf{game\_jugador\_inicializar\_mapa} la cual, para cada pirata, 
+      le mapea las nueve posiciones iniciales del mapa, en las virtuales correspondientes como solo lectura (fisica+0x300000).
+    \end{enumerate}
+
+  \item Para inicializar las estructuras del scheduler llamamos a \textbf{inicializar\_sched} la cual
+    hace lo siguiente:
+    \begin{enumerate}
+      \item Inicializa un vector de dos posiciones, en la posición cero un puntero al jugadorA, en la posición uno, puntero al jugadorB.
+      \item Le asigna a las variables \textbf{indice\_actual}, \textbf{debug\_seteado}, y \textbf{debug\_activo} en cero.
+        El primero se utiliza para alternar a que jugador le toca correr.
+        El segundo para ver si se ha activado el modo debug.
+        El tercero para ver si, una vez activado el debug, una tarea ha cometido una excepción.
+    \end{enumerate}
+
+\end{itemize}
+
+\subsubsection{Desarrollo del juego}
+  El juego inicialmente, una vez creadas todas las estructuras, comienza corriendo únicamente la tarea idle.
+  La manera de comenzar a correr tareas, tanto del jugadorA como del jugadorB es a través de la interrupción de teclado.
+
+  La interrupción de teclado se encarga de verificar que tecla se oprimió y actuar dependiendo de eso:
+  \begin{itemize}
+    \item Si se oprimió la tecla Lshift se imprime en pantalla la tecla y se llama a la función \textbf{sched\_generar\_pirata\_jugadorA} la cual verifica que haya algún
+      slot disponible para disponible lanzar un pirata. En caso de que no haya, no hace nada. 
+    \item Si se oprimió la tecla Rshift se imprime en pantalla la tecla y se llama a la función \textbf{sched\_generar\_pirata\_jugadorB} la cual verifica que haya algún
+      slot disponible para disponible lanzar un pirata. En caso de que no haya, no hace nada. 
+    \item Si se oprimió la tecla Y se imprime en pantalla la tecla y se verifica si el debbuger esta activado o no.
+      Si no esta activado, se lo activa. Si estaba activado, se limpia la pantalla copiando la memoria de video (previamente guardada en la excepción) en el mapa actual,
+      y se reinicia la variable debug\_activo. 
+  \end{itemize}
+   
+  En caso de haber lanzado un pirata el scheduler se encarga de llamar a \textbf{game\_jugador\_lanzar\_pirata}
+  pasandole como parametros el puntero al jugador, el tipo de pirata (cero=explorador, uno=minero), y la posición inicial correspondiente al jugador.
+  La función hace la siguiente:
+  \begin{itemize}
+    \item Si el tipo del pirata es minero, pregunta si hay un slot disponible en los piratas para incializar un minero.
+      Si no hay espacio le setea a un minero en \textbf{minerosPendientes} que esta vivo. Al minero le asigna 
+      las posiciones a las cuales tiene que ir a buscar el botín.
+    \item Le setea al pirata su posicion inicial, que esta vivo, su tipo, que todavía no corrió, y si el pirata no es un minero pendiente
+      llama a mmu\_inicializar\_dir\_pirata.
+    \item Dependiendo de que jugador haya llamado a la función pinta el mapa inicial con su color correspondiente. 
+  \end{itemize}
+
+  Habiendo ya por lo menos una tarea corriendo, la interrupción de clock empieza a hacer el switch entre las tareas:
+  \begin{itemize}
+    \item Llama a la función \textbf{verificar\_fin\_juego} que se fija si todos los botínes
+      ya han sido descubiertos y vaciados. Si han sido todos vaciados imprime en pantalla el ganador del juego.
+    \item Verifica si el debug esta activo o no. En caso de estarlo no hace nada.
+    \item Llama a \textbf{sched\_tick} la cual se encarga de devolver el selector de segmento de la GDT del pirata a correr.
+    \item Llama a \textbf{game\_pirata\_tick} la cual se encarga de imprimirle en pantalla el clock al pirata que va a correr.
+    \item Carga el Task Register utilizando \textbf{str}, y pregunta si es la misma tarea que esta corriendo actualmente.
+      Si es la misma no hace nada. Si no verifica si la tarea a correr tiene su atributo \textbf{explotó} seteado.
+      Si es asi le reinicia la tss. Luego salta a la tarea.
+  \end{itemize}
+
+  Para ver por cada ciclo de clock a que tarea le toca ejecutarse explicaremos lo que hace la funcion \textbf{sched\_tick}.
+  Las tareas se ejecutan secuencialmente alternando entre los jugadores.
+  \begin{enumerate}
+    \item Setea el resultado estandar que es la tarea idle. En caso de no haber tarea corriendo, devuelve su selector de segmento de la GDT.
+    \item Si la tarea que corrio antes era del jugadorA, ahora se correra una del jugador B y viceversa.
+    \item Se pregunta llamando a la función \textbf{hay\_minero\_pendiente} si había algún minero pendiente para poner a correr.
+      Si había y hay lugar para ponerlo a correr, se le setea sus atributos para indicar que esta vivo y que todavía no corrió, y 
+      se le inicia al mapa de memoria llamando a \textbf{mmu\_inicializar\_dir\_pirata}.
+    \item Luego se pregunta si del jugador al cual el indice del scheduler esta seleccionando, tiene algún pirata vivo, que todavía no
+      corrió en esa pasada del scheduler. Si esto sucede, se devuelve su selector de segmento de la GDT.
+    \item Si no devuelve ningún pirata, se realiza la misma iteración con el otro jugador.
+  \end{enumerate}
+
+  Las acciones que pueden hacer los piratas son servicios que les provee el sistema.
+  Es una system call mapeada a la interrupción 0x46. Al entrar a la rutina de atención de la interrupción
+  se verifica que acción se quiere realizar. Estas se implementaron de la siguiente manera:
+  \begin{itemize}
+    \item Mover:
+      \begin{enumerate}
+        \item Se llama a la función \textbf{game\_id\_from\_selector} que devuelve el id único del pirata.
+        \item Se obtiene el pirata que hizo el llamado a la syscall por medio de la función \textbf{id\_pirata2pirata}, que dada
+          su id, devuelve el puntero al pirata.
+        \item Como los jugadores se mueven como indica la figura 2 del enunciado del trabajo, se verifica
+          antes de moverse si se van a mover a una posición valida dentro del mapa. Si estan por salirse del mapa
+          la función no hace nada.
+        \item Si es valida la posición a moverse, se le pinta al jugador las posiciones nuevas con su color correspondiente.
+        \item Se obtiene la dirección actual del pirata a través de su atributo \textbf{fisica\_actual} y,
+          dependiendo de a que dirección se quiere mover, su posición fisica siguiente.
+        \item Se le mapea en la 0x400000 virtual la página a la cual se va a mover.
+        \item Si el pirata es un explorador, se obtienen las tres direcciones nuevas que acaba de descubrir
+          y se las mapea a todos los piratas en la posicion fisica + 0x300000. También, si el pirata
+          descubrió algún botín, llama a \textbf{game\_jugador\_lanzar\_pirata} pasandole por parametro
+          los datos necesarios para crear una tarea minero (su tipo y la posición a la cual tiene que ir
+          a buscar el botín).
+        \item Luego se le mapea al kernel momentaneamente en la posicion 0x3FE000 y 0x3FF000 la dirección fisica actual
+          del pirata y a la cual se va a mover. Se copia el código de la página actual a la siguiente, y
+          se le vuelve a reestablecer el identity mapping al kernel.
+        \item Luego se salta a la tarea idle.
+      \end{enumerate}
+    \item Cavar:
+      \begin{enumerate}
+        \item Se llama a la función \textbf{game\_id\_from\_selector} que devuelve el id único del pirata.
+        \item Se obtiene el pirata que hizo el llamado a la syscall por medio de la función \textbf{id\_pirata2pirata}, que dada
+          su id, devuelve el puntero al pirata.
+        \item Se encuentra el botín sobre el cual el pirata esta posicionado y se le asigna a su atributo
+          \textbf{monedas\_recolectadas} la cantidad que había en ese botín, sacandole todas las monedas a ese botín. Luego, por cada vez que 
+          entra a la syscall le ira aumentando el puntaje al jugador, y restandole a su atributo.
+          Cuando llegue a cero, se le setea al pirata su atributo explotó en 1, y se le limpia
+          el clock, así desalojando la tarea.
+        \item Luego se salta a la tarea idle.
+      \end{enumerate}
+    \item Posición:
+      \begin{enumerate}
+        \item Se llama a la función \textbf{game\_id\_from\_selector} que devuelve el id único del pirata.
+        \item Se obtiene el pirata que hizo el llamado a la syscall por medio de la función \textbf{id\_pirata2pirata}, que dada
+        \item Si el numero pasado por parametro es -1, se devuelve la posición actual del pirata. De lo
+          contrario se devuelve la posición del pirata pedido. El formato de la posicion es 
+          (y <<8 | x).
+          su id, devuelve el puntero al pirata.
+      \end{enumerate}
+  \end{itemize}
+
+  Por último, las tareas pueden cometer excepciones, por lo cual deben ser desalojadas. La rutina de atención
+  de interrupciones para las primeras 20 excepciones del manual de intel es la siguiente:
+  \begin{enumerate}
+    \item Se copia la pantalla para que, en caso de haberse oprimido la tecla del debug, poder restaurarla luego.
+    \item Se imprime en pantalla el error.
+    \item Se llama a \textbf{game\_pirata\_explotó} para desalojar a la tarea.
+    \item Se pregunta si esta activado el debug. En caso de estarlo se pushean todos los registros previos a que
+      la tarea caiga en la excepción. Para imprimirlos por pantalla, se utiliza la función \textbf{print\_registros} y \textbf{print\_interfaz\_debbuger}.
+    \item Luego se salta a la tarea idle.
+  \end{enumerate}
 
 \end{document}

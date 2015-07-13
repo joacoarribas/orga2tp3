@@ -27,6 +27,7 @@ extern tss_inicializar
 extern cargar_tarea_inicial
 
 extern mmu_inicializar_dir_pirata
+extern mmu_inicializar
 extern prueba_lanzar_pirata
 
 extern game_inicializar
@@ -89,17 +90,16 @@ start:
     ; Establecer la base de la pila
     mov esp, 0x27000
 
-    ; Imprimir mensaje de bienvenida
-
     ; Inicializar pantalla
     call screen_inicializar
     call screen_escribir_nombre
 
-    ; Inicializar el juego
+    ; Inicializar las tss 
     call tss_inicializar
     lgdt [GDT_DESC]
 
     ; Inicializar el manejador de memoria
+    call mmu_inicializar
 
     ; Inicializar el directorio de paginas
     call kernel_create_page_directory
@@ -114,17 +114,10 @@ start:
     or eax, 0x80000000 ;habilito paginacion
     mov cr0, eax
 
+    ; Inicializo las estructuras del juego
     call game_inicializar
-    call inicializar_sched
-    ; Error division por cero, funciona
-    ;;mov edx, 0
-    ;;div edx 
-
-    ; Inicializar tss
-
-    ; Inicializar tss de la tarea Idle
-
     ; Inicializar el scheduler
+    call inicializar_sched
 
     ; Inicializar la IDT
     call idt_inicializar
@@ -133,31 +126,16 @@ start:
     lidt [IDT_DESC]
 
     ; Configurar controlador de interrupciones
-    ;call deshabilitar_pic
     call resetear_pic
     call habilitar_pic
 
     ; Cargar tarea inicial
     mov ax, 0x68
     ltr ax
-    ;call cargar_tarea_inicial
-
 
     ; Habilitar interrupciones
     sti
 
-    ;prueba tarea
-;;    xchg bx,bx
-;    call mmu_inicializar_dir_pirata
-;    mov cr3, eax
-    ;call prueba_lanzar_pirata
-    ; mov ax, 0x88
-    ; ltr ax
-    ; mov
-    ; mov
-    ;jmp 0x80:0x00000000
-    
-;xchg bx,bx
     ; Saltar a la primera tarea: Idle
     jmp 0x70:0x00000000
 
